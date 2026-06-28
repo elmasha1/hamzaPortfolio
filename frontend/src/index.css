@@ -1,0 +1,191 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   GLOBAL BASE STYLES — "Cool Slate Tech"
+   ============================================================ */
+@layer base {
+  html {
+    scroll-behavior: smooth; /* native smooth-scroll for nav links */
+  }
+
+  body {
+    /* Inter body copy on a deep-space base, generous line-height */
+    @apply text-body font-sans antialiased;
+    color: #94a3b8;
+    font-size: 0.9375rem; /* 15px — refined body size */
+    line-height: 1.7;
+    letter-spacing: -0.01em;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    /* Near-black deep-space base. The small central glow + vignette are painted
+       by a fixed <CosmicDecor> layer on the public site (cheaper than a fixed
+       background-attachment, which janks on mobile scroll). */
+    background-color: #02060f;
+  }
+
+  /* Space Grotesk headings: geometric, tightly tracked, near-white */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-heading text-heading;
+    letter-spacing: -0.02em;
+  }
+
+  /* Tabular figures for clean, aligned numbers/stats */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum' 1;
+  }
+
+  /* Blue selection */
+  ::selection {
+    background-color: #3b82f6;
+    color: #f8fafc;
+  }
+
+  /* Hairline custom scrollbar (dark) */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #05091a;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #3b82f6;
+  }
+
+  /* Visible keyboard focus everywhere (accessibility) */
+  :focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+/* ============================================================
+   REUSABLE COMPONENT CLASSES
+   ============================================================ */
+@layer components {
+  .container-px {
+    @apply mx-auto w-full max-w-7xl px-5 sm:px-8 lg:px-12;
+  }
+
+  .section-title {
+    @apply font-heading text-2xl sm:text-3xl font-semibold text-heading;
+    letter-spacing: -0.02em;
+  }
+
+  .pill {
+    @apply inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-medium;
+  }
+
+  /* Wide-tracked small caps — the "premium" eyebrow label */
+  .eyebrow {
+    @apply inline-block font-sans text-eyebrow font-semibold uppercase text-eyebrow;
+    letter-spacing: 0.14em;
+  }
+
+  /* Glassmorphism card — translucent navy, blurred, hairline white border */
+  .glass {
+    @apply backdrop-blur-xl border border-line shadow-soft;
+    background-color: rgba(255, 255, 255, 0.04);
+  }
+
+  /* ---- Buttons ----
+     Magnetic motion + shine sweep come from the <Button> wrapper;
+     these classes supply the surface (radius, sheen, depth, highlight). */
+  .btn {
+    @apply relative isolate inline-flex items-center justify-center gap-2 overflow-hidden rounded-btn text-base font-medium;
+    transition:
+      box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+      background-color 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  /* Primary: off-white pill with dark text (the reference look) */
+  .btn-primary {
+    @apply btn px-6 py-3 shadow-btn;
+    background-color: #f5f5f0;
+    color: #0a1124;
+  }
+  .btn-primary:hover {
+    @apply shadow-btn-hover;
+    background-color: #ffffff;
+  }
+  /* Secondary: subtle bordered glass button */
+  .btn-secondary {
+    @apply btn border border-line px-6 py-3 text-heading shadow-btn-secondary backdrop-blur;
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+  .btn-secondary:hover {
+    @apply border-primary/50;
+    background-color: rgba(255, 255, 255, 0.09);
+  }
+  /* Ghost: frosted, thin blue border with a glow on hover */
+  .btn-ghost {
+    @apply btn border border-primary/30 px-6 py-3 text-primary-300 backdrop-blur;
+    background-color: rgba(59, 130, 246, 0.06);
+  }
+  .btn-ghost:hover {
+    @apply border-primary/60;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.14), 0 8px 24px rgba(59, 130, 246, 0.2);
+  }
+
+  /* Hero accent — white → light-blue gradient text fill */
+  .gradient-text {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(90deg, #ffffff 0%, #a9c8ec 100%);
+  }
+}
+
+/* ============================================================
+   ACCESSIBILITY — reduced motion fallback.
+   Framer Motion respects useReducedMotion(), and we also kill
+   CSS animations/transitions for users who prefer reduced motion.
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Hide the native cursor only when the custom cursor is active (desktop) */
+.custom-cursor-active,
+.custom-cursor-active * {
+  cursor: none;
+}
+
+/* ============================================================
+   LENIS smooth scroll — required base styles.
+   ============================================================ */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}

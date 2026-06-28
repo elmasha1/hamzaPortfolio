@@ -1,0 +1,26 @@
+# Laravel
+backend/vendor/
+backend/node_modules/
+backend/.env
+backend/storage/*.key
+backend/storage/logs/
+backend/bootstrap/cache/*.php
+
+# React / Vite
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+
+# General
+node_modules/
+vendor/
+.env
+.env.*
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/
