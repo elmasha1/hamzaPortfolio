@@ -13,10 +13,14 @@ class CvController extends Controller
      */
     public const DEFAULT_CV = [
         'name' => 'EL MASDOUKI Hamza',
-        'role' => 'Full Stack Developer',
+        'role' => 'Full-Stack Developer / Software Engineer',
+        'tagline' => 'I turn ideas into fast, accessible, production-grade web applications — end to end.',
         'email' => 'lyrvmind@gmail.com',
+        'phone' => '',
         'github' => 'https://github.com/',
-        'location' => 'Morocco',
+        'linkedin' => 'https://linkedin.com/',
+        'website' => '',
+        'location' => 'Rabat, Morocco',
         'summary' => 'Full-stack developer who loves the sweet spot between engineering and design. I build fast, accessible and beautifully animated apps with React, Tailwind & Framer Motion on the frontend, and robust REST APIs with Laravel & MySQL on the backend.',
         'experiences' => [
             [
@@ -46,6 +50,16 @@ class CvController extends Controller
         'skills' => [
             'React', 'Vite', 'Tailwind CSS', 'Framer Motion', 'JavaScript',
             'Laravel', 'PHP', 'MySQL', 'REST APIs', 'Git',
+        ],
+        'skill_groups' => [
+            ['label' => 'Frontend', 'items' => ['React', 'Vite', 'TypeScript', 'Tailwind CSS', 'Framer Motion', 'GSAP']],
+            ['label' => 'Backend', 'items' => ['Laravel', 'PHP', 'REST APIs', 'Node.js', 'Sanctum / Auth']],
+            ['label' => 'Database', 'items' => ['MySQL', 'Eloquent ORM', 'Redis']],
+            ['label' => 'DevOps & Tools', 'items' => ['Git', 'Docker', 'CI/CD', 'Linux', 'Figma']],
+        ],
+        'projects' => [
+            ['name' => 'Portfolio & CMS', 'description' => 'Editorial portfolio with a full Laravel admin dashboard and a client-generated PDF résumé.', 'tech' => 'React, Laravel, MySQL', 'link' => 'https://github.com/'],
+            ['name' => 'Realtime Dashboard', 'description' => 'Analytics dashboard with a Laravel API and a fast, accessible React frontend.', 'tech' => 'React, Laravel, WebSockets', 'link' => 'https://github.com/'],
         ],
         'languages' => [
             ['name' => 'Arabic', 'level' => 'Native'],

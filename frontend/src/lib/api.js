@@ -15,6 +15,12 @@ export async function fetchProjects() {
   return data.data ?? data // supports both {data:[...]} and [...] responses
 }
 
+/** GET /api/projects/:id — a single project / case study. */
+export async function fetchProject(id) {
+  const { data } = await api.get(`/projects/${id}`)
+  return data.data ?? data
+}
+
 /** POST /api/contact — stores a contact message. */
 export async function sendContactMessage(payload) {
   const { data } = await api.post('/contact', payload)
@@ -30,6 +36,30 @@ export async function fetchSettings() {
 /** GET /api/cv — public CV / résumé data (for the /cv page and PDF). */
 export async function fetchCv() {
   const { data } = await api.get('/cv')
+  return data.data ?? data
+}
+
+/** GET /api/posts — published blog posts (list). */
+export async function fetchPosts() {
+  const { data } = await api.get('/posts')
+  return data.data ?? data
+}
+
+/** GET /api/posts/:slug — a single published post. */
+export async function fetchPost(slug) {
+  const { data } = await api.get(`/posts/${slug}`)
+  return data.data ?? data
+}
+
+/** GET /api/journey — "My Journey" timeline milestones (ordered). */
+export async function fetchJourney() {
+  const { data } = await api.get('/journey')
+  return data.data ?? data
+}
+
+/** GET /api/about — About page content (headline, story, video, etc.). */
+export async function fetchAbout() {
+  const { data } = await api.get('/about')
   return data.data ?? data
 }
 

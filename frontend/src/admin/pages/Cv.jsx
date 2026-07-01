@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { cvApi } from '../../lib/adminApi'
 import { useToast } from '../../context/ToastContext'
-import { Plus, X, Trash2 } from '../../components/ui/Icons'
+import { Plus, Trash2 } from '../../components/ui/Icons'
 
 const field =
   'w-full rounded-xl border border-line bg-white/[0.04] px-3 py-2 text-sm text-heading outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20'
@@ -9,14 +9,20 @@ const field =
 const EMPTY = {
   name: '',
   role: '',
+  tagline: '',
   email: '',
+  phone: '',
   github: '',
+  linkedin: '',
+  website: '',
   location: '',
   photo: '',
   summary: '',
   experiences: [],
   education: [],
   skills: [],
+  skill_groups: [],
+  projects: [],
   languages: [],
   certifications: [],
 }
@@ -82,7 +88,6 @@ export default function Cv() {
   const toast = useToast()
   const [cv, setCv] = useState(null)
   const [saving, setSaving] = useState(false)
-  const [skillInput, setSkillInput] = useState('')
 
   useEffect(() => {
     cvApi
@@ -92,14 +97,6 @@ export default function Cv() {
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const set = (k, v) => setCv((p) => ({ ...p, [k]: v }))
-
-  const addSkill = (e) => {
-    e.preventDefault()
-    const t = skillInput.trim()
-    if (t && !cv.skills.includes(t)) set('skills', [...cv.skills, t])
-    setSkillInput('')
-  }
-  const removeSkill = (t) => set('skills', cv.skills.filter((x) => x !== t))
 
   const save = async (e) => {
     e.preventDefault()
@@ -150,16 +147,28 @@ export default function Cv() {
           <Labeled label="Email">
             <input value={cv.email} onChange={(e) => set('email', e.target.value)} className={field} />
           </Labeled>
-          <Labeled label="GitHub URL">
-            <input value={cv.github} onChange={(e) => set('github', e.target.value)} className={field} />
+          <Labeled label="Phone">
+            <input value={cv.phone} onChange={(e) => set('phone', e.target.value)} className={field} placeholder="+212 …" />
           </Labeled>
           <Labeled label="Location">
             <input value={cv.location} onChange={(e) => set('location', e.target.value)} className={field} />
           </Labeled>
+          <Labeled label="Website / portfolio URL">
+            <input value={cv.website} onChange={(e) => set('website', e.target.value)} className={field} placeholder="https://…" />
+          </Labeled>
+          <Labeled label="GitHub URL">
+            <input value={cv.github} onChange={(e) => set('github', e.target.value)} className={field} />
+          </Labeled>
+          <Labeled label="LinkedIn URL">
+            <input value={cv.linkedin} onChange={(e) => set('linkedin', e.target.value)} className={field} />
+          </Labeled>
           <Labeled label="Photo URL (shared with the hero profile photo)">
-            <input value={cv.photo} onChange={(e) => set('photo', e.target.value)} className={field} placeholder="https://… or /assets/me.jpg" />
+            <input value={cv.photo} onChange={(e) => set('photo', e.target.value)} className={field} placeholder="https://… or /assets/cv-photo.jpg" />
           </Labeled>
         </div>
+        <Labeled label="Tagline (one line under the name)">
+          <input value={cv.tagline} onChange={(e) => set('tagline', e.target.value)} className={field} />
+        </Labeled>
       </Section>
 
       <Section title="Profile summary">
@@ -203,29 +212,43 @@ export default function Cv() {
         />
       </Section>
 
-      <Section title="Skills">
-        <div className="mb-2 flex flex-wrap gap-2">
-          {cv.skills.map((t) => (
-            <span key={t} className="inline-flex items-center gap-1 rounded-full border border-line bg-[#0B1A33] px-3 py-1 text-xs font-medium text-primary-300">
-              {t}
-              <button type="button" onClick={() => removeSkill(t)} className="text-muted hover:text-coral">
-                <X size={12} />
-              </button>
-            </span>
-          ))}
-        </div>
-        <div className="flex gap-2">
-          <input
-            value={skillInput}
-            onChange={(e) => setSkillInput(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && addSkill(e)}
-            className={field}
-            placeholder="Type a skill, press Enter"
-          />
-          <button type="button" onClick={addSkill} className="rounded-xl border border-line px-3 text-sm text-body">
-            Add
-          </button>
-        </div>
+      <Section title="Skills (grouped — shown on the CV sidebar)">
+        <RepeatableList
+          items={cv.skill_groups}
+          onChange={(v) => set('skill_groups', v)}
+          blank={{ label: '', items: [] }}
+          addLabel="Add category"
+          render={(item, upd) => (
+            <div className="grid gap-3 sm:grid-cols-[0.4fr_1fr]">
+              <input value={item.label} onChange={(e) => upd('label', e.target.value)} className={field} placeholder="Category (e.g. Frontend)" />
+              <input
+                value={(item.items || []).join(', ')}
+                onChange={(e) => upd('items', e.target.value.split(',').map((x) => x.trim()).filter(Boolean))}
+                className={field}
+                placeholder="Items, comma separated (React, Vite, …)"
+              />
+            </div>
+          )}
+        />
+      </Section>
+
+      <Section title="Key Projects">
+        <RepeatableList
+          items={cv.projects}
+          onChange={(v) => set('projects', v)}
+          blank={{ name: '', description: '', tech: '', link: '' }}
+          addLabel="Add project"
+          render={(item, upd) => (
+            <>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <input value={item.name} onChange={(e) => upd('name', e.target.value)} className={field} placeholder="Project name" />
+                <input value={item.link} onChange={(e) => upd('link', e.target.value)} className={field} placeholder="Link (GitHub / live URL)" />
+              </div>
+              <input value={item.tech} onChange={(e) => upd('tech', e.target.value)} className={field} placeholder="Tech (e.g. React, Laravel, MySQL)" />
+              <textarea value={item.description} onChange={(e) => upd('description', e.target.value)} rows={2} className={`${field} resize-none`} placeholder="One-line description" />
+            </>
+          )}
+        />
       </Section>
 
       <Section title="Languages">

@@ -21,7 +21,7 @@ export default function useCvDownload(preloaded) {
       // Load the jsPDF generator only on click so it never bloats the
       // initial page bundle.
       const { generateCvPdf } = await import('../lib/pdf')
-      generateCvPdf(cv)
+      await generateCvPdf(cv)
     } catch (err) {
       toast.error('Could not generate the CV PDF. Please try again.')
     } finally {

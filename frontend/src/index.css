@@ -11,19 +11,16 @@
   }
 
   body {
-    /* Inter body copy on a deep-space base, generous line-height */
+    /* Inter body copy on a near-black editorial base */
     @apply text-body font-sans antialiased;
-    color: #94a3b8;
-    font-size: 0.9375rem; /* 15px — refined body size */
+    color: #8a8a8a;
+    font-size: 0.9375rem; /* 15px */
     line-height: 1.7;
     letter-spacing: -0.01em;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
-    /* Near-black deep-space base. The small central glow + vignette are painted
-       by a fixed <CosmicDecor> layer on the public site (cheaper than a fixed
-       background-attachment, which janks on mobile scroll). */
-    background-color: #02060f;
+    background-color: #0d0d0d;
   }
 
   /* Space Grotesk headings: geometric, tightly tracked, near-white */
@@ -43,32 +40,32 @@
     font-feature-settings: 'tnum' 1;
   }
 
-  /* Blue selection */
+  /* High-contrast selection */
   ::selection {
-    background-color: #3b82f6;
-    color: #f8fafc;
+    background-color: #ffffff;
+    color: #0d0d0d;
   }
 
-  /* Hairline custom scrollbar (dark) */
+  /* Hairline custom scrollbar (mono) */
   ::-webkit-scrollbar {
-    width: 10px;
+    width: 9px;
   }
   ::-webkit-scrollbar-track {
-    background: #05091a;
+    background: #0d0d0d;
   }
   ::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.14);
     border-radius: 9999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #3b82f6;
+    background: rgba(255, 255, 255, 0.3);
   }
 
   /* Visible keyboard focus everywhere (accessibility) */
   :focus-visible {
-    outline: 2px solid #3b82f6;
+    outline: 2px solid #ffffff;
     outline-offset: 2px;
-    border-radius: 4px;
+    border-radius: 2px;
   }
 }
 
@@ -112,39 +109,37 @@
       transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
       background-color 0.35s cubic-bezier(0.22, 1, 0.36, 1);
   }
-  /* Primary: off-white pill with dark text (the reference look) */
+  /* Primary: solid white pill with black text (high-contrast, editorial) */
   .btn-primary {
-    @apply btn px-6 py-3 shadow-btn;
-    background-color: #f5f5f0;
-    color: #0a1124;
+    @apply btn rounded-full px-6 py-3 shadow-btn;
+    background-color: #ffffff;
+    color: #0d0d0d;
   }
   .btn-primary:hover {
     @apply shadow-btn-hover;
-    background-color: #ffffff;
+    background-color: #e5e5e5;
   }
-  /* Secondary: subtle bordered glass button */
+  /* Secondary: hairline outline button */
   .btn-secondary {
-    @apply btn border border-line px-6 py-3 text-heading shadow-btn-secondary backdrop-blur;
-    background-color: rgba(255, 255, 255, 0.05);
+    @apply btn rounded-full border border-line px-6 py-3 text-heading;
+    background-color: transparent;
   }
   .btn-secondary:hover {
-    @apply border-primary/50;
-    background-color: rgba(255, 255, 255, 0.09);
+    border-color: rgba(255, 255, 255, 0.35);
+    background-color: rgba(255, 255, 255, 0.04);
   }
-  /* Ghost: frosted, thin blue border with a glow on hover */
+  /* Ghost: minimal outline */
   .btn-ghost {
-    @apply btn border border-primary/30 px-6 py-3 text-primary-300 backdrop-blur;
-    background-color: rgba(59, 130, 246, 0.06);
+    @apply btn rounded-full border border-line px-6 py-3 text-heading;
+    background-color: transparent;
   }
   .btn-ghost:hover {
-    @apply border-primary/60;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.14), 0 8px 24px rgba(59, 130, 246, 0.2);
+    border-color: rgba(255, 255, 255, 0.35);
   }
 
-  /* Hero accent — white → light-blue gradient text fill */
+  /* Strict mono — no gradients. Kept as a class so call sites don't change. */
   .gradient-text {
-    @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(90deg, #ffffff 0%, #a9c8ec 100%);
+    color: #ffffff;
   }
 }
 
@@ -188,4 +183,26 @@ html.lenis body {
 }
 .lenis.lenis-smooth iframe {
   pointer-events: none;
+}
+
+/* ============================================================
+   HERO CONSTELLATION — subtle twinkling map nodes (opacity only)
+   ============================================================ */
+@keyframes heroTwinkle {
+  0%,
+  100% {
+    opacity: 0.12;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+.hero-node {
+  animation: heroTwinkle 5s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-node {
+    animation: none;
+    opacity: 0.28;
+  }
 }

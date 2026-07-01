@@ -37,7 +37,7 @@ export default function CosmicDecor() {
         style={{
           right: '-46vh',
           opacity: 0.6,
-          filter: 'drop-shadow(0 0 30px rgba(59, 130, 246, 0.22))',
+          filter: 'drop-shadow(0 0 30px rgba(255,255,255,0.22))',
         }}
         viewBox="0 0 800 800"
         fill="none"

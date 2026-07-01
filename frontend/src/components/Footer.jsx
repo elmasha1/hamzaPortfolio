@@ -1,122 +1,151 @@
+import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { COLORS, shapes } from './Stickers'
-import { Linkedin, Github, Mail, Whatsapp, ArrowRight } from './ui/Icons'
-import Button from './ui/Button'
-import { scrollToSelector } from '../lib/smoothScroll'
+import { ArrowRight, ArrowUp, ArrowUpRight, Github, Linkedin, Mail, Whatsapp } from './ui/Icons'
+import Marquee from './Marquee'
+import LocalTime from './LocalTime'
+import { getLenis } from '../lib/smoothScroll'
 import { useSettings } from '../context/SettingsContext'
 
-const FOOTER_STICKERS = [
-  { shape: 'star', color: COLORS.indigo, size: 26, top: '24%', left: '8%' },
-  { shape: 'sparkle', color: COLORS.mint, size: 22, top: '62%', left: '88%' },
-  { shape: 'circle', color: COLORS.sky, size: 16, top: '34%', left: '70%' },
-  { shape: 'plus', color: COLORS.indigo, size: 18, top: '70%', left: '20%' },
+const NAV = [
+  { label: 'Home', to: '/' },
+  { label: 'About', to: '/about' },
+  { label: 'Projects', to: '/projects' },
+  { label: 'Blog', to: '/blog' },
+  { label: 'Contact', to: '/contact' },
 ]
 
-function buildSocials(settings) {
-  const s = settings.socials || {}
-  const wa = (settings.whatsapp_number || '').replace(/\D/g, '')
-  const list = []
-  if (s.linkedin) list.push({ label: 'LinkedIn', Icon: Linkedin, href: s.linkedin })
-  if (s.github) list.push({ label: 'GitHub', Icon: Github, href: s.github })
-  if (wa)
-    list.push({
-      label: 'WhatsApp',
-      Icon: Whatsapp,
-      href: `https://wa.me/${wa}?text=${encodeURIComponent(settings.whatsapp_message || 'Hi!')}`,
-    })
-  if (s.email) list.push({ label: 'Email', Icon: Mail, href: `mailto:${s.email}` })
-  return list
+function backToTop() {
+  const l = getLenis()
+  if (l) l.scrollTo(0, { duration: 1.2 })
+  else window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+const reveal = {
+  hidden: { opacity: 0, y: 24 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } },
 }
 
 export default function Footer() {
   const { settings } = useSettings()
-  const SOCIALS = buildSocials(settings)
+  const s = settings.socials || {}
+  const wa = (settings.whatsapp_number || '').replace(/\D/g, '')
+  const available = settings.available !== false
+  const location = settings.location || ''
+  const year = new Date().getFullYear()
 
-  const toContact = (e) => {
-    e.preventDefault()
-    scrollToSelector('#contact')
-  }
+  const socials = [
+    s.github && { label: 'GitHub', href: s.github, Icon: Github },
+    s.linkedin && { label: 'LinkedIn', href: s.linkedin, Icon: Linkedin },
+    s.email && { label: 'Email', href: `mailto:${s.email}`, Icon: Mail },
+    wa && { label: 'WhatsApp', href: `https://wa.me/${wa}`, Icon: Whatsapp },
+  ].filter(Boolean)
 
   return (
-    <footer className="relative overflow-hidden bg-dark text-white">
-      {/* Subtle decorative stickers (low opacity on dark) */}
-      {FOOTER_STICKERS.map((s, i) => {
-        const Shape = shapes[s.shape]
-        return (
-          <motion.div
-            key={i}
-            className="absolute opacity-30"
-            style={{ top: s.top, left: s.left, width: s.size, height: s.size }}
-            animate={{ y: [0, -12, 0], rotate: [0, 20, 0] }}
-            transition={{ duration: 4 + i, repeat: Infinity, ease: 'easeInOut' }}
-          >
-            <svg viewBox="0 0 24 24" width="100%" height="100%">
-              {Shape(s.color)}
-            </svg>
-          </motion.div>
-        )
-      })}
-
-      {/* CTA */}
-      <div className="container-px relative z-10 flex flex-col items-center gap-7 py-20 text-center">
-        <motion.h2
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="font-heading text-3xl font-semibold tracking-tightish text-white sm:text-4xl"
-        >
-          Let's build something{' '}
-          {/* Shimmering accent that continuously sweeps light across the word */}
-          <span
-            className="bg-clip-text text-transparent motion-safe:animate-shimmer"
-            style={{
-              backgroundImage:
-                'linear-gradient(110deg, #BFDBFE 20%, #FFFFFF 40%, #5EEAD4 55%, #BFDBFE 80%)',
-              backgroundSize: '200% auto',
-            }}
-          >
-            remarkable.
-          </span>
-        </motion.h2>
-
-        <p className="max-w-md text-slate-300">
-          Have a project, a role, or an idea in mind? I'd love to hear about it.
-        </p>
-
-        <Button as="a" href="#contact" onClick={toContact} className="px-7 py-3.5">
-          Start a conversation
-          <ArrowRight className="transition-transform duration-300 ease-out group-hover:translate-x-1" />
-        </Button>
-
-        {/* Socials */}
-        <div className="mt-2 flex gap-3">
-          {SOCIALS.map((s) => (
-            <motion.a
-              key={s.label}
-              href={s.href}
-              target="_blank"
-              rel="noreferrer"
-              aria-label={s.label}
-              whileHover={{ y: -4, scale: 1.12 }}
-              whileTap={{ scale: 0.92 }}
-              className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-white/80 transition-colors hover:bg-white/15 hover:text-white"
-            >
-              <s.Icon size={20} />
-            </motion.a>
-          ))}
-        </div>
-
-        <div className="mt-6 flex w-full flex-col items-center gap-2 border-t border-white/10 pt-6 text-sm text-slate-400 sm:flex-row sm:justify-between">
-          <a href="#home" className="font-heading text-base text-white">
-            &lt;Hamza/&gt;
-          </a>
-          <p>
-            © {new Date().getFullYear()} EL MASDOUKI Hamza. Built with React,
-            Tailwind, Framer Motion & Laravel.
-          </p>
-        </div>
+    <footer className="relative border-t border-line">
+      {/* Looping name / role marquee */}
+      <div className="overflow-hidden border-b border-line py-4">
+        <Marquee
+          items={['Available for work', "Let's work together", 'Full-Stack Developer', 'React · Laravel', 'EL MASDOUKI Hamza']}
+          className="font-heading text-sm uppercase tracking-[0.14em] text-muted"
+        />
       </div>
+
+      <motion.div
+        variants={reveal}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, amount: 0.2 }}
+        className="container-px py-16 sm:py-24"
+      >
+        {/* Closing CTA */}
+        <p className="eyebrow">Have a project in mind?</p>
+        <Link
+          to="/contact"
+          data-cursor="hover"
+          className="group mt-5 inline-flex items-center gap-4 font-heading text-[clamp(2.5rem,7vw,5.5rem)] font-semibold leading-[1.02] tracking-[-0.03em] text-heading"
+        >
+          Let&rsquo;s work together
+          <ArrowRight
+            size={44}
+            className="shrink-0 transition-transform duration-300 ease-out group-hover:translate-x-2"
+          />
+        </Link>
+
+        {/* Columns */}
+        <div className="mt-16 grid gap-10 border-t border-line pt-12 sm:grid-cols-3">
+          {/* Navigate */}
+          <div>
+            <p className="eyebrow mb-5">Navigate</p>
+            <ul className="space-y-2.5">
+              {NAV.map((n) => (
+                <li key={n.to}>
+                  <Link to={n.to} data-cursor="hover" className="group inline-flex items-center gap-1.5 text-body transition-colors hover:text-heading">
+                    {n.label}
+                    <ArrowUpRight size={13} className="opacity-0 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:opacity-100" />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Find me online */}
+          <div>
+            <p className="eyebrow mb-5">Find me online</p>
+            <ul className="space-y-2.5">
+              {socials.map((soc) => (
+                <li key={soc.label}>
+                  <a href={soc.href} target="_blank" rel="noreferrer" data-cursor="hover" className="group inline-flex items-center gap-2.5 text-body transition-colors hover:text-heading">
+                    <soc.Icon size={16} className="shrink-0" />
+                    {soc.label}
+                    <ArrowUpRight size={13} className="opacity-0 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:opacity-100" />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Status / meta */}
+          <div className="space-y-3">
+            <p className="eyebrow mb-5">Status</p>
+            <div className="flex items-center gap-2.5 text-body">
+              <span className="relative flex h-2 w-2">
+                {available && <span className="absolute inline-flex h-full w-full rounded-full bg-white/60 motion-safe:animate-pulse-ring" />}
+                <span className={`relative inline-flex h-2 w-2 rounded-full ${available ? 'bg-white' : 'bg-muted'}`} />
+              </span>
+              {available ? 'Available for work' : 'Currently booked'}
+            </div>
+            {location && <p className="text-body">{location}</p>}
+            <LocalTime className="block text-body" />
+            {s.email && (
+              <a href={`mailto:${s.email}`} data-cursor="hover" className="block text-body transition-colors hover:text-heading">
+                {s.email}
+              </a>
+            )}
+          </div>
+        </div>
+
+        {/* Oversized wordmark → back to top */}
+        <button
+          onClick={backToTop}
+          data-cursor="hover"
+          aria-label="Back to top"
+          className="group mt-16 flex w-full items-end justify-between gap-6 text-left"
+        >
+          <span className="font-heading text-[clamp(3.5rem,17vw,13rem)] font-semibold leading-[0.85] tracking-[-0.04em] text-heading">
+            Hamza<span className="text-muted">®</span>
+          </span>
+          <span className="mb-3 hidden shrink-0 items-center gap-2 text-xs uppercase tracking-[0.14em] text-muted transition-colors group-hover:text-heading sm:inline-flex">
+            Back to top
+            <ArrowUp size={15} className="transition-transform duration-300 group-hover:-translate-y-0.5" />
+          </span>
+        </button>
+
+        {/* Bottom meta */}
+        <div className="mt-10 flex flex-col gap-2 border-t border-line pt-6 text-xs text-muted sm:flex-row sm:justify-between">
+          <span>© {year} EL MASDOUKI Hamza — All rights reserved.</span>
+          <span>Built with React, Tailwind, GSAP &amp; Laravel</span>
+        </div>
+      </motion.div>
     </footer>
   )
 }

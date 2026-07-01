@@ -2,52 +2,56 @@ import { useEffect, useState } from 'react'
 import { motion, useMotionValue, useSpring, useReducedMotion } from 'framer-motion'
 
 /**
- * Cursor — a custom animated cursor with a trailing ring.
- * - The dot follows the pointer instantly; the ring lags with a spring.
- * - Grows + changes colour when hovering interactive elements.
- * - Disabled on touch devices and when reduced-motion is requested.
+ * Cursor — a minimal editorial cursor: a precise dot + a trailing ring that
+ * springs behind it. Over elements marked `data-cursor="view|drag|open"` it
+ * morphs into a filled label pill ("View" / "Drag" / "Open"). Disabled on
+ * touch / reduced motion. GPU-only (transform/opacity).
  */
+const LABELS = { view: 'View', drag: 'Drag', open: 'Open' }
+
 export default function Cursor() {
   const reduce = useReducedMotion()
   const [enabled, setEnabled] = useState(false)
-  const [hovering, setHovering] = useState(false)
+  const [mode, setMode] = useState('default') // default | hover | label
+  const [label, setLabel] = useState('')
 
   const x = useMotionValue(-100)
   const y = useMotionValue(-100)
-  // Springy ring trails behind the precise dot.
   const ringX = useSpring(x, { stiffness: 300, damping: 28, mass: 0.6 })
   const ringY = useSpring(y, { stiffness: 300, damping: 28, mass: 0.6 })
 
   useEffect(() => {
-    // Only enable for fine pointers (mouse) and when motion is allowed.
     const fine = window.matchMedia('(pointer: fine)').matches
     if (!fine || reduce) return
 
     setEnabled(true)
     document.documentElement.classList.add('custom-cursor-active')
 
-    // Throttle to one update per animation frame: store the latest event and
-    // only touch motion values / query the DOM inside rAF. Avoids doing work
-    // on every single mousemove (which can fire far more than 60Hz).
     let frame = 0
-    let lastEvent = null
+    let last = null
 
     const flush = () => {
       frame = 0
-      if (!lastEvent) return
-      x.set(lastEvent.clientX)
-      y.set(lastEvent.clientY)
-      const t = lastEvent.target
-      // setHovering bails out when the value is unchanged, so no re-render
-      // happens on a plain move — only when crossing into/out of a target.
-      setHovering(
-        !!(t instanceof Element &&
-          t.closest('a, button, input, textarea, [data-cursor="hover"]'))
-      )
+      if (!last) return
+      x.set(last.clientX)
+      y.set(last.clientY)
+      const t = last.target
+      const tagged = t instanceof Element ? t.closest('[data-cursor]') : null
+      const val = tagged?.getAttribute('data-cursor')
+      if (val && LABELS[val]) {
+        setLabel(LABELS[val])
+        setMode('label')
+      } else if (val === 'hover' || (t instanceof Element && t.closest('a, button, input, textarea'))) {
+        setLabel('')
+        setMode('hover')
+      } else {
+        setLabel('')
+        setMode('default')
+      }
     }
 
     const move = (e) => {
-      lastEvent = e
+      last = e
       if (!frame) frame = requestAnimationFrame(flush)
     }
 
@@ -61,25 +65,38 @@ export default function Cursor() {
 
   if (!enabled) return null
 
+  const isLabel = mode === 'label'
+
   return (
     <>
       {/* Precise dot */}
       <motion.div
-        className="pointer-events-none fixed left-0 top-0 z-[90] h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary"
+        className="pointer-events-none fixed left-0 top-0 z-[120] h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white"
         style={{ x, y }}
-        animate={{ scale: hovering ? 0 : 1 }}
+        animate={{ scale: mode === 'default' ? 1 : 0 }}
       />
-      {/* Trailing ring — fixed size; only transform (scale) + opacity animate
-          so it stays on the GPU compositor (no width/height layout work). */}
+      {/* Trailing ring → label pill */}
       <motion.div
-        className="pointer-events-none fixed left-0 top-0 z-[90] h-7 w-7 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-primary bg-primary/10"
-        style={{ x: ringX, y: ringY, willChange: 'transform' }}
+        className="pointer-events-none fixed left-0 top-0 z-[120] flex -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full"
+        style={{ x: ringX, y: ringY, willChange: 'transform', height: 96, width: 96 }}
         animate={{
-          scale: hovering ? 1.7 : 1,
-          opacity: hovering ? 1 : 0.7,
+          scale: isLabel ? 1 : mode === 'hover' ? 0.42 : 0.3,
+          backgroundColor: isLabel ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,0)',
         }}
-        transition={{ type: 'spring', stiffness: 250, damping: 20 }}
-      />
+        transition={{ type: 'spring', stiffness: 260, damping: 24 }}
+      >
+        <span
+          style={{ borderWidth: isLabel ? 0 : 2 }}
+          className="absolute inset-0 rounded-full border-white/60"
+        />
+        <motion.span
+          className="text-[11px] font-medium uppercase tracking-[0.14em] text-ink"
+          animate={{ opacity: isLabel ? 1 : 0 }}
+          transition={{ duration: 0.18 }}
+        >
+          {label || 'View'}
+        </motion.span>
+      </motion.div>
     </>
   )
 }

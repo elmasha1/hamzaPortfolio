@@ -77,15 +77,23 @@ class ProjectController extends Controller
 
     private function validateData(Request $request): array
     {
-        // tech_tags may arrive as a JSON string (multipart) or an array.
-        if (is_string($request->input('tech_tags'))) {
-            $decoded = json_decode($request->input('tech_tags'), true);
-            $request->merge(['tech_tags' => is_array($decoded) ? $decoded : []]);
+        // tech_tags / key_features may arrive as JSON strings (multipart) or arrays.
+        foreach (['tech_tags', 'key_features'] as $jsonField) {
+            if (is_string($request->input($jsonField))) {
+                $decoded = json_decode($request->input($jsonField), true);
+                $request->merge([$jsonField => is_array($decoded) ? $decoded : []]);
+            }
         }
 
         return $request->validate([
             'title' => ['required', 'string', 'max:160'],
             'description' => ['required', 'string'],
+            'problem' => ['nullable', 'string', 'max:2000'],
+            'architecture_notes' => ['nullable', 'string', 'max:2000'],
+            'key_features' => ['nullable', 'array'],
+            'key_features.*' => ['string', 'max:200'],
+            'challenges' => ['nullable', 'string', 'max:2000'],
+            'outcome' => ['nullable', 'string', 'max:2000'],
             'tech_tags' => ['nullable', 'array'],
             'tech_tags.*' => ['string', 'max:40'],
             'live_url' => ['nullable', 'url', 'max:255'],

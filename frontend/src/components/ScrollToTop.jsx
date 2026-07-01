@@ -28,7 +28,8 @@ export default function ScrollToTop() {
           exit={{ opacity: 0, y: 20, scale: 0.8 }}
           whileHover={{ scale: 1.1, y: -2 }}
           whileTap={{ scale: 0.92 }}
-          className="fixed bottom-24 right-7 z-[70] flex h-11 w-11 items-center justify-center rounded-full border border-line bg-white/[0.06] text-primary shadow-[0_0_22px_-6px_rgba(59,130,246,0.55)] backdrop-blur-md transition-shadow hover:shadow-[0_0_28px_-4px_rgba(59,130,246,0.7)]"
+          data-cursor="hover"
+          className="fixed bottom-[5.25rem] right-6 z-[70] flex h-12 w-12 items-center justify-center rounded-full border border-line bg-ink text-heading transition-colors hover:bg-white hover:text-ink"
         >
           <ArrowUp size={20} strokeWidth={2} />
         </motion.button>

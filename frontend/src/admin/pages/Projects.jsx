@@ -10,6 +10,11 @@ function toFormData(form, file) {
   const fd = new FormData()
   fd.append('title', form.title)
   fd.append('description', form.description)
+  fd.append('problem', form.problem || '')
+  fd.append('architecture_notes', form.architecture_notes || '')
+  fd.append('challenges', form.challenges || '')
+  fd.append('outcome', form.outcome || '')
+  fd.append('key_features', JSON.stringify(form.key_features || []))
   fd.append('live_url', form.live_url || '')
   fd.append('github_url', form.github_url || '')
   fd.append('role', form.role || '')
@@ -23,6 +28,11 @@ function toFormData(form, file) {
 const EMPTY = {
   title: '',
   description: '',
+  problem: '',
+  architecture_notes: '',
+  key_features: [],
+  challenges: '',
+  outcome: '',
   tech_tags: [],
   live_url: '',
   github_url: '',
@@ -38,10 +48,21 @@ function ProjectForm({ initial, onClose, onSaved }) {
   const [file, setFile] = useState(null)
   const [preview, setPreview] = useState(initial?.image || '')
   const [tagInput, setTagInput] = useState('')
+  const [featInput, setFeatInput] = useState('')
   const [saving, setSaving] = useState(false)
   const [errors, setErrors] = useState({})
 
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }))
+
+  const addFeature = (e) => {
+    e.preventDefault()
+    const t = featInput.trim()
+    const list = form.key_features || []
+    if (t && !list.includes(t)) set('key_features', [...list, t])
+    setFeatInput('')
+  }
+  const removeFeature = (t) =>
+    set('key_features', (form.key_features || []).filter((x) => x !== t))
 
   const onFile = (e) => {
     const f = e.target.files?.[0]
@@ -136,15 +157,67 @@ function ProjectForm({ initial, onClose, onSaved }) {
 
           <div>
             <label className="eyebrow mb-1 block">My role</label>
-            <input value={form.role} onChange={(e) => set('role', e.target.value)} className={field} placeholder="e.g. Full-stack developer" />
+            <input value={form.role} onChange={(e) => set('role', e.target.value)} className={field} placeholder="e.g. Lead full-stack developer" />
           </div>
+
+          {/* ---- Engineering case study ---- */}
+          <div className="!mt-5 border-t border-line pt-4">
+            <p className="eyebrow mb-3 block text-primary">Case study</p>
+          </div>
+
+          <div>
+            <label className="eyebrow mb-1 block">Problem</label>
+            <textarea value={form.problem} onChange={(e) => set('problem', e.target.value)} rows={3} className={`${field} resize-none`} placeholder="What problem did this solve, and for whom?" />
+          </div>
+
+          <div>
+            <label className="eyebrow mb-1 block">Approach & architecture</label>
+            <textarea value={form.architecture_notes} onChange={(e) => set('architecture_notes', e.target.value)} rows={3} className={`${field} resize-none`} placeholder="e.g. React SPA + Laravel REST API, MySQL, Sanctum auth, queued jobs…" />
+          </div>
+
+          {/* Key features */}
+          <div>
+            <label className="eyebrow mb-1 block">Key features</label>
+            <div className="mb-2 flex flex-wrap gap-2">
+              {(form.key_features || []).map((t) => (
+                <span key={t} className="inline-flex items-center gap-1 rounded-full border border-line bg-white/[0.05] px-3 py-1 text-xs font-medium text-primary-300">
+                  {t}
+                  <button type="button" onClick={() => removeFeature(t)} className="text-muted hover:text-coral">
+                    <X size={12} />
+                  </button>
+                </span>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <input
+                value={featInput}
+                onChange={(e) => setFeatInput(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && addFeature(e)}
+                className={field}
+                placeholder="Type a feature, press Enter"
+              />
+              <button type="button" onClick={addFeature} className="rounded-xl border border-line px-3 text-sm">Add</button>
+            </div>
+          </div>
+
+          <div>
+            <label className="eyebrow mb-1 block">Challenges</label>
+            <textarea value={form.challenges} onChange={(e) => set('challenges', e.target.value)} rows={2} className={`${field} resize-none`} placeholder="Hardest technical problems you solved" />
+          </div>
+
+          <div>
+            <label className="eyebrow mb-1 block">Outcome & impact</label>
+            <textarea value={form.outcome} onChange={(e) => set('outcome', e.target.value)} rows={2} className={`${field} resize-none`} placeholder="Measurable result, e.g. reduced load time 40%" />
+          </div>
+
+          <div className="!mt-5 border-t border-line pt-4" />
 
           {/* Tech tags */}
           <div>
             <label className="eyebrow mb-1 block">Tech tags</label>
             <div className="mb-2 flex flex-wrap gap-2">
               {form.tech_tags.map((t) => (
-                <span key={t} className="inline-flex items-center gap-1 rounded-full bg-base-indigo px-3 py-1 text-xs font-medium text-primary-700">
+                <span key={t} className="inline-flex items-center gap-1 rounded-full border border-line bg-white/[0.05] px-3 py-1 text-xs font-medium text-primary-300">
                   {t}
                   <button type="button" onClick={() => removeTag(t)} className="text-muted hover:text-coral">
                     <X size={12} />
@@ -176,7 +249,7 @@ function ProjectForm({ initial, onClose, onSaved }) {
           </div>
 
           <label className="flex cursor-pointer items-center gap-3 pt-1">
-            <input type="checkbox" checked={form.featured} onChange={(e) => set('featured', e.target.checked)} className="h-4 w-4 accent-[#2563EB]" />
+            <input type="checkbox" checked={form.featured} onChange={(e) => set('featured', e.target.checked)} className="h-4 w-4 accent-white" />
             <span className="text-sm font-medium text-heading">Featured project</span>
           </label>
         </div>
@@ -187,7 +260,7 @@ function ProjectForm({ initial, onClose, onSaved }) {
           </button>
           <button type="submit" disabled={saving} className="btn-primary flex-1 px-4 py-2.5 text-sm disabled:opacity-60">
             <span className="relative z-10 inline-flex items-center gap-2">
-              {saving && <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />}
+              {saving && <span className="h-4 w-4 animate-spin rounded-full border-2 border-black/20 border-t-black/70" />}
               Save
             </span>
           </button>

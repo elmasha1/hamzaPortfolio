@@ -12,12 +12,18 @@ import {
   LogOut,
   Menu,
   ArrowUpRight,
+  FileCode2,
+  GitBranch,
+  Eye,
 } from '../components/ui/Icons'
 
 const NAV = [
   { to: '/admin/dashboard', label: 'Overview', end: true, Icon: LayoutDashboard },
   { to: '/admin/messages', label: 'Messages', Icon: Inbox },
   { to: '/admin/projects', label: 'Projects', Icon: FolderKanban },
+  { to: '/admin/journey', label: 'Journey', Icon: GitBranch },
+  { to: '/admin/about', label: 'About page', Icon: Eye },
+  { to: '/admin/posts', label: 'Blog', Icon: FileCode2 },
   { to: '/admin/cv', label: 'CV / Resume', Icon: FileText },
   { to: '/admin/settings', label: 'Settings', Icon: Settings },
 ]

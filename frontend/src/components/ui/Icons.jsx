@@ -40,6 +40,15 @@ import {
   FileCode2 as LFileCode2,
   Layers as LLayers,
   Server as LServer,
+  Code2 as LCode2,
+  Rocket as LRocket,
+  LayoutGrid as LLayoutGrid,
+  Wrench as LWrench,
+  Terminal as LTerminal,
+  Cpu as LCpu,
+  MonitorSmartphone as LMonitorSmartphone,
+  Play as LPlay,
+  Pause as LPause,
 } from 'lucide-react'
 
 const DEFAULTS = { size: 18, strokeWidth: 1.75 }
@@ -88,7 +97,7 @@ export const Info = make(LInfo)
 // the surrounding container). Kept as `Whatsapp` for existing call sites.
 export const Whatsapp = make(LMessageCircle)
 
-/* ---- Tech stack ---- */
+/* ---- Tech stack + services ---- */
 export const Atom = make(LAtom)
 export const Wind = make(LWind)
 export const Database = make(LDatabase)
@@ -97,6 +106,38 @@ export const Braces = make(LBraces)
 export const FileCode2 = make(LFileCode2)
 export const Layers = make(LLayers)
 export const Server = make(LServer)
+export const Code = make(LCode2)
+export const Rocket = make(LRocket)
+export const LayoutGrid = make(LLayoutGrid)
+export const Wrench = make(LWrench)
+export const Terminal = make(LTerminal)
+export const Cpu = make(LCpu)
+export const MonitorSmartphone = make(LMonitorSmartphone)
+export const Play = make(LPlay)
+export const Pause = make(LPause)
+
+// Name → icon map for dashboard-selectable icons (services, tech groups).
+export const ICONS = {
+  Code,
+  Server,
+  Database,
+  Rocket,
+  LayoutGrid,
+  Wrench,
+  Terminal,
+  Cpu,
+  MonitorSmartphone,
+  Layers,
+  GitBranch,
+  Braces,
+}
+export const ICON_NAMES = Object.keys(ICONS)
+
+/** Render an icon by name (falls back to Code). */
+export function DynamicIcon({ name, ...props }) {
+  const Cmp = ICONS[name] || Code
+  return <Cmp {...props} />
+}
 
 /* ---- Admin dashboard ---- */
 export const Plus = make(LPlus)

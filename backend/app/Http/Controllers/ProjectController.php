@@ -21,4 +21,10 @@ class ProjectController extends Controller
 
         return response()->json(['data' => $projects]);
     }
+
+    /** GET /api/projects/{project} (public) — a single project / case study. */
+    public function show(Project $project): JsonResponse
+    {
+        return response()->json(['data' => $project]);
+    }
 }

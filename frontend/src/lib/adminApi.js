@@ -76,6 +76,29 @@ export const projectsApi = {
     adminApi.post('/admin/projects/reorder', { order: ids }).then((r) => r.data),
 }
 
+/* ---------------------------- Posts ----------------------------- */
+export const postsApi = {
+  list: () => adminApi.get('/admin/posts').then((r) => r.data.data),
+  create: (payload) => adminApi.post('/admin/posts', payload).then((r) => r.data.data),
+  update: (id, payload) => adminApi.put(`/admin/posts/${id}`, payload).then((r) => r.data.data),
+  remove: (id) => adminApi.delete(`/admin/posts/${id}`).then((r) => r.data),
+}
+
+/* ---------------------------- About ----------------------------- */
+export const aboutApi = {
+  get: () => adminApi.get('/admin/about').then((r) => r.data.data),
+  update: (payload) => adminApi.put('/admin/about', payload).then((r) => r.data.data),
+}
+
+/* --------------------------- Journey ---------------------------- */
+export const journeyApi = {
+  list: () => adminApi.get('/admin/journey').then((r) => r.data.data),
+  create: (payload) => adminApi.post('/admin/journey', payload).then((r) => r.data.data),
+  update: (id, payload) => adminApi.put(`/admin/journey/${id}`, payload).then((r) => r.data.data),
+  remove: (id) => adminApi.delete(`/admin/journey/${id}`).then((r) => r.data),
+  reorder: (ids) => adminApi.post('/admin/journey/reorder', { order: ids }).then((r) => r.data),
+}
+
 /* --------------------------- Settings --------------------------- */
 export const settingsApi = {
   get: () => adminApi.get('/admin/settings').then((r) => r.data.data),

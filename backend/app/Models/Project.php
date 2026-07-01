@@ -15,6 +15,11 @@ class Project extends Model
     protected $fillable = [
         'title',
         'description',
+        'problem',
+        'architecture_notes',
+        'key_features',
+        'challenges',
+        'outcome',
         'image',
         'tech_tags',
         'live_url',
@@ -25,11 +30,12 @@ class Project extends Model
     ];
 
     /**
-     * Attribute casting. `tech_tags` is stored as JSON and exposed to the API
-     * as a plain array; `featured` as a boolean.
+     * Attribute casting. `tech_tags` / `key_features` are JSON ⇄ array;
+     * `featured` is a boolean.
      */
     protected $casts = [
         'tech_tags' => 'array',
+        'key_features' => 'array',
         'featured' => 'boolean',
         'order' => 'integer',
     ];

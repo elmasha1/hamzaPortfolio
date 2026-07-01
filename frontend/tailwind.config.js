@@ -4,57 +4,55 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Deep-space background anchors
-        deep: '#040A18', // near-black navy (page base)
-        glow: '#0F2147', // faint blue glow (center-top)
+        // Editorial monochrome base — near-black ink + white paper.
+        ink: '#0D0D0D',
+        paper: '#FFFFFF',
+        deep: '#0D0D0D',
+        glow: '#0D0D0D',
 
-        // Backgrounds — re-tinted to translucent/dark navy surfaces
         base: {
-          white: 'rgba(255,255,255,0.04)', // glassy cards
-          soft: '#040A18', // page base (deep space)
-          indigo: '#0B1B36', // soft sections
-          hero: '#0B1B36',
+          white: 'rgba(255,255,255,0.03)', // faint glass card
+          soft: '#0D0D0D', // page base
+          indigo: '#141414', // slightly raised panel
+          hero: '#141414',
         },
-        // Translucent glass surface for cards/panels on the dark bg
-        surface: 'rgba(255,255,255,0.04)',
-        'surface-2': 'rgba(255,255,255,0.07)',
+        surface: 'rgba(255,255,255,0.03)',
+        'surface-2': 'rgba(255,255,255,0.06)',
 
-        // Primary accent — luminous blue
+        // "Primary" is now monochrome white — a single, disciplined accent.
+        // (Token name kept so existing components keep working.)
         primary: {
-          DEFAULT: '#3B82F6',
-          soft: '#5B8DD6', // softer accent / eyebrow
-          50: '#1E2A47',
-          100: '#23335A',
-          300: '#93C5FD', // light blue (text on dark)
-          500: '#3B82F6',
-          600: '#2563EB',
-          700: '#93C5FD', // light blue so `text-primary-700` stays legible on dark
-          800: '#1E3A8A',
+          DEFAULT: '#FFFFFF',
+          soft: '#A1A1A1',
+          50: '#1A1A1A',
+          100: '#202020',
+          300: '#FFFFFF',
+          500: '#FFFFFF',
+          600: '#E5E5E5',
+          700: '#FFFFFF',
+          800: '#FFFFFF',
         },
-        // Secondary accent — soft blue (was teal)
-        teal: '#5B8DD6',
-        secondary: '#5B8DD6',
+        teal: '#A1A1A1',
+        secondary: '#A1A1A1',
 
-        // Dark panel (footer / CTA) — blends into deep space
-        dark: '#02060F',
+        dark: '#000000',
 
-        // --- Legacy token names kept so existing components keep working,
-        // --- remapped to the cosmic blue palette ---
-        sky: '#3B82F6',
-        mint: '#5B8DD6',
-        coral: '#F87171', // soft red (validation errors on dark)
-        amber: '#A9C8EC', // pale blue (decor)
-        lavender: '#93C5FD', // light blue (decor)
-        pink: '#A9C8EC', // pale blue (decor)
+        // Legacy decorative names neutralised to mono.
+        sky: '#FFFFFF',
+        mint: '#A1A1A1',
+        coral: '#F87171', // validation errors only
+        amber: '#A1A1A1',
+        lavender: '#A1A1A1',
+        pink: '#A1A1A1',
 
-        // Text — light on dark
-        heading: '#F8FAFC', // headings
-        body: '#94A3B8', // body copy
-        muted: '#64748B', // muted captions / labels
-        eyebrow: '#5B8DD6', // eyebrow labels
+        // Text — white on near-black, Swiss contrast.
+        heading: '#FAFAFA',
+        body: '#8A8A8A',
+        muted: '#6B6B6B',
+        eyebrow: '#A1A1A1',
 
-        // Hairline borders — faint white on the dark bg
-        line: 'rgba(255,255,255,0.08)',
+        // Hairline borders.
+        line: 'rgba(255,255,255,0.12)',
       },
       fontFamily: {
         // Body/UI: Inter. Headings & stats: Space Grotesk (geometric grotesk).
@@ -80,15 +78,14 @@ export default {
         '3xl': '1.5rem',
       },
       boxShadow: {
-        // Deep, soft shadows with a faint blue glow on the dark bg
-        soft: '0 10px 34px -12px rgba(2, 6, 16, 0.7), 0 0 0 1px rgba(255,255,255,0.02)',
-        'soft-lg': '0 24px 60px -18px rgba(2, 6, 16, 0.8), 0 0 40px -20px rgba(59,130,246,0.25)',
-        glow: '0 0 36px rgba(59, 130, 246, 0.35)',
-        'glow-teal': '0 0 36px rgba(91, 141, 214, 0.30)',
-        // Primary (off-white pill) button depth
-        btn: '0 6px 20px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255,255,255,0.04)',
-        'btn-hover': '0 10px 30px rgba(0, 0, 0, 0.45), 0 0 24px rgba(245,245,240,0.12)',
-        'btn-secondary': '0 2px 10px rgba(0, 0, 0, 0.3)',
+        // Flat, gallery-like — definition comes from hairline borders, not shadows.
+        soft: 'none',
+        'soft-lg': 'none',
+        glow: 'none',
+        'glow-teal': 'none',
+        btn: 'none',
+        'btn-hover': 'none',
+        'btn-secondary': 'none',
       },
       keyframes: {
         float: {
@@ -140,6 +137,11 @@ export default {
           '0%, 100%': { opacity: '0.5' },
           '50%': { opacity: '0.9' },
         },
+        // Looping marquee strip (the track is duplicated; move by 50%).
+        marquee: {
+          from: { transform: 'translateX(0)' },
+          to: { transform: 'translateX(-50%)' },
+        },
       },
       animation: {
         float: 'float 6s ease-in-out infinite',
@@ -152,6 +154,7 @@ export default {
         bloom: 'bloom 0.9s ease-out',
         twinkle: 'twinkle 3.5s ease-in-out infinite',
         breathe: 'breathe 9s ease-in-out infinite',
+        marquee: 'marquee 30s linear infinite',
       },
     },
   },

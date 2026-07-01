@@ -15,6 +15,8 @@ class DatabaseSeeder extends Seeder
             AdminUserSeeder::class,
             SettingSeeder::class,
             ProjectSeeder::class,
+            PostSeeder::class,
+            JourneyMilestoneSeeder::class,
         ]);
     }
 }

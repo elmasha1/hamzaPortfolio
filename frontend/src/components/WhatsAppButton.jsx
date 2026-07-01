@@ -34,20 +34,12 @@ export default function WhatsAppButton() {
       transition={{ delay: 1, type: 'spring', stiffness: 200, damping: 16 }}
       whileHover={{ scale: 1.08 }}
       whileTap={{ scale: 0.95 }}
-      className="group fixed bottom-6 right-6 z-[70] flex h-14 w-14 items-center justify-center rounded-full border border-[#25D366]/40 bg-white/[0.05] text-[#34E27E] shadow-[0_0_24px_-4px_rgba(37,211,102,0.5)] backdrop-blur-md"
+      data-cursor="hover"
+      className="group fixed bottom-6 right-6 z-[70] flex h-12 w-12 items-center justify-center rounded-full border border-line bg-ink text-heading transition-colors hover:bg-white hover:text-ink"
     >
-      {/* Pulse ring (accent glow) */}
-      {!reduce && (
-        <span className="absolute inset-0 rounded-full bg-[#25D366] opacity-30 motion-safe:animate-pulse-ring" />
-      )}
-      {/* Gentle float */}
-      <motion.span
-        className="relative flex"
-        animate={reduce ? {} : { y: [0, -3, 0] }}
-        transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
-      >
-        <MessageCircle size={26} />
-      </motion.span>
+      <span className="relative flex">
+        <MessageCircle size={22} />
+      </span>
 
       {/* Tooltip */}
       <AnimatePresence>
@@ -56,9 +48,9 @@ export default function WhatsAppButton() {
             initial={{ opacity: 0, x: 8 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 8 }}
-            className="pointer-events-none absolute right-[120%] whitespace-nowrap rounded-xl bg-dark px-3 py-1.5 text-xs font-medium text-white shadow-soft"
+            className="pointer-events-none absolute right-[125%] whitespace-nowrap border border-line bg-ink px-3 py-1.5 text-xs uppercase tracking-[0.1em] text-heading"
           >
-            Chat on WhatsApp
+            WhatsApp
           </motion.span>
         )}
       </AnimatePresence>

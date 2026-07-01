@@ -1,14 +1,23 @@
-# EL MASDOUKI Hamza — Animated Developer Portfolio
+# EL MASDOUKI Hamza — Full-Stack Developer Portfolio
 
-A modern, **bright/light**, heavily-animated full-stack developer portfolio.
+A minimal **black-and-white editorial** (`#0D0D0D` / `#FFFFFF`), Swiss-typography
+full-stack developer portfolio with ultra-smooth reference-style motion.
 
-- **Frontend:** React (Vite) + Tailwind CSS + Framer Motion
-- **Backend:** Laravel REST API
-- **Database:** MySQL (stores contact messages, serves projects dynamically)
+- **Frontend:** React (Vite) + Tailwind CSS + GSAP/ScrollTrigger + Lenis + Framer Motion
+- **Backend:** Laravel REST API + Sanctum admin
+- **Database:** MySQL (settings, projects, blog posts, contact messages)
 
-Animations everywhere: a counting preloader, floating + parallax stickers,
-scroll-triggered reveals, a custom magnetic cursor, animated counters, skill
-bars, 3D-tilt project cards, animated filter tabs, and an animated contact form.
+**Pages / routes:** `/` (home: hero → Overview "what I do" → My Journey timeline →
+Selected work → contact) · `/about` · `/projects` · `/contact` · `/blog` +
+`/blog/:slug` · `/playground` · `/work/:id` (case study) · `/cv` · `/admin/*`.
+
+Motion: a counting preloader (with a hard fallback timeout), Lenis smooth scroll,
+split-text reveals, clip-path image reveals, looping marquees, a custom cursor
+("View" / "Drag"), magnetic buttons, a full-screen menu overlay, and smooth
+page transitions — all with `prefers-reduced-motion` + touch fallbacks.
+
+> **Run the frontend on port 5173** (`npm run dev`): the API's CORS allow-list is
+> `http://localhost:5173`, so blog posts / projects / settings only load there.
 
 ---
 
@@ -283,8 +292,26 @@ php artisan migrate --seed
 - **Projects** (`/admin/projects`) — full CRUD with **image upload + live
   preview**, tech-tag input, featured toggle, and **up/down reordering**
   (persisted via `/projects/reorder`). Delete with confirm.
-- **Settings** (`/admin/settings`) — edit WhatsApp number + message, hero
-  title/subtitle/roles, availability badge, bio, stats rows, and social links.
+- **Blog** (`/admin/posts`) — full CRUD for journal posts (title, auto-slug,
+  cover URL, excerpt, tags, read time, body, published toggle). Public reads via
+  `GET /api/posts` + `GET /api/posts/{slug}`.
+- **CV / Resume** (`/admin/cv`) — edit every field of the résumé: personal info
+  (name, role, tagline, email, phone, location, website, GitHub, LinkedIn,
+  photo), summary, experiences, education, **grouped skills**, **key projects**,
+  languages and certifications. Saving updates `GET /api/cv`, so both the
+  on-screen **`/cv`** page and the **downloaded PDF** always reflect the latest
+  data. Every "CV" / "Download CV" button on the site (navbar, footer, about,
+  contact page) generates a **professional, ATS-friendly two-column A4 PDF**
+  (real selectable text, embedded photo) named `First-Last-CV.pdf`.
+  The CV photo reuses the dashboard **`profile_photo`** — set it in the CV editor
+  or drop a same-origin file at `frontend/public/assets/cv-photo.jpg`.
+  > PDF generation is **client-side** (jsPDF) because `barryvdh/laravel-dompdf`
+  > could not be installed in this environment (package registry blocked). It
+  > still produces real selectable text — swap in server-side dompdf later if you
+  > prefer, without changing the data model or buttons.
+- **Settings** (`/admin/settings`) — WhatsApp, hero title/subtitle/**location
+  line**/roles, availability, bio, **Overview** capabilities, **My Journey**
+  milestones, Technologies groups, Services, stats, testimonials, and socials.
 
 The login token is a **Sanctum bearer token** stored in `localStorage`,
 attached on every request; a 401 clears it and returns you to `/admin`.
