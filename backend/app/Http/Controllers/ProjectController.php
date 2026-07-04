@@ -3,23 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Models\Project;
+use App\Support\PublicCache;
 use Illuminate\Http\JsonResponse;
 
 class ProjectController extends Controller
 {
-    /**
-     * GET /api/projects (public)
-     * Return projects for the portfolio grid: featured first, then by the
-     * manual `order` set in the dashboard, then newest.
-     */
+    /** The public projects list (featured first, then manual order, then newest). */
+    public static function payload()
+    {
+        return Project::orderByDesc('featured')->orderBy('order')->latest()->get();
+    }
+
+    /** GET /api/projects (public). */
     public function index(): JsonResponse
     {
-        $projects = Project::orderByDesc('featured')
-            ->orderBy('order')
-            ->latest()
-            ->get();
-
-        return response()->json(['data' => $projects]);
+        return response()->json([
+            'data' => PublicCache::remember('projects', fn () => self::payload()),
+        ]);
     }
 
     /** GET /api/projects/{project} (public) — a single project / case study. */

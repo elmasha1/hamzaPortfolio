@@ -25,6 +25,19 @@ const RULE = [219, 219, 219]
 const cleanUrl = (u) =>
   u ? String(u).replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/$/, '') : ''
 
+/* Fetch the photo as a base64 data-URI from the API. Locally-stored uploads
+   under /storage carry no CORS headers, so drawing them on the canvas directly
+   would fail — the API inlines the bytes instead (see GET /api/cv/photo). */
+async function fetchPhotoDataUri(fallbackUrl) {
+  try {
+    const { default: api } = await import('./api')
+    const { data } = await api.get('/cv/photo')
+    return data?.data?.photo || fallbackUrl || null
+  } catch {
+    return fallbackUrl || null
+  }
+}
+
 /* Load a photo and return a square-cropped JPEG data URL (or null on failure /
    cross-origin taint — the CV then falls back to no photo gracefully). */
 function loadPhoto(url) {
@@ -59,7 +72,7 @@ export async function generateCvPdf(cv = {}) {
   const color = (c) => doc.setTextColor(c[0], c[1], c[2])
   const draw = (c) => doc.setDrawColor(c[0], c[1], c[2])
 
-  const photo = await loadPhoto(cv.photo)
+  const photo = await loadPhoto(await fetchPhotoDataUri(cv.photo))
 
   /* ------------------------------ Header ------------------------------ */
   const photoSize = 26

@@ -49,6 +49,7 @@ import {
   MonitorSmartphone as LMonitorSmartphone,
   Play as LPlay,
   Pause as LPause,
+  Tag as LTag,
 } from 'lucide-react'
 
 const DEFAULTS = { size: 18, strokeWidth: 1.75 }
@@ -115,6 +116,7 @@ export const Cpu = make(LCpu)
 export const MonitorSmartphone = make(LMonitorSmartphone)
 export const Play = make(LPlay)
 export const Pause = make(LPause)
+export const Tag = make(LTag)
 
 // Name → icon map for dashboard-selectable icons (services, tech groups).
 export const ICONS = {

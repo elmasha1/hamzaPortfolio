@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ArrowRight } from '../../components/ui/Icons'
-import { messagesApi, projectsApi } from '../../lib/adminApi'
+import { overviewApi } from '../../lib/adminApi'
 
 function StatCard({ label, value, accent, delay }) {
   return (
@@ -25,15 +25,18 @@ export default function Overview() {
 
   useEffect(() => {
     let alive = true
-    Promise.all([messagesApi.list(), projectsApi.list()])
-      .then(([m, projects]) => {
-        if (!alive) return
+    // ONE consolidated request (counts + recents) instead of downloading
+    // every message and project just to show three numbers.
+    overviewApi
+      .get()
+      .then((d) => {
+        if (!alive || !d) return
         setStats({
-          messages: m.meta?.total ?? m.data.length,
-          unread: m.meta?.unread ?? m.data.filter((x) => !x.read).length,
-          projects: projects.length,
+          messages: d.counts?.messages ?? 0,
+          unread: d.counts?.unread ?? 0,
+          projects: d.counts?.projects ?? 0,
         })
-        setRecent(m.data.slice(0, 5))
+        setRecent(d.recent_messages || [])
       })
       .catch(() => {})
       .finally(() => alive && setLoading(false))

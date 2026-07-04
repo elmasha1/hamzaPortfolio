@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
-import { settingsApi } from '../../lib/adminApi'
+import { settingsApi, photoApi } from '../../lib/adminApi'
 import { useToast } from '../../context/ToastContext'
 import { Plus, X, ICON_NAMES, DynamicIcon } from '../../components/ui/Icons'
+import ImageUploader from '../components/ImageUploader'
 
 const field =
   'w-full rounded-xl border border-line bg-white/[0.04] px-3 py-2 text-sm text-heading outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20'
@@ -58,54 +59,12 @@ export default function Settings() {
       // Guarantee nested shapes exist so every input stays controlled.
       socials: { linkedin: '', github: '', email: '', ...(data.socials || {}) },
       hero_roles: Array.isArray(data.hero_roles) ? data.hero_roles : [],
-      stats: Array.isArray(data.stats) ? data.stats : [],
-      testimonials: Array.isArray(data.testimonials) ? data.testimonials : [],
-      tech_groups: Array.isArray(data.tech_groups) ? data.tech_groups : [],
-      services: Array.isArray(data.services) ? data.services : [],
       overview_items: Array.isArray(data.overview_items) ? data.overview_items : [],
-      journey: Array.isArray(data.journey) ? data.journey : [],
     }
   }
 
   const set = (k, v) => setS((p) => ({ ...p, [k]: v }))
   const setSocial = (k, v) => setS((p) => ({ ...p, socials: { ...p.socials, [k]: v } }))
-  const setStat = (i, k, v) =>
-    setS((p) => {
-      const stats = [...p.stats]
-      stats[i] = { ...stats[i], [k]: k === 'value' ? Number(v) : v }
-      return { ...p, stats }
-    })
-  const addStat = () => set('stats', [...s.stats, { label: '', value: 0, suffix: '+' }])
-  const removeStat = (i) => set('stats', s.stats.filter((_, idx) => idx !== i))
-
-  const setTestimonial = (i, k, v) =>
-    setS((p) => {
-      const testimonials = [...p.testimonials]
-      testimonials[i] = { ...testimonials[i], [k]: v }
-      return { ...p, testimonials }
-    })
-  const addTestimonial = () =>
-    set('testimonials', [...s.testimonials, { quote: '', name: '', role: '' }])
-  const removeTestimonial = (i) =>
-    set('testimonials', s.testimonials.filter((_, idx) => idx !== i))
-
-  const setTechGroup = (i, k, v) =>
-    setS((p) => {
-      const tech_groups = [...p.tech_groups]
-      tech_groups[i] = { ...tech_groups[i], [k]: v }
-      return { ...p, tech_groups }
-    })
-  const addTechGroup = () => set('tech_groups', [...s.tech_groups, { label: '', items: [] }])
-  const removeTechGroup = (i) => set('tech_groups', s.tech_groups.filter((_, idx) => idx !== i))
-
-  const setService = (i, k, v) =>
-    setS((p) => {
-      const services = [...p.services]
-      services[i] = { ...services[i], [k]: v }
-      return { ...p, services }
-    })
-  const addService = () => set('services', [...s.services, { title: '', description: '' }])
-  const removeService = (i) => set('services', s.services.filter((_, idx) => idx !== i))
 
   const setOverview = (i, k, v) =>
     setS((p) => {
@@ -173,8 +132,25 @@ export default function Settings() {
         <Labeled label="Location (footer meta, e.g. Rabat, Morocco)">
           <input value={s.location} onChange={(e) => set('location', e.target.value)} className={field} />
         </Labeled>
-        <Labeled label="Profile photo URL (leave blank for the local placeholder)">
-          <input value={s.profile_photo} onChange={(e) => set('profile_photo', e.target.value)} className={field} placeholder="https://… or /assets/me.jpg" />
+        <Labeled label="Profile photo (used by the hero, About portrait and CV)">
+          <ImageUploader
+            value={s.profile_photo}
+            alt="Profile photo"
+            uploadFn={photoApi.upload}
+            onUploaded={(d) => {
+              set('profile_photo', d.profile_photo)
+              toast.success('Photo uploaded — it now shows across the site.')
+            }}
+            onRemove={async () => {
+              try {
+                await photoApi.remove()
+                set('profile_photo', '')
+                toast.success('Photo removed — the placeholder will show.')
+              } catch {
+                toast.error('Could not remove the photo.')
+              }
+            }}
+          />
         </Labeled>
         <Labeled label="Rotating roles (comma separated)">
           <input
@@ -193,75 +169,6 @@ export default function Settings() {
         <Labeled label="Bio">
           <textarea value={s.bio} onChange={(e) => set('bio', e.target.value)} rows={3} className={`${field} resize-none`} />
         </Labeled>
-      </Section>
-
-      <Section title="Stats">
-        {s.stats.map((st, i) => (
-          <div key={i} className="flex items-center gap-2">
-            <input value={st.label} onChange={(e) => setStat(i, 'label', e.target.value)} className={field} placeholder="Label" />
-            <input value={st.value} onChange={(e) => setStat(i, 'value', e.target.value)} type="number" className="w-24 rounded-xl border border-line bg-white/[0.04] px-3 py-2 text-sm" placeholder="0" />
-            <input value={st.suffix} onChange={(e) => setStat(i, 'suffix', e.target.value)} className="w-16 rounded-xl border border-line bg-white/[0.04] px-3 py-2 text-sm" placeholder="+" />
-            <button type="button" onClick={() => removeStat(i)} className="px-2 text-muted hover:text-coral" aria-label="Remove stat">
-              <X size={16} />
-            </button>
-          </div>
-        ))}
-        <button type="button" onClick={addStat} className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline">
-          <Plus size={16} /> Add stat
-        </button>
-      </Section>
-
-      <Section title="Technologies (grouped capabilities)">
-        <div className="space-y-4">
-          {s.tech_groups.map((g, i) => (
-            <div key={i} className="relative rounded-xl border border-line bg-white/[0.02] p-4">
-              <button type="button" onClick={() => removeTechGroup(i)} aria-label="Remove group" className="absolute right-3 top-3 text-muted transition hover:text-coral">
-                <X size={16} />
-              </button>
-              <div className="grid gap-3 pr-6 sm:grid-cols-[0.4fr_1fr]">
-                <input value={g.label} onChange={(e) => setTechGroup(i, 'label', e.target.value)} className={field} placeholder="Category (e.g. Frontend)" />
-                <input
-                  value={(g.items || []).join(', ')}
-                  onChange={(e) => setTechGroup(i, 'items', e.target.value.split(',').map((x) => x.trim()).filter(Boolean))}
-                  className={field}
-                  placeholder="Items, comma separated (React, Vite, …)"
-                />
-              </div>
-            </div>
-          ))}
-          <button type="button" onClick={addTechGroup} className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline">
-            <Plus size={16} /> Add category
-          </button>
-        </div>
-      </Section>
-
-      <Section title="Services">
-        <div className="space-y-4">
-          {s.services.map((sv, i) => (
-            <div key={i} className="relative rounded-xl border border-line bg-white/[0.02] p-4">
-              <button type="button" onClick={() => removeService(i)} aria-label="Remove service" className="absolute right-3 top-3 text-muted transition hover:text-coral">
-                <X size={16} />
-              </button>
-              <div className="space-y-3 pr-6">
-                <div className="flex items-center gap-3">
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-line text-heading">
-                    <DynamicIcon name={sv.icon} size={18} strokeWidth={1.5} />
-                  </span>
-                  <select value={sv.icon || 'Code'} onChange={(e) => setService(i, 'icon', e.target.value)} className={`${field} max-w-[12rem]`}>
-                    {ICON_NAMES.map((n) => (
-                      <option key={n} value={n}>{n}</option>
-                    ))}
-                  </select>
-                  <input value={sv.title} onChange={(e) => setService(i, 'title', e.target.value)} className={field} placeholder="Service title" />
-                </div>
-                <textarea value={sv.description} onChange={(e) => setService(i, 'description', e.target.value)} rows={2} className={`${field} resize-none`} placeholder="One-line description" />
-              </div>
-            </div>
-          ))}
-          <button type="button" onClick={addService} className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline">
-            <Plus size={16} /> Add service
-          </button>
-        </div>
       </Section>
 
       <Section title="Overview — “This is what I do”">
@@ -320,26 +227,6 @@ export default function Settings() {
         <p className="text-sm text-muted">
           Milestones (add / edit / remove / reorder) are managed on the dedicated <span className="font-medium text-heading">Journey</span> page.
         </p>
-      </Section>
-
-      <Section title="Testimonials">
-        <div className="space-y-4">
-          {s.testimonials.map((t, i) => (
-            <div key={i} className="relative rounded-xl border border-line bg-white/[0.02] p-4">
-              <button type="button" onClick={() => removeTestimonial(i)} aria-label="Remove testimonial" className="absolute right-3 top-3 text-muted transition hover:text-coral">
-                <X size={16} />
-              </button>
-              <textarea value={t.quote} onChange={(e) => setTestimonial(i, 'quote', e.target.value)} rows={3} className={`${field} resize-none pr-6`} placeholder="Quote" />
-              <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                <input value={t.name} onChange={(e) => setTestimonial(i, 'name', e.target.value)} className={field} placeholder="Name" />
-                <input value={t.role} onChange={(e) => setTestimonial(i, 'role', e.target.value)} className={field} placeholder="Role / company" />
-              </div>
-            </div>
-          ))}
-          <button type="button" onClick={addTestimonial} className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline">
-            <Plus size={16} /> Add testimonial
-          </button>
-        </div>
       </Section>
 
       <Section title="Social links">

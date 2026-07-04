@@ -9,14 +9,18 @@ use Illuminate\Http\Request;
 
 class MessageController extends Controller
 {
-    /** GET /api/admin/messages — list all messages, newest first. */
-    public function index(): JsonResponse
+    /** GET /api/admin/messages?page=N — paginated list, newest first. */
+    public function index(Request $request): JsonResponse
     {
+        $paginator = Message::latest()->paginate(25);
+
         return response()->json([
-            'data' => Message::latest()->get(),
+            'data' => $paginator->items(),
             'meta' => [
-                'total' => Message::count(),
+                'total' => $paginator->total(),
                 'unread' => Message::where('read', false)->count(),
+                'page' => $paginator->currentPage(),
+                'last_page' => $paginator->lastPage(),
             ],
         ]);
     }

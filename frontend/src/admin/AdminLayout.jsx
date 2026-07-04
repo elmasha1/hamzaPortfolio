@@ -15,6 +15,8 @@ import {
   FileCode2,
   GitBranch,
   Eye,
+  LayoutGrid,
+  Tag,
 } from '../components/ui/Icons'
 
 const NAV = [
@@ -22,6 +24,8 @@ const NAV = [
   { to: '/admin/messages', label: 'Messages', Icon: Inbox },
   { to: '/admin/projects', label: 'Projects', Icon: FolderKanban },
   { to: '/admin/journey', label: 'Journey', Icon: GitBranch },
+  { to: '/admin/technologies', label: 'Technologies', Icon: LayoutGrid },
+  { to: '/admin/pricing', label: 'Pricing', Icon: Tag },
   { to: '/admin/about', label: 'About page', Icon: Eye },
   { to: '/admin/posts', label: 'Blog', Icon: FileCode2 },
   { to: '/admin/cv', label: 'CV / Resume', Icon: FileText },

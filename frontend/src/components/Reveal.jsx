@@ -1,4 +1,5 @@
 import { motion, useReducedMotion } from 'framer-motion'
+import { EASE, DUR } from '../lib/motion'
 
 /**
  * Reveal — a consistent scroll-in wrapper used across the site so every
@@ -30,7 +31,7 @@ export default function Reveal({
   const variants = reduce
     ? {
         hidden: { opacity: 0 },
-        show: { opacity: 1, transition: { duration: 0.4, delay } },
+        show: { opacity: 1, transition: { duration: DUR.fast, delay } },
       }
     : {
         hidden: { opacity: 0, y, filter: blur ? 'blur(10px)' : 'blur(0px)' },
@@ -38,7 +39,7 @@ export default function Reveal({
           opacity: 1,
           y: 0,
           filter: 'blur(0px)',
-          transition: { duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] },
+          transition: { duration: DUR.reveal, delay, ease: EASE.out },
         },
       }
 

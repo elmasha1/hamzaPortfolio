@@ -7,7 +7,7 @@ import { motion, useMotionValue, useSpring, useReducedMotion } from 'framer-moti
  * morphs into a filled label pill ("View" / "Drag" / "Open"). Disabled on
  * touch / reduced motion. GPU-only (transform/opacity).
  */
-const LABELS = { view: 'View', drag: 'Drag', open: 'Open' }
+const LABELS = { view: 'View', drag: 'Drag', open: 'Open', play: 'Play' }
 
 export default function Cursor() {
   const reduce = useReducedMotion()

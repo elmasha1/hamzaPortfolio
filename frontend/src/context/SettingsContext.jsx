@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react'
-import { fetchSettings } from '../lib/api'
+import { fetchBootstrap, fetchSettings } from '../lib/api'
 
 /**
  * SettingsContext — loads dashboard-managed site settings (hero text, stats,
@@ -33,10 +33,19 @@ const DEFAULTS = {
     email: 'lyrvmind@gmail.com',
   },
   tech_groups: [
-    { label: 'Frontend', items: ['React', 'Vite', 'TypeScript', 'Tailwind CSS', 'Framer Motion', 'GSAP'] },
-    { label: 'Backend', items: ['Laravel', 'PHP', 'REST APIs', 'Sanctum / Auth', 'Queued Jobs'] },
-    { label: 'Database', items: ['MySQL', 'Eloquent ORM', 'Redis'] },
-    { label: 'DevOps & Tools', items: ['Git', 'Docker', 'CI/CD', 'Linux', 'Figma'] },
+    { label: 'Frontend', items: [
+      { name: 'React', icon: 'react' }, { name: 'Vite', icon: 'vite' }, { name: 'TypeScript', icon: 'typescript' },
+      { name: 'Tailwind CSS', icon: 'tailwind' }, { name: 'Framer Motion', icon: 'framer' }, { name: 'GSAP', icon: 'gsap' }, { name: 'JavaScript', icon: 'javascript' },
+    ] },
+    { label: 'Backend', items: [
+      { name: 'Laravel', icon: 'laravel' }, { name: 'PHP', icon: 'php' }, { name: 'Node.js', icon: 'nodejs' }, { name: 'REST APIs', icon: 'restapi' },
+    ] },
+    { label: 'Database', items: [
+      { name: 'MySQL', icon: 'mysql' }, { name: 'PostgreSQL', icon: 'postgresql' }, { name: 'Redis', icon: 'redis' },
+    ] },
+    { label: 'DevOps & Tools', items: [
+      { name: 'Git', icon: 'git' }, { name: 'Docker', icon: 'docker' }, { name: 'CI/CD', icon: 'cicd' }, { name: 'Linux', icon: 'linux' }, { name: 'Figma', icon: 'figma' },
+    ] },
   ],
   services: [
     { icon: 'Code', title: 'Web App Development', description: 'Fast, accessible React SPAs (Vite, Tailwind) with polished, production-ready UI.' },
@@ -113,20 +122,31 @@ export function SettingsProvider({ children }) {
   const [settings, setSettings] = useState(DEFAULTS)
   const [loading, setLoading] = useState(true)
 
+  // Start the ONE consolidated request during the provider's first RENDER —
+  // before any child section mounts — so section fetchers (projects, journey,
+  // pricing…) find it in flight and wait for its seeded cache instead of each
+  // firing their own request. (Child effects run before parent effects, so
+  // kicking this off in useEffect would be too late.)
+  const [bootPromise] = useState(() => fetchBootstrap())
+
   useEffect(() => {
     let alive = true
-    fetchSettings()
-      .then((data) => {
-        if (!alive || !data) return
-        // Merge so any missing keys fall back to defaults.
-        setSettings({ ...DEFAULTS, ...data })
+    bootPromise
+      .then((b) => {
+        if (!alive || !b?.settings) return
+        setSettings({ ...DEFAULTS, ...b.settings }) // merge → defaults fill gaps
       })
-      .catch(() => {}) // keep defaults on failure
+      .catch(() =>
+        // Bootstrap unavailable (older backend?) → fall back to settings only.
+        fetchSettings()
+          .then((data) => alive && data && setSettings({ ...DEFAULTS, ...data }))
+          .catch(() => {}) // keep local defaults — the site still renders
+      )
       .finally(() => alive && setLoading(false))
     return () => {
       alive = false
     }
-  }, [])
+  }, [bootPromise])
 
   return (
     <SettingsContext.Provider value={{ settings, loading }}>

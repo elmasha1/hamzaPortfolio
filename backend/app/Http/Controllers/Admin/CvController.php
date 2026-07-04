@@ -49,17 +49,14 @@ class CvController extends Controller
             'cv.projects.*.link' => ['nullable', 'string', 'max:255'],
             'cv.languages' => ['nullable', 'array'],
             'cv.certifications' => ['nullable', 'array'],
-            'profile_photo' => ['nullable', 'string', 'max:1000'],
         ]);
 
-        // Persist the photo separately so it stays in sync with the hero slot.
+        // The photo is managed by its own upload endpoints (cv_photo /
+        // profile_photo settings) — never stored inside the cv object, and
+        // saving the CV text must never touch the hero photo.
         $cv = $data['cv'];
-        unset($cv['photo']); // photo is derived from profile_photo, never stored in cv
+        unset($cv['photo'], $cv['cv_photo']);
         Setting::put('cv', $cv);
-
-        if ($request->has('profile_photo')) {
-            Setting::put('profile_photo', $data['profile_photo'] ?? '');
-        }
 
         return response()->json([
             'message' => 'CV saved.',

@@ -19,10 +19,12 @@ class ServiceController extends Controller
     /** GET /api/services (public) — the services / capabilities list. */
     public function index(): JsonResponse
     {
-        $services = Setting::get('services');
-
         return response()->json([
-            'data' => is_array($services) ? $services : self::DEFAULTS,
+            'data' => \App\Support\PublicCache::remember('services', function () {
+                $services = Setting::get('services');
+
+                return is_array($services) ? $services : self::DEFAULTS;
+            }),
         ]);
     }
 }

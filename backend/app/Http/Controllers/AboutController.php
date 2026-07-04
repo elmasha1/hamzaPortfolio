@@ -19,13 +19,19 @@ class AboutController extends Controller
         'facts' => [],
     ];
 
-    /** GET /api/about (public) — the About page content. */
-    public function index(): JsonResponse
+    /** The About payload (merged with defaults). */
+    public static function payload(): array
     {
         $about = Setting::get('about');
 
+        return is_array($about) ? array_merge(self::DEFAULTS, $about) : self::DEFAULTS;
+    }
+
+    /** GET /api/about (public) — the About page content. */
+    public function index(): JsonResponse
+    {
         return response()->json([
-            'data' => is_array($about) ? array_merge(self::DEFAULTS, $about) : self::DEFAULTS,
+            'data' => \App\Support\PublicCache::remember('about', fn () => self::payload()),
         ]);
     }
 }

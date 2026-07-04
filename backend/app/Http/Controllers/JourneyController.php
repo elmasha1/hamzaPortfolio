@@ -3,15 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Models\JourneyMilestone;
+use App\Support\PublicCache;
 use Illuminate\Http\JsonResponse;
 
 class JourneyController extends Controller
 {
-    /** GET /api/journey (public) — milestones in display order. */
+    /** Milestones in display order. */
+    public static function payload()
+    {
+        return JourneyMilestone::orderBy('order')->orderBy('id')->get();
+    }
+
+    /** GET /api/journey (public). */
     public function index(): JsonResponse
     {
         return response()->json([
-            'data' => JourneyMilestone::orderBy('order')->orderBy('id')->get(),
+            'data' => PublicCache::remember('journey', fn () => self::payload()),
         ]);
     }
 }

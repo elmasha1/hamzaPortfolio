@@ -69,6 +69,7 @@ class ProjectController extends Controller
         foreach ($data['order'] as $position => $id) {
             Project::where('id', $id)->update(['order' => $position]);
         }
+        \App\Support\PublicCache::bust(); // query-builder updates skip model events
 
         return response()->json(['message' => 'Order updated.']);
     }

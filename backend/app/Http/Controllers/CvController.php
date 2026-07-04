@@ -70,13 +70,16 @@ class CvController extends Controller
     ];
 
     /**
-     * Merge saved CV over the defaults and attach the dashboard profile photo.
+     * Merge saved CV over the defaults and attach the photo:
+     * a dedicated cv_photo (more formal shot) wins, otherwise the site
+     * profile photo, otherwise null → the placeholder initials show.
      */
     public static function payload(): array
     {
         $saved = Setting::get('cv');
         $cv = array_merge(self::DEFAULT_CV, is_array($saved) ? $saved : []);
-        $cv['photo'] = Setting::get('profile_photo') ?: null;
+        $cv['cv_photo'] = Setting::get('cv_photo') ?: null;
+        $cv['photo'] = $cv['cv_photo'] ?: (Setting::get('profile_photo') ?: null);
 
         return $cv;
     }
@@ -84,6 +87,44 @@ class CvController extends Controller
     /** GET /api/cv — public CV data for the /cv page and the PDF. */
     public function show(): JsonResponse
     {
-        return response()->json(['data' => self::payload()]);
+        return response()->json([
+            'data' => \App\Support\PublicCache::remember('cv', fn () => self::payload()),
+        ]);
+    }
+
+    /**
+     * GET /api/cv/photo — the CV photo as a base64 data-URI.
+     *
+     * The PDF generator draws the photo on a <canvas>; loading it straight
+     * from /storage fails cross-origin (static files carry no CORS headers,
+     * unlike this API route). Serving it as a data-URI sidesteps CORS and
+     * canvas tainting entirely, in dev and production alike.
+     */
+    public function photo(): JsonResponse
+    {
+        $data = \App\Support\PublicCache::remember('cv-photo', function () {
+            $url = Setting::get('cv_photo') ?: Setting::get('profile_photo');
+            if (! $url) {
+                return null;
+            }
+
+            // Locally stored upload → inline it. Remote URLs are returned
+            // as-is (the browser may load them directly if they allow CORS).
+            if (str_contains($url, '/storage/')) {
+                $relative = ltrim(parse_url($url, PHP_URL_PATH), '/');
+                $relative = preg_replace('#^storage/#', '', $relative);
+                $disk = \Illuminate\Support\Facades\Storage::disk('public');
+                if (! $disk->exists($relative)) {
+                    return null;
+                }
+                $mime = $disk->mimeType($relative) ?: 'image/webp';
+
+                return 'data:'.$mime.';base64,'.base64_encode($disk->get($relative));
+            }
+
+            return $url;
+        });
+
+        return response()->json(['data' => ['photo' => $data]]);
     }
 }

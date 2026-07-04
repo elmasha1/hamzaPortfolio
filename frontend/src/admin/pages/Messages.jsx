@@ -8,6 +8,8 @@ import ConfirmModal from '../components/ConfirmModal'
 export default function Messages() {
   const toast = useToast()
   const [messages, setMessages] = useState([])
+  const [meta, setMeta] = useState({ total: 0, page: 1, last_page: 1 })
+  const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(true)
   const [selected, setSelected] = useState(null)
   const [toDelete, setToDelete] = useState(null)
@@ -16,12 +18,15 @@ export default function Messages() {
   const load = () => {
     setLoading(true)
     messagesApi
-      .list()
-      .then((res) => setMessages(res.data))
+      .list(page)
+      .then((res) => {
+        setMessages(res.data)
+        setMeta(res.meta || { total: res.data.length, page: 1, last_page: 1 })
+      })
       .catch(() => toast.error('Could not load messages.'))
       .finally(() => setLoading(false))
   }
-  useEffect(load, []) // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(load, [page]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const openMessage = async (m) => {
     setSelected(m)
@@ -74,7 +79,7 @@ export default function Messages() {
           <h2 className="font-heading text-lg font-semibold text-heading">
             Messages
           </h2>
-          <span className="text-sm text-muted">{messages.length} total</span>
+          <span className="text-sm text-muted">{meta.total} total</span>
         </div>
 
         {loading ? (
@@ -110,6 +115,31 @@ export default function Messages() {
               </li>
             ))}
           </ul>
+        )}
+
+        {/* Pager (server-side pagination, 25 per page) */}
+        {meta.last_page > 1 && (
+          <div className="flex items-center justify-between border-t border-line px-5 py-3">
+            <button
+              type="button"
+              disabled={page <= 1 || loading}
+              onClick={() => setPage((p) => p - 1)}
+              className="rounded-lg border border-line px-3 py-1.5 text-sm text-body transition hover:text-heading disabled:opacity-40"
+            >
+              Previous
+            </button>
+            <span className="text-xs text-muted">
+              Page {meta.page} of {meta.last_page}
+            </span>
+            <button
+              type="button"
+              disabled={page >= meta.last_page || loading}
+              onClick={() => setPage((p) => p + 1)}
+              className="rounded-lg border border-line px-3 py-1.5 text-sm text-body transition hover:text-heading disabled:opacity-40"
+            >
+              Next
+            </button>
+          </div>
         )}
       </div>
 

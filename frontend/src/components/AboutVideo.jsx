@@ -81,6 +81,7 @@ export default function AboutVideo({ src, poster }) {
       whileInView={{ clipPath: 'inset(0% 0% 0% 0%)' }}
       viewport={{ once: true, amount: 0.25 }}
       transition={{ duration: 1, ease: [0.76, 0, 0.24, 1] }}
+      data-cursor={playing ? undefined : 'play'}
       className="group relative aspect-video w-full overflow-hidden rounded-[6px] border border-line bg-base-indigo"
     >
       {src ? (

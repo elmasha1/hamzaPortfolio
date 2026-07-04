@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\PublicCache;
 use Illuminate\Database\Eloquent\Model;
 
 class Setting extends Model
@@ -22,11 +23,14 @@ class Setting extends Model
     }
 
     /**
-     * Create or update a setting.
+     * Create or update a setting. Any write invalidates the public API cache.
      */
     public static function put(string $key, $value): self
     {
-        return static::updateOrCreate(['key' => $key], ['value' => $value]);
+        $setting = static::updateOrCreate(['key' => $key], ['value' => $value]);
+        PublicCache::bust();
+
+        return $setting;
     }
 
     /**

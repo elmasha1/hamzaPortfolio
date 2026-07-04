@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion'
 import { Code2 } from 'lucide-react'
@@ -61,6 +61,13 @@ export default function Hero() {
   const words = (settings.hero_title || 'I turn ideas into working software.').trim().split(/\s+/)
   const eyebrow = settings.hero_eyebrow || 'Full-Stack Developer'
   const photoSrc = settings.profile_photo || '/assets/me.png'
+
+  // If the fallback 404'd before settings arrived, give the REAL photo URL a
+  // fresh chance once it lands — otherwise the placeholder would stick even
+  // after a photo is uploaded in the dashboard.
+  useEffect(() => {
+    setPhotoError(false)
+  }, [photoSrc])
 
   // Subtle photo parallax on scroll.
   const { scrollYProgress } = useScroll({
@@ -161,19 +168,6 @@ export default function Hero() {
               >
                 <Button
                   as="a"
-                  href="#projects"
-                  onClick={(e) => {
-                    e.preventDefault()
-                    scrollToSelector('#projects')
-                  }}
-                  className="px-7 py-3"
-                >
-                  View work
-                  <ArrowRight size={16} className="transition-transform duration-300 ease-out group-hover:translate-x-1" />
-                </Button>
-                <Button
-                  variant="secondary"
-                  as="a"
                   href="/contact"
                   onClick={(e) => {
                     e.preventDefault()
@@ -182,6 +176,19 @@ export default function Hero() {
                   className="px-7 py-3"
                 >
                   Get in touch
+                  <ArrowRight size={16} className="transition-transform duration-300 ease-out group-hover:translate-x-1" />
+                </Button>
+                <Button
+                  variant="secondary"
+                  as="a"
+                  href="#projects"
+                  onClick={(e) => {
+                    e.preventDefault()
+                    scrollToSelector('#projects')
+                  }}
+                  className="px-7 py-3"
+                >
+                  View work
                 </Button>
               </motion.div>
             </div>

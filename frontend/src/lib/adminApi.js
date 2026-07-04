@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { clearPublicCache } from './api'
 
 /**
  * Axios instance for the admin dashboard. Automatically attaches the stored
@@ -25,9 +26,48 @@ adminApi.interceptors.request.use((config) => {
   return config
 })
 
+/* ------------------------------------------------------------------ */
+/* Admin GET cache: TTL + in-flight de-duplication, so navigating       */
+/* between admin pages is instant. ANY successful admin write clears    */
+/* it (and the public cache), so data is never stale after a save.      */
+/* ------------------------------------------------------------------ */
+const ADMIN_STALE_MS = 2 * 60 * 1000 // 2 min
+const adminCache = new Map() // path -> { data, expires }
+const adminInflight = new Map() // path -> Promise
+
+function cachedAdminGet(path) {
+  const hit = adminCache.get(path)
+  if (hit && hit.expires > Date.now()) return Promise.resolve(hit.data)
+  if (adminInflight.has(path)) return adminInflight.get(path)
+
+  const p = adminApi
+    .get(path)
+    .then((r) => {
+      adminCache.set(path, { data: r.data, expires: Date.now() + ADMIN_STALE_MS })
+      return r.data
+    })
+    .finally(() => adminInflight.delete(path))
+
+  adminInflight.set(path, p)
+  return p
+}
+
+export function clearAdminCache() {
+  adminCache.clear()
+}
+
 // Global 401 handling: drop the token (ProtectedRoute will redirect).
+// Also: any successful WRITE invalidates BOTH client caches (admin + public),
+// so every page — dashboard or site — re-fetches fresh content after a save.
 adminApi.interceptors.response.use(
-  (res) => res,
+  (res) => {
+    const method = (res.config?.method || '').toLowerCase()
+    if (method && method !== 'get') {
+      clearPublicCache()
+      clearAdminCache()
+    }
+    return res
+  },
   (err) => {
     if (err.response?.status === 401) {
       tokenStore.clear()
@@ -47,9 +87,48 @@ export const authApi = {
   logout: () => adminApi.post('/logout').then((r) => r.data),
 }
 
+/* --------------------------- Overview --------------------------- */
+export const overviewApi = {
+  get: () => cachedAdminGet('/admin/overview').then((d) => d.data),
+}
+
+/* ------------------------- Profile photo ------------------------ */
+export const photoApi = {
+  upload: (file, onProgress) => {
+    const form = new FormData()
+    form.append('photo', file)
+    return adminApi
+      .post('/admin/profile-photo', form, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+        onUploadProgress: (e) => {
+          if (onProgress && e.total) onProgress(Math.round((e.loaded / e.total) * 100))
+        },
+      })
+      .then((r) => r.data.data)
+  },
+  remove: () => adminApi.delete('/admin/profile-photo').then((r) => r.data.data),
+}
+
+/* ------------------ CV photo (dedicated, formal) ----------------- */
+export const cvPhotoApi = {
+  upload: (file, onProgress) => {
+    const form = new FormData()
+    form.append('photo', file)
+    return adminApi
+      .post('/admin/cv-photo', form, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+        onUploadProgress: (e) => {
+          if (onProgress && e.total) onProgress(Math.round((e.loaded / e.total) * 100))
+        },
+      })
+      .then((r) => r.data.data)
+  },
+  remove: () => adminApi.delete('/admin/cv-photo').then((r) => r.data.data),
+}
+
 /* --------------------------- Messages --------------------------- */
 export const messagesApi = {
-  list: () => adminApi.get('/admin/messages').then((r) => r.data),
+  list: (page = 1) => cachedAdminGet(`/admin/messages?page=${page}`),
   setRead: (id, read) =>
     adminApi.patch(`/admin/messages/${id}`, { read }).then((r) => r.data),
   remove: (id) => adminApi.delete(`/admin/messages/${id}`).then((r) => r.data),
@@ -57,7 +136,7 @@ export const messagesApi = {
 
 /* --------------------------- Projects --------------------------- */
 export const projectsApi = {
-  list: () => adminApi.get('/admin/projects').then((r) => r.data.data),
+  list: () => cachedAdminGet('/admin/projects').then((d) => d.data),
   create: (formData) =>
     adminApi
       .post('/admin/projects', formData, {
@@ -78,7 +157,7 @@ export const projectsApi = {
 
 /* ---------------------------- Posts ----------------------------- */
 export const postsApi = {
-  list: () => adminApi.get('/admin/posts').then((r) => r.data.data),
+  list: () => cachedAdminGet('/admin/posts').then((d) => d.data),
   create: (payload) => adminApi.post('/admin/posts', payload).then((r) => r.data.data),
   update: (id, payload) => adminApi.put(`/admin/posts/${id}`, payload).then((r) => r.data.data),
   remove: (id) => adminApi.delete(`/admin/posts/${id}`).then((r) => r.data),
@@ -86,13 +165,25 @@ export const postsApi = {
 
 /* ---------------------------- About ----------------------------- */
 export const aboutApi = {
-  get: () => adminApi.get('/admin/about').then((r) => r.data.data),
+  get: () => cachedAdminGet('/admin/about').then((d) => d.data),
   update: (payload) => adminApi.put('/admin/about', payload).then((r) => r.data.data),
+}
+
+/* ------------------------- Technologies ------------------------- */
+export const technologiesApi = {
+  get: () => cachedAdminGet('/admin/technologies').then((d) => d.data),
+  update: (groups) => adminApi.put('/admin/technologies', { groups }).then((r) => r.data.data),
+}
+
+/* ---------------------------- Pricing ---------------------------- */
+export const pricingApi = {
+  get: () => cachedAdminGet('/admin/pricing').then((d) => d.data),
+  update: (payload) => adminApi.put('/admin/pricing', payload).then((r) => r.data.data),
 }
 
 /* --------------------------- Journey ---------------------------- */
 export const journeyApi = {
-  list: () => adminApi.get('/admin/journey').then((r) => r.data.data),
+  list: () => cachedAdminGet('/admin/journey').then((d) => d.data),
   create: (payload) => adminApi.post('/admin/journey', payload).then((r) => r.data.data),
   update: (id, payload) => adminApi.put(`/admin/journey/${id}`, payload).then((r) => r.data.data),
   remove: (id) => adminApi.delete(`/admin/journey/${id}`).then((r) => r.data),
@@ -101,18 +192,15 @@ export const journeyApi = {
 
 /* --------------------------- Settings --------------------------- */
 export const settingsApi = {
-  get: () => adminApi.get('/admin/settings').then((r) => r.data.data),
+  get: () => cachedAdminGet('/admin/settings').then((d) => d.data),
   update: (settings) =>
     adminApi.put('/admin/settings', { settings }).then((r) => r.data.data),
 }
 
 /* ------------------------------ CV ------------------------------ */
 export const cvApi = {
-  get: () => adminApi.get('/admin/cv').then((r) => r.data.data),
-  update: (cv, profilePhoto) =>
-    adminApi
-      .put('/admin/cv', { cv, profile_photo: profilePhoto })
-      .then((r) => r.data.data),
+  get: () => cachedAdminGet('/admin/cv').then((d) => d.data),
+  update: (cv) => adminApi.put('/admin/cv', { cv }).then((r) => r.data.data),
 }
 
 export default adminApi

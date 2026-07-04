@@ -177,6 +177,7 @@ first sign-in.
 |--------|-----------------|------------------------------------------|
 | GET    | `/api/projects` | Projects (featured first, then `order`)  |
 | GET    | `/api/settings` | Site settings (hero, stats, WhatsApp, …) |
+| GET    | `/api/pricing`  | Pricing tiers + FAQ (for `/pricing`)     |
 | POST   | `/api/contact`  | Validate + store a contact message       |
 | POST   | `/api/login`    | Admin login → returns a Sanctum token    |
 
@@ -192,6 +193,13 @@ first sign-in.
 | PUT/DELETE | `/api/admin/projects/{id}`   | Update / delete            |
 | POST   | `/api/admin/projects/reorder`    | Persist card order         |
 | GET/PUT | `/api/admin/settings`           | Read / bulk-update settings |
+| GET/PUT | `/api/admin/pricing`            | Read / update pricing (tiers, footnote, FAQ) |
+
+**Managing pricing:** Admin → **Pricing** lets you edit the heading/subline,
+the footnote (VAT / retainer note), the three tiers (name, price, delivery,
+description, one-feature-per-line checklist, "Highlighted" flag for the
+*Most popular* card, CTA label) and the FAQ items. Changes appear on
+`/pricing` immediately — no deploy needed.
 
 `POST /api/contact` body:
 
@@ -202,6 +210,66 @@ first sign-in.
 Validation errors return HTTP **422** with an `errors` object that the forms
 display inline. Project image uploads are stored on the `public` disk and
 served from `APP_URL/storage/...` (hence `php artisan storage:link`).
+
+### Profile photo (admin upload)
+
+Change your photo in **Admin → Settings → Profile photo**: drag-and-drop or
+click to browse (JPG/PNG/WEBP, ≤4 MB, with preview + progress). The server
+(`POST /api/admin/profile-photo`, Sanctum-protected) validates the file,
+resizes it to ≤1200 px, converts it to **webp** (GD), stores it under
+`storage/app/public/profile/` with a timestamped name (so browsers never show
+a stale cached image), deletes the previous file, and saves the URL to the
+`profile_photo` setting. The **hero**, **About**, and **CV/PDF** all read that
+setting, so the photo updates everywhere immediately. "Remove photo" deletes
+the file and falls back to the placeholder. Requires `php artisan
+storage:link` (already created).
+
+### CV / Resume
+
+Everything on the CV is edited in **Admin → CV / Resume**: personal info +
+contact links, tagline, summary, experiences, key projects, education, grouped
+skills, languages, certifications. Changes appear on the on-screen `/cv` page
+and in the next PDF download immediately (caches bust on save).
+
+**CV photo:** the "CV photo" section uploads a dedicated (more formal) shot to
+`cv_photo` — same optimize pipeline as the profile photo (≤1200 px webp,
+old-file cleanup). The CV resolves its photo as `cv_photo` → `profile_photo`
+→ initials placeholder, and removing the CV photo falls back automatically.
+Saving the CV text never touches the hero photo.
+
+**PDF:** "Download CV" buttons generate the PDF client-side (jsPDF) from the
+same data — a two-column A4 with real selectable text (ATS-friendly) and the
+photo embedded via `GET /api/cv/photo` (base64 data-URI, which sidesteps CORS
+on `/storage` files). Server-side PDF (dompdf) wasn't used because Composer
+package installation is unavailable in this environment.
+
+### Admin panel performance
+
+Admin reads go through a 2-minute client cache with in-flight de-duplication
+(`frontend/src/lib/adminApi.js`), invalidated by any admin write — navigating
+between admin pages is instant. The dashboard uses one consolidated
+`GET /api/admin/overview` (counts + recent messages) instead of downloading
+whole tables; messages are server-paginated (25/page); frequently
+filtered/sorted columns are indexed.
+
+### Performance
+
+The public API is cached on both ends:
+
+- **Server:** every public GET (`/bootstrap`, projects, settings, pricing, …)
+  is cached for 5 min (`app/Support/PublicCache.php`) and **auto-invalidated by
+  any dashboard write**. Responses carry `Cache-Control` + `ETag` (304s on
+  repeat visits).
+- **Consolidated bootstrap:** the site loads all shared data in ONE request —
+  `GET /api/bootstrap` (settings + projects + journey + technologies + pricing
+  + about) — instead of 5–6 separate calls.
+- **Client:** `frontend/src/lib/api.js` keeps a 5-min in-memory cache with
+  in-flight de-duplication, so repeat navigation makes zero requests.
+
+**In production also run:** `php artisan config:cache route:cache`, enable
+**OPcache**, set `APP_DEBUG=false`, and serve via a real web server (nginx +
+php-fpm) — `php artisan serve` is a single-threaded dev server and adds
+~400 ms framework boot per request.
 
 ### CORS
 

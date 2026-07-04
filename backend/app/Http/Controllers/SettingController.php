@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Setting;
+use App\Support\PublicCache;
 use Illuminate\Http\JsonResponse;
 
 class SettingController extends Controller
@@ -14,6 +15,8 @@ class SettingController extends Controller
      */
     public function index(): JsonResponse
     {
-        return response()->json(['data' => Setting::map()]);
+        return response()->json([
+            'data' => PublicCache::remember('settings', fn () => Setting::map()),
+        ]);
     }
 }

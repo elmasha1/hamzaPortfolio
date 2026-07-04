@@ -38,6 +38,8 @@ class Post extends Model
     /** Auto-derive a unique slug from the title when none is provided. */
     public static function booted(): void
     {
+        static::saved(fn () => \App\Support\PublicCache::bust());
+        static::deleted(fn () => \App\Support\PublicCache::bust());
         static::saving(function (Post $post) {
             if (blank($post->slug) && filled($post->title)) {
                 $base = Str::slug($post->title);

@@ -1,8 +1,37 @@
-// Shared Framer Motion variants used across the whole site.
-// Keeping them in one place keeps animations consistent and DRY.
+// ============================================================
+// MOTION SYSTEM — the single source of truth for site motion.
+// One easing family, one duration scale, one stagger step.
+// Every component should consume these tokens (directly or via
+// the variants below) so the whole site moves as one hand.
+// ============================================================
+
+/** Easing curves. `out` for reveals/entrances, `inOut` for clip/mask wipes. */
+export const EASE = {
+  out: [0.22, 1, 0.36, 1], // soft decel — all fades/slides/reveals
+  inOut: [0.76, 0, 0.24, 1], // clip-path wipes, curtains, page masks
+}
+
+/** Duration scale (s). micro = hovers/icons, reveal = section entrances, mask = clip wipes. */
+export const DUR = {
+  micro: 0.3,
+  fast: 0.5,
+  reveal: 0.8,
+  mask: 1,
+  slow: 1.2,
+}
+
+/** Stagger step between sibling reveals. */
+export const STAGGER = 0.08
+
+/** Soft spring for magnetic pulls / cursor followers. */
+export const SPRING = { stiffness: 180, damping: 18, mass: 0.6 }
+
+/* ------------------------------------------------------------ */
+/* Shared Framer Motion variants built on the tokens above.      */
+/* ------------------------------------------------------------ */
 
 /** Container that staggers its children on reveal. */
-export const staggerContainer = (stagger = 0.12, delay = 0) => ({
+export const staggerContainer = (stagger = STAGGER, delay = 0) => ({
   hidden: {},
   show: {
     transition: {
@@ -13,17 +42,17 @@ export const staggerContainer = (stagger = 0.12, delay = 0) => ({
 })
 
 /** Fade + slide up. The default reveal for almost every element. */
-export const fadeUp = (y = 40, duration = 0.6) => ({
+export const fadeUp = (y = 40, duration = DUR.reveal) => ({
   hidden: { opacity: 0, y },
   show: {
     opacity: 1,
     y: 0,
-    transition: { duration, ease: [0.22, 1, 0.36, 1] },
+    transition: { duration, ease: EASE.out },
   },
 })
 
 /** Fade + slide in from the side. */
-export const fadeIn = (direction = 'left', distance = 60, duration = 0.6) => ({
+export const fadeIn = (direction = 'left', distance = 60, duration = DUR.reveal) => ({
   hidden: {
     opacity: 0,
     x: direction === 'left' ? -distance : direction === 'right' ? distance : 0,
@@ -33,37 +62,9 @@ export const fadeIn = (direction = 'left', distance = 60, duration = 0.6) => ({
     opacity: 1,
     x: 0,
     y: 0,
-    transition: { duration, ease: [0.22, 1, 0.36, 1] },
+    transition: { duration, ease: EASE.out },
   },
 })
-
-/** Strong card reveal: scale + rotate-in + fade (used by Projects). */
-export const cardPop = {
-  hidden: { opacity: 0, scale: 0.8, rotate: -6, y: 50 },
-  show: {
-    opacity: 1,
-    scale: 1,
-    rotate: 0,
-    y: 0,
-    transition: { type: 'spring', stiffness: 120, damping: 14 },
-  },
-  exit: {
-    opacity: 0,
-    scale: 0.8,
-    rotate: 6,
-    transition: { duration: 0.25 },
-  },
-}
-
-/** Pop-in for badges / pills. */
-export const popIn = {
-  hidden: { opacity: 0, scale: 0.5 },
-  show: {
-    opacity: 1,
-    scale: 1,
-    transition: { type: 'spring', stiffness: 260, damping: 18 },
-  },
-}
 
 // Sensible defaults for whileInView so every section reveals consistently.
 export const viewportOnce = { once: true, amount: 0.25 }

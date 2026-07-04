@@ -162,6 +162,24 @@ export default function WorkGallery() {
           {projects.map((p, i) => (
             <Tile key={p.id} project={p} index={i} onOpen={onOpen} horizontal={false} />
           ))}
+          {/* End CTA (mobile/vertical) — same conversion moment as the
+              horizontal gallery's closing panel. */}
+          <a
+            href="/contact"
+            onClick={(e) => {
+              e.preventDefault()
+              navigate('/contact')
+            }}
+            className="group flex min-h-[44px] flex-col justify-center border-t border-line pt-10 sm:col-span-2"
+          >
+            <span className="eyebrow mb-3">Next</span>
+            <span className="font-heading text-3xl font-semibold leading-[1.05] tracking-[-0.02em] text-heading">
+              Let&rsquo;s work together
+            </span>
+            <span className="mt-4 inline-flex items-center gap-2 text-muted transition-colors group-hover:text-heading">
+              Start a project <ArrowRight size={18} />
+            </span>
+          </a>
         </motion.div>
       ) : (
         // Pinned horizontal gallery.

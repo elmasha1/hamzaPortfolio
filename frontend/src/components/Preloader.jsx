@@ -42,7 +42,8 @@ export default function Preloader({ onComplete }) {
     let raf
     let current = 0
     const tick = () => {
-      const step = current < 80 ? 1.4 : 0.5
+      // Fast counter (~1s to 100) — the preloader is a beat, not a wait.
+      const step = current < 80 ? 2.6 : 1.2
       current = Math.min(100, current + step * Math.random() * 2)
       setProgress(Math.floor(current))
       if (current < 100) raf = requestAnimationFrame(tick)
@@ -65,7 +66,7 @@ export default function Preloader({ onComplete }) {
           className="absolute inset-0 z-10 bg-white"
           initial={{ clipPath: 'inset(0% 0% 0% 0%)' }}
           animate={{ clipPath: 'inset(0% 0% 100% 0%)' }}
-          transition={{ duration: 0.7, ease: [0.76, 0, 0.24, 1] }}
+          transition={{ duration: 0.55, ease: [0.76, 0, 0.24, 1] }}
           onAnimationComplete={finish}
         />
       )}

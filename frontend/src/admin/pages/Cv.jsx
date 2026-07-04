@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
-import { cvApi } from '../../lib/adminApi'
+import { cvApi, cvPhotoApi } from '../../lib/adminApi'
 import { useToast } from '../../context/ToastContext'
 import { Plus, Trash2 } from '../../components/ui/Icons'
+import ImageUploader from '../components/ImageUploader'
 
 const field =
   'w-full rounded-xl border border-line bg-white/[0.04] px-3 py-2 text-sm text-heading outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20'
@@ -102,8 +103,9 @@ export default function Cv() {
     e.preventDefault()
     setSaving(true)
     try {
-      const { photo, ...rest } = cv
-      const saved = await cvApi.update(rest, photo || '')
+      // Photos are managed by their own uploaders, never by this form.
+      const { photo, cv_photo, ...rest } = cv
+      const saved = await cvApi.update(rest)
       setCv({ ...EMPTY, ...saved })
       toast.success('CV saved.')
     } catch {
@@ -162,13 +164,35 @@ export default function Cv() {
           <Labeled label="LinkedIn URL">
             <input value={cv.linkedin} onChange={(e) => set('linkedin', e.target.value)} className={field} />
           </Labeled>
-          <Labeled label="Photo URL (shared with the hero profile photo)">
-            <input value={cv.photo} onChange={(e) => set('photo', e.target.value)} className={field} placeholder="https://… or /assets/cv-photo.jpg" />
-          </Labeled>
         </div>
         <Labeled label="Tagline (one line under the name)">
           <input value={cv.tagline} onChange={(e) => set('tagline', e.target.value)} className={field} />
         </Labeled>
+      </Section>
+
+      <Section title="CV photo">
+        <p className="-mt-1 text-sm text-muted">
+          A dedicated (more formal) photo for the CV. If none is set, the CV
+          uses your site profile photo, then the initials placeholder.
+        </p>
+        <ImageUploader
+          value={cv.cv_photo || ''}
+          alt="CV photo"
+          uploadFn={cvPhotoApi.upload}
+          onUploaded={(d) => {
+            setCv((p) => ({ ...p, cv_photo: d.cv_photo, photo: d.cv_photo }))
+            toast.success('CV photo uploaded.')
+          }}
+          onRemove={async () => {
+            try {
+              await cvPhotoApi.remove()
+              setCv((p) => ({ ...p, cv_photo: '' }))
+              toast.success('CV photo removed — the profile photo will be used.')
+            } catch {
+              toast.error('Could not remove the photo.')
+            }
+          }}
+        />
       </Section>
 
       <Section title="Profile summary">

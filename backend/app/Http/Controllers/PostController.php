@@ -10,10 +10,12 @@ class PostController extends Controller
     /** GET /api/posts (public) — published posts, newest first. */
     public function index(): JsonResponse
     {
-        $posts = Post::query()
-            ->where('published', true)
-            ->orderByDesc('published_at')
-            ->get(['id', 'title', 'slug', 'cover', 'excerpt', 'tags', 'read_time', 'published_at']);
+        $posts = \App\Support\PublicCache::remember('posts', function () {
+            return Post::query()
+                ->where('published', true)
+                ->orderByDesc('published_at')
+                ->get(['id', 'title', 'slug', 'cover', 'excerpt', 'tags', 'read_time', 'published_at']);
+        });
 
         return response()->json(['data' => $posts]);
     }

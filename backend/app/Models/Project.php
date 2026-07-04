@@ -2,12 +2,20 @@
 
 namespace App\Models;
 
+use App\Support\PublicCache;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Project extends Model
 {
     use HasFactory;
+
+    /** Any write invalidates the public API cache. */
+    public static function booted(): void
+    {
+        static::saved(fn () => PublicCache::bust());
+        static::deleted(fn () => PublicCache::bust());
+    }
 
     /**
      * Mass-assignable attributes.

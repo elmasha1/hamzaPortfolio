@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import useMagnetic from '../../hooks/useMagnetic'
 
@@ -12,7 +13,8 @@ import useMagnetic from '../../hooks/useMagnetic'
  *    ghost (frosted + border-glow).
  *  - Icons placed inside with `group-hover` classes get their own micro-motion.
  *
- * Pass `as="a"` to render an anchor. Extra props pass through.
+ * Pass `as="a"` to render an anchor, or a component (e.g. `as={Link}`) for
+ * router links. Extra props pass through.
  */
 const VARIANTS = {
   primary: 'btn-primary',
@@ -30,7 +32,11 @@ export default function Button({
 }) {
   const reduce = useReducedMotion()
   const { ref, x, y, handlers } = useMagnetic(strength)
-  const Comp = motion[as] || motion.button
+  // Strings map to motion.<tag>; components (Link, …) are wrapped via motion().
+  const Comp = useMemo(
+    () => (typeof as === 'string' ? motion[as] || motion.button : motion(as)),
+    [as]
+  )
 
   return (
     <Comp
