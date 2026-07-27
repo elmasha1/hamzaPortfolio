@@ -65,6 +65,7 @@ const DEFAULTS = {
     'A written scope, estimate and timeline within three days.',
   ],
   location: 'Rabat, Morocco',
+  response_time: 'Replies within 24h',
   bio: "I'm a full-stack engineer with 4+ years building and shipping web applications — React and Tailwind on the frontend, Laravel and MySQL on the backend. I care about clean architecture, performance, accessibility and tested, maintainable code.",
   // Profile photo URL (set from the dashboard); empty → local placeholder.
   profile_photo: '',

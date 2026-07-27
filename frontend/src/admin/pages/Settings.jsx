@@ -53,6 +53,7 @@ export default function Settings() {
       bio: '',
       available: true,
       overview_intro: '',
+      response_time: '',
       journey_heading: '',
       journey_intro: '',
       process_heading: '',
@@ -174,6 +175,9 @@ export default function Settings() {
         </Labeled>
         <Labeled label="Location (footer meta, e.g. Rabat, Morocco)">
           <input value={s.location} onChange={(e) => set('location', e.target.value)} className={field} />
+        </Labeled>
+        <Labeled label="Response time (footer status, e.g. Replies within 24h)">
+          <input value={s.response_time} onChange={(e) => set('response_time', e.target.value)} className={field} />
         </Labeled>
         <Labeled label="Profile photo (used by the hero, About portrait and CV)">
           <ImageUploader

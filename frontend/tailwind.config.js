@@ -106,16 +106,10 @@ export default {
           '0%, 100%': { opacity: '0.25' },
           '50%': { opacity: '1' },
         },
-        // Looping marquee strip (the track is duplicated; move by 50%)
-        marquee: {
-          from: { transform: 'translateX(0)' },
-          to: { transform: 'translateX(-50%)' },
-        },
       },
       animation: {
         'pulse-ring': 'pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'node-pulse': 'node-pulse 4s ease-in-out infinite',
-        marquee: 'marquee 30s linear infinite',
       },
     },
   },
