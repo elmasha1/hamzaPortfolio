@@ -1,0 +1,87 @@
+# Render blueprint — the Laravel API and its PostgreSQL database.
+#
+# Render has no native PHP runtime, so the service is a Docker image built from
+# backend/Dockerfile. Point Render at this file (New → Blueprint) and it
+# provisions both, wiring the database credentials in automatically.
+#
+# The frontend is NOT here: it stays on Vercel, which serves static files from
+# its edge network and never sleeps.
+
+databases:
+  - name: portfolio-db
+    databaseName: portfolio
+    user: portfolio
+    plan: free
+    postgresMajorVersion: "16"
+
+services:
+  - type: web
+    name: portfolio-api
+    runtime: docker
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free
+    region: frankfurt
+    healthCheckPath: /up
+    autoDeploy: true
+
+    envVars:
+      - key: APP_NAME
+        value: PortfolioAPI
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      # Generated once by Render and kept across deploys. If you'd rather use
+      # your own: php artisan key:generate --show
+      - key: APP_KEY
+        generateValue: true
+      - key: LOG_CHANNEL
+        value: stack
+      - key: LOG_LEVEL
+        value: error
+
+      # --- Database: wired from the managed instance above ---------------
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        fromDatabase:
+          name: portfolio-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: portfolio-db
+          property: port
+      - key: DB_DATABASE
+        fromDatabase:
+          name: portfolio-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: portfolio-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: portfolio-db
+          property: password
+
+      - key: CACHE_STORE
+        value: database
+      - key: SESSION_DRIVER
+        value: database
+      - key: QUEUE_CONNECTION
+        value: sync
+
+      # --- Set these two by hand in the Render dashboard ------------------
+      # APP_URL      the service's own https URL, known only after creation
+      # FRONTEND_URL your Vercel domain — drives CORS (config/cors.php)
+      # CLOUDINARY_URL  cloudinary://<key>:<secret>@<cloud>
+      - key: APP_URL
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: CLOUDINARY_URL
+        sync: false
+      - key: CLOUDINARY_FOLDER
+        value: portfolio

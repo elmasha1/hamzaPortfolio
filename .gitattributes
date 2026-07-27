@@ -1,0 +1,10 @@
+# Shell scripts and the Dockerfile must keep LF endings.
+#
+# This repo is developed on Windows, where git checks files out with CRLF. A
+# shell script whose shebang ends in \r fails inside a Linux container with the
+# useless error "no such file or directory" — pointing at the interpreter, not
+# the line ending. Forcing LF here means the Render build works regardless of
+# who checked the file out.
+*.sh text eol=lf
+Dockerfile text eol=lf
+docker/* text eol=lf

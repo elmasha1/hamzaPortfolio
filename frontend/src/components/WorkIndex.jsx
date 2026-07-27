@@ -7,6 +7,7 @@ import { useReducedEffects } from '../hooks/usePerf'
 import SectionLabel from './ui/SectionLabel'
 import SplitTextReveal from './ui/SplitTextReveal'
 import Meta from './ui/Meta'
+import Skeleton from './ui/Skeleton'
 import WorkPreview from './WorkPreview'
 import { ArrowUpRight } from './ui/Icons'
 import { img, imgSrcSet } from '../lib/cloudinary'
@@ -128,6 +129,7 @@ function Row({ project, index, onActivate }) {
  */
 export default function WorkIndex({ scope = 'Home', index = '02' }) {
   const [projects, setProjects] = useState([])
+  const [loading, setLoading] = useState(true)
   const [active, setActive] = useState(0)
   const reduce = useReducedEffects()
 
@@ -136,6 +138,7 @@ export default function WorkIndex({ scope = 'Home', index = '02' }) {
     fetchProjects()
       .then((d) => alive && setProjects(Array.isArray(d) && d.length ? d : FALLBACK))
       .catch(() => alive && setProjects(FALLBACK))
+      .finally(() => alive && setLoading(false))
     return () => {
       alive = false
     }
@@ -148,7 +151,11 @@ export default function WorkIndex({ scope = 'Home', index = '02' }) {
     return active
   }, [projects, active])
 
-  if (projects.length === 0) return null
+  // Only vanish once we know there is nothing to show. While the request is
+  // still out — which on a sleeping free-tier API means tens of seconds, not
+  // milliseconds — the section holds its place with skeleton rows instead of
+  // popping into existence halfway down a page the visitor is already reading.
+  if (!loading && projects.length === 0) return null
 
   const activeProject = projects[active] || projects[0]
 
@@ -173,7 +180,7 @@ export default function WorkIndex({ scope = 'Home', index = '02' }) {
               className="max-w-[22ch] font-heading text-h2 font-semibold text-ink-100"
             />
             <Meta caps className="tracking-[0.05em] sm:text-right">
-              {String(projects.length).padStart(2, '0')} selected
+              {loading ? 'Loading' : `${String(projects.length).padStart(2, '0')} selected`}
             </Meta>
           </div>
         </m.div>
@@ -187,19 +194,31 @@ export default function WorkIndex({ scope = 'Home', index = '02' }) {
             viewport={{ once: true, amount: 0.1 }}
             className="border-t border-rule lg:col-span-7"
           >
-            {projects.map((p, i) => (
-              <Row key={p.id ?? i} project={p} index={i} onActivate={() => setActive(i)} />
-            ))}
+            {loading
+              ? [0, 1, 2].map((i) => (
+                  <div key={i} className="border-b border-rule-soft px-2 py-6 sm:py-7">
+                    <Skeleton className="h-[5.5rem] border-0 bg-white/[0.02]" />
+                  </div>
+                ))
+              : projects.map((p, i) => (
+                  <Row key={p.id ?? i} project={p} index={i} onActivate={() => setActive(i)} />
+                ))}
           </m.div>
 
           {/* The sticky colour preview — desktop only */}
           <div className="hidden lg:col-span-5 lg:block">
-            <WorkPreview
-              projects={projects}
-              active={previewIndex}
-              meta={metaLine(activeProject) || activeProject.title}
-              reduce={reduce}
-            />
+            {loading ? (
+              <div className="sticky top-28">
+                <Skeleton className="aspect-[5/4] w-full" />
+              </div>
+            ) : (
+              <WorkPreview
+                projects={projects}
+                active={previewIndex}
+                meta={metaLine(activeProject) || activeProject.title}
+                reduce={reduce}
+              />
+            )}
           </div>
         </div>
       </div>
