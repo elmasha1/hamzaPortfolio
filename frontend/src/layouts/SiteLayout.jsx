@@ -7,7 +7,6 @@ import GrainOverlay from '../components/GrainOverlay'
 import ScrollProgress from '../components/ScrollProgress'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
-import WhatsAppButton from '../components/WhatsAppButton'
 import ScrollToTop from '../components/ScrollToTop'
 import { jumpToTop, scrollToSelectorWhenReady } from '../lib/scroll'
 
@@ -73,7 +72,6 @@ export default function SiteLayout() {
       </div>
 
       {/* Floating utilities */}
-      <WhatsAppButton />
       <ScrollToTop />
     </div>
   )
