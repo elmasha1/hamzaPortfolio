@@ -115,7 +115,12 @@ class ProjectSeeder extends Seeder
         foreach ($projects as $i => $project) {
             $project['featured'] = $i === 0;
             $project['order'] = $i;
-            Project::create($project);
+
+            // Keyed on title so re-running the seeder updates the demo rows
+            // instead of stacking duplicates — the other seeders are already
+            // idempotent, and on a host without shell access seeding happens
+            // from the deploy, where "run twice" is a normal accident.
+            Project::updateOrCreate(['title' => $project['title']], $project);
         }
     }
 }

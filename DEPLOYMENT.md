@@ -48,10 +48,27 @@ Migrations run in the container entrypoint on every boot, before Apache starts �
 a failed migration means the service never reports healthy, instead of serving
 against a schema that doesn't exist. `/up` is the health check.
 
-**Seed the first admin user** — Render → the service → Shell:
-```bash
-php artisan tinker --execute="\App\Models\User::create(['name'=>'Hamza','email'=>'you@example.com','password'=>bcrypt('a-strong-password')]);"
+**Seed the database** — the free tier has no shell, so seeding runs from the
+deploy instead:
+
+1. Environment → add `SEED_DATABASE` = `true`
+2. Save. Render redeploys, and the entrypoint runs `php artisan db:seed --force`.
+3. **Remove the variable again.** Every seeder is idempotent so leaving it on
+   breaks nothing, but it would reset the demo rows on each deploy and quietly
+   undo edits made in the dashboard.
+
+That creates the starting content and one admin account:
+
 ```
+admin@portfolio.test / password
+```
+
+**Change that password the moment you first log in** — it is in this repository,
+in plain text, in `database/seeders/AdminUserSeeder.php`.
+
+The seeded projects and copy are placeholders. Replace them from /admin; that
+is what the dashboard is for. Your local database is not copied up — local runs
+MySQL, production runs PostgreSQL, and there is no dump step between them.
 
 ### Two things about the free tier
 
