@@ -5,14 +5,15 @@ import Marquee from './Marquee'
 import LocalTime from './LocalTime'
 import { getLenis } from '../lib/smoothScroll'
 import { useSettings } from '../context/SettingsContext'
+import useSectionNav from '../hooks/useSectionNav'
 
+// Work / pricing / contact are sections of the home scroll, not routes.
 const NAV = [
   { label: 'Home', to: '/' },
   { label: 'About', to: '/about' },
-  { label: 'Projects', to: '/projects' },
-  { label: 'Pricing', to: '/pricing' },
-  { label: 'Blog', to: '/blog' },
-  { label: 'Contact', to: '/contact' },
+  { label: 'Work', to: '/', hash: '#projects' },
+  { label: 'Pricing', to: '/', hash: '#pricing' },
+  { label: 'Contact', to: '/', hash: '#contact' },
 ]
 
 function backToTop() {
@@ -28,6 +29,8 @@ const reveal = {
 
 export default function Footer() {
   const { settings } = useSettings()
+  const goToSection = useSectionNav()
+
   const s = settings.socials || {}
   const wa = (settings.whatsapp_number || '').replace(/\D/g, '')
   const available = settings.available !== false
@@ -61,7 +64,8 @@ export default function Footer() {
         {/* Closing CTA */}
         <p className="eyebrow">Have a project in mind?</p>
         <Link
-          to="/contact"
+          to="/#contact"
+          onClick={(e) => goToSection('#contact', e)}
           data-cursor="hover"
           className="group mt-5 inline-flex items-center gap-4 font-heading text-[clamp(2.5rem,7vw,5.5rem)] font-semibold leading-[1.02] tracking-[-0.03em] text-heading"
         >
@@ -79,8 +83,13 @@ export default function Footer() {
             <p className="eyebrow mb-5">Navigate</p>
             <ul className="space-y-2.5">
               {NAV.map((n) => (
-                <li key={n.to}>
-                  <Link to={n.to} data-cursor="hover" className="group inline-flex items-center gap-1.5 text-body transition-colors hover:text-heading">
+                <li key={n.label}>
+                  <Link
+                    to={n.hash ? n.to + n.hash : n.to}
+                    onClick={n.hash ? (e) => goToSection(n.hash, e) : undefined}
+                    data-cursor="hover"
+                    className="group inline-flex items-center gap-1.5 text-body transition-colors hover:text-heading"
+                  >
                     {n.label}
                     <ArrowUpRight size={13} className="opacity-0 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:opacity-100" />
                   </Link>

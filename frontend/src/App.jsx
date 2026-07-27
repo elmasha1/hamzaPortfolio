@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import { ToastProvider } from './context/ToastContext'
 import { SettingsProvider } from './context/SettingsContext'
 import { AuthProvider } from './context/AuthContext'
@@ -9,11 +9,6 @@ import { AuthProvider } from './context/AuthContext'
 const SiteLayout = lazy(() => import('./layouts/SiteLayout'))
 const HomePage = lazy(() => import('./pages/HomePage'))
 const AboutPage = lazy(() => import('./pages/AboutPage'))
-const ProjectsPage = lazy(() => import('./pages/ProjectsPage'))
-const ContactPage = lazy(() => import('./pages/ContactPage'))
-const PricingPage = lazy(() => import('./pages/PricingPage'))
-const BlogPage = lazy(() => import('./pages/BlogPage'))
-const BlogPostPage = lazy(() => import('./pages/BlogPostPage'))
 const AdminApp = lazy(() => import('./admin/AdminApp'))
 const CvPage = lazy(() => import('./CvPage'))
 const ProjectDetail = lazy(() => import('./ProjectDetail'))
@@ -67,11 +62,13 @@ export default function App() {
           >
             <Route path="/" element={<HomePage />} />
             <Route path="/about" element={<AboutPage />} />
-            <Route path="/projects" element={<ProjectsPage />} />
-            <Route path="/pricing" element={<PricingPage />} />
-            <Route path="/contact" element={<ContactPage />} />
-            <Route path="/blog" element={<BlogPage />} />
-            <Route path="/blog/:slug" element={<BlogPostPage />} />
+            {/* Retired pages — their content now lives on the home scroll, so
+                old links / bookmarks land on the matching section. */}
+            <Route path="/contact" element={<Navigate to="/#contact" replace />} />
+            <Route path="/pricing" element={<Navigate to="/#pricing" replace />} />
+            <Route path="/projects" element={<Navigate to="/#projects" replace />} />
+            <Route path="/blog" element={<Navigate to="/" replace />} />
+            <Route path="/blog/:slug" element={<Navigate to="/" replace />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>

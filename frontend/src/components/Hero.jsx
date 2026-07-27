@@ -1,11 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion'
 import { Code2 } from 'lucide-react'
 import Button from './ui/Button'
 import HeroBackground from './HeroBackground'
 import { ArrowRight, ArrowDown, MapPin } from './ui/Icons'
-import { scrollToSelector } from '../lib/smoothScroll'
+import useSectionNav from '../hooks/useSectionNav'
 import { useSettings } from '../context/SettingsContext'
 
 /* Per-word mask reveal: each word sits in an overflow-hidden box and slides up. */
@@ -53,7 +52,7 @@ function HeroPhoto({ src, error, onError, className = '' }) {
 
 export default function Hero() {
   const reduce = useReducedMotion()
-  const navigate = useNavigate()
+  const goToSection = useSectionNav()
   const { settings } = useSettings()
   const [photoError, setPhotoError] = useState(false)
   const sectionRef = useRef(null)
@@ -168,11 +167,8 @@ export default function Hero() {
               >
                 <Button
                   as="a"
-                  href="/contact"
-                  onClick={(e) => {
-                    e.preventDefault()
-                    navigate('/contact')
-                  }}
+                  href="#contact"
+                  onClick={(e) => goToSection('#contact', e)}
                   className="px-7 py-3"
                 >
                   Get in touch
@@ -182,10 +178,7 @@ export default function Hero() {
                   variant="secondary"
                   as="a"
                   href="#projects"
-                  onClick={(e) => {
-                    e.preventDefault()
-                    scrollToSelector('#projects')
-                  }}
+                  onClick={(e) => goToSection('#projects', e)}
                   className="px-7 py-3"
                 >
                   View work

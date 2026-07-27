@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { motion, useInView, useReducedMotion } from 'framer-motion'
 import { staggerContainer, fadeUp, viewportOnce } from '../lib/motion'
 import SectionLabel from '../components/ui/SectionLabel'
@@ -11,6 +10,7 @@ import { ArrowRight, ArrowUpRight, Download, Github, Linkedin, Mail, Whatsapp } 
 import { fetchAbout } from '../lib/api'
 import { useSettings } from '../context/SettingsContext'
 import useCvDownload from '../hooks/useCvDownload'
+import useSectionNav from '../hooks/useSectionNav'
 
 /* A paragraph that rises out from behind an overflow-hidden mask on scroll. */
 function MaskedParagraph({ children, className = '' }) {
@@ -69,7 +69,7 @@ function Counter({ value, suffix }) {
  */
 export default function AboutPage() {
   const { settings } = useSettings()
-  const navigate = useNavigate()
+  const goToSection = useSectionNav()
   const cv = useCvDownload()
   const [about, setAbout] = useState(settings.about || {})
 
@@ -235,11 +235,8 @@ export default function AboutPage() {
         >
           <Button
             as="a"
-            href="/contact"
-            onClick={(e) => {
-              e.preventDefault()
-              navigate('/contact')
-            }}
+            href="/#contact"
+            onClick={(e) => goToSection('#contact', e)}
             className="px-7 py-3"
           >
             Get in touch

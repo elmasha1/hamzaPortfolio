@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { staggerContainer, fadeUp, viewportOnce, EASE, DUR, STAGGER } from '../lib/motion'
-import SectionLabel from '../components/ui/SectionLabel'
-import SplitTextReveal from '../components/ui/SplitTextReveal'
-import Button from '../components/ui/Button'
-import Skeleton from '../components/ui/Skeleton'
-import { ArrowRight, Check, ChevronDown } from '../components/ui/Icons'
+import SectionLabel from './ui/SectionLabel'
+import SplitTextReveal from './ui/SplitTextReveal'
+import Button from './ui/Button'
+import Skeleton from './ui/Skeleton'
+import { ArrowRight, Check, ChevronDown } from './ui/Icons'
+import useSectionNav from '../hooks/useSectionNav'
 import { fetchPricing } from '../lib/api'
 
 /* A single FAQ row — minimal accordion with smooth height + fade. */
@@ -52,7 +52,7 @@ function FaqRow({ item, open, onToggle, index }) {
 }
 
 /* One pricing tier column. */
-function Tier({ tier, index }) {
+function Tier({ tier, onCta }) {
   const features = Array.isArray(tier.features) ? tier.features : []
   const hl = !!tier.highlighted
   return (
@@ -104,8 +104,9 @@ function Tier({ tier, index }) {
 
       <div className="mt-9">
         <Button
-          as={Link}
-          to="/contact"
+          as="a"
+          href="#contact"
+          onClick={onCta}
           variant={hl ? 'primary' : 'secondary'}
           className="w-full justify-center px-6 py-3"
         >
@@ -118,14 +119,16 @@ function Tier({ tier, index }) {
 }
 
 /**
- * PricingPage — "05 — Pricing": three editorial tiers (hairline cards, the
- * middle one highlighted), feature checklists, CTAs to contact, a footnote and
- * a minimal FAQ accordion. Dashboard-driven via GET /api/pricing.
+ * Pricing — "04 — Pricing" section on the home scroll: three editorial tiers
+ * (hairline cards, the middle one highlighted), feature checklists, CTAs to
+ * contact, a footnote and a minimal FAQ accordion. Dashboard-driven via
+ * GET /api/pricing.
  */
-export default function PricingPage() {
+export default function Pricing() {
   const [pricing, setPricing] = useState(null)
   const [error, setError] = useState(false)
   const [openFaq, setOpenFaq] = useState(0)
+  const goToSection = useSectionNav()
 
   const load = () => {
     setError(false)
@@ -142,15 +145,15 @@ export default function PricingPage() {
   const faq = Array.isArray(pricing?.faq) ? pricing.faq : []
 
   return (
-    <div className="pt-32 sm:pt-40">
+    <section id="pricing" className="relative py-24 sm:py-32">
       {/* Header */}
-      <section className="container-px">
-        <SectionLabel num="05">Pricing</SectionLabel>
+      <div className="container-px">
+        <SectionLabel num="04">Pricing</SectionLabel>
         <SplitTextReveal
-          as="h1"
+          as="h2"
           text={pricing?.heading || 'Simple, transparent pricing.'}
           amount={0.3}
-          className="max-w-[18ch] font-heading text-[clamp(2.25rem,6vw,4.75rem)] font-semibold leading-[1.03] tracking-[-0.03em] text-heading"
+          className="max-w-[18ch] font-heading text-[clamp(2rem,4.5vw,3.5rem)] font-semibold leading-[1.06] tracking-[-0.03em] text-heading"
         />
         {pricing?.subline && (
           <motion.p
@@ -158,39 +161,39 @@ export default function PricingPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={viewportOnce}
             transition={{ duration: DUR.reveal, delay: 0.2, ease: EASE.out }}
-            className="mt-8 max-w-[52ch] text-lg leading-[1.7] text-body"
+            className="mt-6 max-w-[52ch] text-base leading-[1.7] text-body"
           >
             {pricing.subline}
           </motion.p>
         )}
-      </section>
+      </div>
 
-      {/* Loading — skeleton tiers keep the layout stable (no blank page) */}
+      {/* Loading — skeleton tiers keep the layout stable (no blank section) */}
       {loading && (
-        <section className="container-px mt-16 sm:mt-24">
+        <div className="container-px mt-14 sm:mt-20">
           <div className="grid gap-6 lg:grid-cols-3">
             <Skeleton className="h-[26rem]" />
             <Skeleton className="h-[26rem] lg:-my-4" />
             <Skeleton className="h-[26rem]" />
           </div>
-        </section>
+        </div>
       )}
 
       {/* Error — visible, with a Retry (never a silent infinite spinner) */}
       {error && (
-        <section className="container-px mt-16 sm:mt-24">
+        <div className="container-px mt-14 sm:mt-20">
           <div className="flex flex-col items-start gap-5 rounded-[6px] border border-line p-8">
             <p className="text-body">Couldn&rsquo;t load pricing — the API didn&rsquo;t respond.</p>
             <Button variant="secondary" onClick={load} className="px-6 py-2.5">
               Retry
             </Button>
           </div>
-        </section>
+        </div>
       )}
 
       {/* Tiers */}
       {tiers.length > 0 && (
-        <section className="container-px mt-16 sm:mt-24">
+        <div className="container-px mt-14 sm:mt-20">
           <motion.div
             variants={staggerContainer()}
             initial="hidden"
@@ -199,7 +202,7 @@ export default function PricingPage() {
             className="grid gap-6 lg:grid-cols-3 lg:items-stretch"
           >
             {tiers.map((t, i) => (
-              <Tier key={t.name || i} tier={t} index={i} />
+              <Tier key={t.name || i} tier={t} onCta={(e) => goToSection('#contact', e)} />
             ))}
           </motion.div>
 
@@ -214,13 +217,13 @@ export default function PricingPage() {
               {pricing.note}
             </motion.p>
           )}
-        </section>
+        </div>
       )}
 
       {/* FAQ — a centered column: heading centered, rows in a readable
           max-width block with questions left-aligned inside it. */}
       {faq.length > 0 && (
-        <section className="container-px mt-24 pb-28 sm:mt-36 sm:pb-40">
+        <div className="container-px mt-24 sm:mt-32">
           <div className="mx-auto max-w-[46rem] text-center">
             <SectionLabel>FAQ</SectionLabel>
             <SplitTextReveal
@@ -250,8 +253,8 @@ export default function PricingPage() {
               />
             ))}
           </motion.div>
-        </section>
+        </div>
       )}
-    </div>
+    </section>
   )
 }

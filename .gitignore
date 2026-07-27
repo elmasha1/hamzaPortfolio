@@ -24,3 +24,5 @@ Thumbs.db
 
 # VS Code
 .vscode/
+# design-doc viewer runtime (not part of the app)
+support.js

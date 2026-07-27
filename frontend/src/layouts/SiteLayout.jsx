@@ -11,7 +11,7 @@ import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import WhatsAppButton from '../components/WhatsAppButton'
 import ScrollToTop from '../components/ScrollToTop'
-import { initLenis, destroyLenis, getLenis } from '../lib/smoothScroll'
+import { initLenis, destroyLenis, getLenis, scrollToSelector } from '../lib/smoothScroll'
 
 // Show the cinematic intro only once per session.
 function shouldSkipIntro() {
@@ -49,14 +49,25 @@ export default function SiteLayout() {
     return () => destroyLenis()
   }, [loaded])
 
-  // On route change: jump to top and re-measure ScrollTriggers.
+  // On route change: jump to top and re-measure ScrollTriggers. A deep link to
+  // a section (/#contact) keeps its position — the effect below scrolls there.
   useEffect(() => {
-    const lenis = getLenis()
-    if (lenis) lenis.scrollTo(0, { immediate: true })
-    else window.scrollTo(0, 0)
+    if (!location.hash) {
+      const lenis = getLenis()
+      if (lenis) lenis.scrollTo(0, { immediate: true })
+      else window.scrollTo(0, 0)
+    }
     const t = setTimeout(() => ScrollTrigger.refresh(), 200)
     return () => clearTimeout(t)
-  }, [location.pathname])
+  }, [location.pathname, location.hash])
+
+  // Deep links / shared URLs like /#contact: once the intro is out of the way
+  // and the page has rendered, scroll down to the section.
+  useEffect(() => {
+    if (!loaded || !location.hash) return
+    const t = setTimeout(() => scrollToSelector(location.hash), 500)
+    return () => clearTimeout(t)
+  }, [loaded, location.pathname, location.hash])
 
   return (
     <>

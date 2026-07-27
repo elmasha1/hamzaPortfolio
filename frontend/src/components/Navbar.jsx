@@ -1,20 +1,21 @@
 import { useEffect, useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { getLenis, scrollToSelector } from '../lib/smoothScroll'
+import { getLenis } from '../lib/smoothScroll'
 import { useSettings } from '../context/SettingsContext'
 import useCvDownload from '../hooks/useCvDownload'
+import useSectionNav from '../hooks/useSectionNav'
 import LocalTime from './LocalTime'
 import { ArrowUpRight, Download, ArrowRight } from './ui/Icons'
 
-// Clean, single set of canonical pages.
+// Clean, single set of canonical destinations. Everything except About is a
+// section of the home scroll, so those are anchors rather than routes.
 const LINKS = [
   { label: 'Home', to: '/' },
   { label: 'About', to: '/about' },
-  { label: 'Projects', to: '/projects' },
-  { label: 'Pricing', to: '/pricing' },
-  { label: 'Blog', to: '/blog' },
-  { label: 'Contact', to: '/contact' },
+  { label: 'Work', to: '/', hash: '#projects' },
+  { label: 'Pricing', to: '/', hash: '#pricing' },
+  { label: 'Contact', to: '/', hash: '#contact' },
 ]
 
 function isActivePath(pathname, l) {
@@ -27,7 +28,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const { settings } = useSettings()
   const location = useLocation()
-  const navigate = useNavigate()
+  const goToSection = useSectionNav()
   const { download: downloadCv, loading: cvLoading } = useCvDownload()
 
   // Scroll-aware bar: transparent at the very top → blurred dark bar past 40px.
@@ -66,13 +67,7 @@ export default function Navbar() {
   const go = (e, l) => {
     setOpen(false)
     if (!l.hash) return // let <Link> handle the route
-    e.preventDefault()
-    if (location.pathname !== '/') {
-      navigate('/')
-      setTimeout(() => scrollToSelector(l.hash), 500)
-    } else {
-      scrollToSelector(l.hash)
-    }
+    goToSection(l.hash, e)
   }
 
   const s = settings.socials || {}
@@ -137,7 +132,8 @@ export default function Navbar() {
               <Download size={14} className="transition-transform duration-300 group-hover:translate-y-0.5" />
             </button>
             <Link
-              to="/contact"
+              to="/#contact"
+              onClick={(e) => goToSection('#contact', e)}
               data-cursor="hover"
               className="group inline-flex items-center gap-1.5 rounded-full border border-line px-4 py-2 text-sm text-heading transition-colors hover:bg-white hover:text-ink"
             >

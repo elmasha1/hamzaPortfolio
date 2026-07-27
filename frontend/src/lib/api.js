@@ -118,12 +118,6 @@ export const fetchSettings = () => cachedGet('/settings')
 /** GET /api/cv — public CV / résumé data (for the /cv page and PDF). */
 export const fetchCv = () => cachedGet('/cv')
 
-/** GET /api/posts — published blog posts (list). */
-export const fetchPosts = () => cachedGet('/posts')
-
-/** GET /api/posts/:slug — a single published post. */
-export const fetchPost = (slug) => cachedGet(`/posts/${slug}`)
-
 /** GET /api/journey — "My Journey" timeline milestones (ordered). */
 export const fetchJourney = () => cachedGet('/journey')
 

@@ -6,6 +6,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { fetchProjects } from '../lib/api'
 import { staggerContainer, fadeUp, viewportOnce } from '../lib/motion'
 import { useReducedEffects } from '../hooks/usePerf'
+import useSectionNav from '../hooks/useSectionNav'
 import SectionLabel from './ui/SectionLabel'
 import SplitTextReveal from './ui/SplitTextReveal'
 import { ArrowRight, ArrowUpRight } from './ui/Icons'
@@ -85,6 +86,7 @@ function Tile({ project, index, onOpen, horizontal }) {
 export default function WorkGallery() {
   const [projects, setProjects] = useState([])
   const navigate = useNavigate()
+  const goToSection = useSectionNav()
   const reduced = useReducedEffects() // touch / reduced-motion / low-end → vertical
   const pinRef = useRef(null)
   const trackRef = useRef(null)
@@ -165,11 +167,8 @@ export default function WorkGallery() {
           {/* End CTA (mobile/vertical) — same conversion moment as the
               horizontal gallery's closing panel. */}
           <a
-            href="/contact"
-            onClick={(e) => {
-              e.preventDefault()
-              navigate('/contact')
-            }}
+            href="#contact"
+            onClick={(e) => goToSection('#contact', e)}
             className="group flex min-h-[44px] flex-col justify-center border-t border-line pt-10 sm:col-span-2"
           >
             <span className="eyebrow mb-3">Next</span>
@@ -194,11 +193,8 @@ export default function WorkGallery() {
             ))}
             {/* End CTA panel */}
             <a
-              href="/contact"
-              onClick={(e) => {
-                e.preventDefault()
-                navigate('/contact')
-              }}
+              href="#contact"
+              onClick={(e) => goToSection('#contact', e)}
               className="group flex w-[70vw] shrink-0 flex-col justify-center sm:w-[40vw]"
             >
               <span className="eyebrow mb-4">Next</span>
