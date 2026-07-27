@@ -7,7 +7,7 @@ import Button from '../components/ui/Button'
 import Meta from '../components/ui/Meta'
 import Technologies from '../components/Technologies'
 import AboutVideo from '../components/AboutVideo'
-import { ArrowRight, ArrowUpRight, Download, Github, Linkedin, Mail, Whatsapp } from '../components/ui/Icons'
+import { ArrowRight, ArrowUpRight, Download, Github, Linkedin, Mail } from '../components/ui/Icons'
 import { fetchAbout } from '../lib/api'
 import { useSettings } from '../context/SettingsContext'
 import useCvDownload from '../hooks/useCvDownload'
@@ -68,12 +68,10 @@ export default function AboutPage() {
   const videoAfter = Math.min(1, Math.max(0, story.length - 1))
 
   const s = settings.socials || {}
-  const wa = (settings.whatsapp_number || '').replace(/\D/g, '')
   const socials = [
     s.github && { label: 'GitHub', href: s.github, Icon: Github },
     s.linkedin && { label: 'LinkedIn', href: s.linkedin, Icon: Linkedin },
     s.email && { label: 'Email', href: `mailto:${s.email}`, Icon: Mail },
-    wa && { label: 'WhatsApp', href: `https://wa.me/${wa}`, Icon: Whatsapp },
   ].filter(Boolean)
 
   return (
