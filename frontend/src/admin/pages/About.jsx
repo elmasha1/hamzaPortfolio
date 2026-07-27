@@ -29,6 +29,7 @@ const EMPTY = {
   subline: '',
   video_url: '',
   video_poster: '',
+  video_caption: '',
   story: [],
   pull_quote: '',
   philosophy: [],
@@ -102,9 +103,11 @@ export default function About() {
         <Labeled label="Subline"><textarea value={a.subline} onChange={(e) => set('subline', e.target.value)} rows={2} className={`${field} resize-none`} /></Labeled>
       </Section>
 
-      <Section title="Intro video">
+      <Section title="Story video">
         <Labeled label="Video URL (mp4 — leave blank to show the placeholder)"><input value={a.video_url} onChange={(e) => set('video_url', e.target.value)} className={field} placeholder="/assets/intro.mp4 or https://…" /></Labeled>
         <Labeled label="Poster image URL"><input value={a.video_poster} onChange={(e) => set('video_poster', e.target.value)} className={field} placeholder="https://… or /assets/poster.jpg" /></Labeled>
+        <Labeled label="Caption (mono, under the video)"><input value={a.video_caption} onChange={(e) => set('video_caption', e.target.value)} className={field} placeholder="Ninety seconds on how I work" maxLength={200} /></Labeled>
+        <p className="text-xs text-muted">The video now sits inside the story as a figure — it illustrates the page rather than opening it.</p>
       </Section>
 
       <Section title="My story (paragraphs)">
@@ -118,20 +121,20 @@ export default function About() {
         <Labeled label="Pull quote (oversized, between paragraphs)"><input value={a.pull_quote} onChange={(e) => set('pull_quote', e.target.value)} className={field} /></Labeled>
       </Section>
 
-      <Section title="Coding philosophy">
+      <Section title="How I decide">
         {a.philosophy.map((p, i) => (
           <div key={i} className="relative rounded-xl border border-line bg-white/[0.02] p-4">
             <button type="button" onClick={() => removePhil(i)} aria-label="Remove" className="absolute right-3 top-3 text-muted hover:text-coral"><X size={16} /></button>
             <div className="space-y-3 pr-6">
-              <input value={p.title} onChange={(e) => setPhil(i, 'title', e.target.value)} className={field} placeholder="Principle title" />
-              <textarea value={p.description} onChange={(e) => setPhil(i, 'description', e.target.value)} rows={2} className={`${field} resize-none`} placeholder="One-line description" />
+              <input value={p.title} onChange={(e) => setPhil(i, 'title', e.target.value)} className={field} placeholder="The opinion (e.g. Boring technology, aggressively)" />
+              <textarea value={p.description} onChange={(e) => setPhil(i, 'description', e.target.value)} rows={2} className={`${field} resize-none`} placeholder="Its consequence — the ‘because…’ half" />
             </div>
           </div>
         ))}
-        <button type="button" onClick={addPhil} className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"><Plus size={16} /> Add principle</button>
+        <button type="button" onClick={addPhil} className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"><Plus size={16} /> Add position</button>
       </Section>
 
-      <Section title="Quick facts">
+      <Section title="Quick facts (no longer shown on About)">
         {a.facts.map((f, i) => (
           <div key={i} className="flex items-center gap-2">
             <input value={f.label} onChange={(e) => setFact(i, 'label', e.target.value)} className={field} placeholder="Label" />
@@ -141,7 +144,7 @@ export default function About() {
             <button type="button" onClick={() => removeFact(i)} className="px-2 text-muted hover:text-coral" aria-label="Remove fact"><X size={16} /></button>
           </div>
         ))}
-        <p className="text-xs text-muted">Use a number + suffix for a count-up, or the text field for a non-numeric fact.</p>
+        <p className="text-xs text-muted">These moved to the proof strip under the home hero — edit them in <span className="font-medium text-heading">Settings → Proof strip</span>. Anything kept here is stored but not displayed.</p>
         <button type="button" onClick={addFact} className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"><Plus size={16} /> Add fact</button>
       </Section>
 

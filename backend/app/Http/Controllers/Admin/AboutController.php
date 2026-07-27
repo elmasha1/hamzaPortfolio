@@ -23,6 +23,9 @@ class AboutController extends Controller
             'subline' => ['nullable', 'string', 'max:500'],
             'video_url' => ['nullable', 'string', 'max:1000'],
             'video_poster' => ['nullable', 'string', 'max:1000'],
+            // Mono caption under the video, which now sits inside the story
+            // as a figure rather than opening the page.
+            'video_caption' => ['nullable', 'string', 'max:200'],
             'story' => ['nullable', 'array'],
             'story.*' => ['string', 'max:3000'],
             'pull_quote' => ['nullable', 'string', 'max:500'],

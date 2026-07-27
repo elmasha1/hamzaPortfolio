@@ -13,6 +13,7 @@ class AboutController extends Controller
         'subline' => 'A full-stack engineer who cares as much about the craft as the outcome.',
         'video_url' => '',
         'video_poster' => '',
+        'video_caption' => '',
         'story' => [],
         'pull_quote' => '',
         'philosophy' => [],
