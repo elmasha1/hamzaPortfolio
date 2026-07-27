@@ -6,6 +6,7 @@ import Meta from './components/ui/Meta'
 import CaseStudyRail from './components/CaseStudyRail'
 import { ArrowLeft, ArrowUpRight, Github, ExternalLink } from './components/ui/Icons'
 import { fetchProject, fetchProjects } from './lib/api'
+import useDocumentTitle from './hooks/useDocumentTitle'
 
 /* Deliberately unfinished-looking, like the work index — never a fake image. */
 function NoImage({ title }) {
@@ -143,6 +144,8 @@ export default function ProjectDetail() {
   const [status, setStatus] = useState('loading')
   const [siblings, setSiblings] = useState([])
 
+  useDocumentTitle(p?.title ? `${p.title} — Case study` : '')
+
   useEffect(() => {
     let alive = true
     setStatus('loading')
@@ -151,7 +154,6 @@ export default function ProjectDetail() {
         if (!alive) return
         setP(data)
         setStatus('ok')
-        document.title = `${data.title} — Case study`
       })
       .catch(() => alive && setStatus('error'))
     return () => {

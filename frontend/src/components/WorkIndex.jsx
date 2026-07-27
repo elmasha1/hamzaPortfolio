@@ -80,19 +80,6 @@ function Row({ project, index, onActivate }) {
               <p className="mt-2 max-w-[52ch] text-small text-ink-300">{problem}</p>
             )}
 
-            {/* Mobile carries its own image — no sticky panel below lg. */}
-            {project.image && (
-              <div className="mt-5 -mx-7 aspect-video overflow-hidden border-y border-rule-soft bg-paper-2 sm:-mx-8 lg:hidden">
-                <img
-                  src={project.image}
-                  alt={`${project.title} — preview`}
-                  loading="lazy"
-                  decoding="async"
-                  className="h-full w-full object-cover"
-                />
-              </div>
-            )}
-
             <div className="mt-3 flex items-end justify-between gap-4">
               <Meta caps className="tracking-[0.05em]">
                 {metaLine(project)}
@@ -104,6 +91,24 @@ function Row({ project, index, onActivate }) {
             </div>
           </div>
         </div>
+
+        {/* Below lg each row carries its own image instead of the sticky
+            panel. It hangs off the row itself, not the indented text column,
+            so the bleed cancels the row padding plus the container gutter and
+            lands flush on BOTH edges. */}
+        {project.image && (
+          <div className="-mx-7 mt-6 aspect-video overflow-hidden border-y border-rule-soft bg-paper-2 sm:-mx-10 lg:hidden">
+            <img
+              src={project.image}
+              alt={`${project.title} — preview`}
+              loading="lazy"
+              decoding="async"
+              width="1200"
+              height="675"
+              className="h-full w-full object-cover"
+            />
+          </div>
+        )}
       </Link>
     </m.div>
   )

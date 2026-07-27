@@ -1,14 +1,12 @@
-import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { m } from 'framer-motion'
 import GrainOverlay from './components/GrainOverlay'
 import { ArrowLeft } from './components/ui/Icons'
+import useDocumentTitle from './hooks/useDocumentTitle'
 
 /** Minimal, on-theme 404 page for unknown routes. */
 export default function NotFound() {
-  useEffect(() => {
-    document.title = 'Page not found — 404'
-  }, [])
+  useDocumentTitle('Page not found — 404')
 
   return (
     <div className="relative flex min-h-screen items-center justify-center px-6">

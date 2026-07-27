@@ -41,10 +41,21 @@ export default function SiteLayout() {
       <GrainOverlay />
       <ScrollProgress />
 
+      {/* Bypass blocks: the fixed navbar puts seven controls in front of the
+          content on every route. Visually hidden until focused. */}
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-5 focus:top-5 focus:z-[130] focus:border focus:border-rule focus:bg-paper focus:px-4 focus:py-3 focus:font-mono focus:text-meta focus:uppercase focus:tracking-[0.06em] focus:text-ink-100"
+      >
+        Skip to content
+      </a>
+
       <div className="relative z-10">
         <Navbar />
         <AnimatePresence mode="wait" initial={false}>
           <m.main
+            id="main"
+            tabIndex={-1}
             key={location.pathname}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

@@ -113,12 +113,12 @@ const DEFAULTS = {
   journey_heading: 'From zero to full-stack.',
   journey_intro: 'A short version of how I went from writing my first lines of code to shipping full-stack products.',
   journey: [
-    { date: '2020', title: 'The beginning', description: 'Wrote my first HTML/CSS and got hooked on turning ideas into things that run in a browser.', tags: ['HTML', 'CSS', 'JavaScript'] },
-    { date: '2021', title: 'Learning full-stack', description: 'Went deep on React and Laravel — building real CRUD apps, auth flows and REST APIs.', tags: ['React', 'Laravel', 'MySQL'] },
-    { date: '2022', title: 'First freelance projects', description: 'Shipped paid work for real clients: landing pages, dashboards and e-commerce.', tags: ['Freelance', 'Client work'] },
-    { date: '2023', title: 'Studies & fundamentals', description: 'Formalised the theory — algorithms, databases and system design — alongside building.', tags: ['CS', 'System design'] },
-    { date: '2024', title: 'DevOps & cloud', description: 'Owned deployment: Docker, CI/CD pipelines and running apps in production on Linux.', tags: ['Docker', 'CI/CD', 'Linux'] },
-    { date: 'Present', title: 'Building & shipping', description: 'Working across the stack on production-grade products, with an eye on performance and craft.', tags: ['Full-stack', 'Performance'] },
+    { date_label: '2020', title: 'The beginning', description: 'Wrote my first HTML/CSS and got hooked on turning ideas into things that run in a browser.', tags: ['HTML', 'CSS', 'JavaScript'] },
+    { date_label: '2021', title: 'Learning full-stack', description: 'Went deep on React and Laravel — building real CRUD apps, auth flows and REST APIs.', tags: ['React', 'Laravel', 'MySQL'] },
+    { date_label: '2022', title: 'First freelance projects', description: 'Shipped paid work for real clients: landing pages, dashboards and e-commerce.', tags: ['Freelance', 'Client work'] },
+    { date_label: '2023', title: 'Studies & fundamentals', description: 'Formalised the theory — algorithms, databases and system design — alongside building.', tags: ['CS', 'System design'] },
+    { date_label: '2024', title: 'DevOps & cloud', description: 'Owned deployment: Docker, CI/CD pipelines and running apps in production on Linux.', tags: ['Docker', 'CI/CD', 'Linux'] },
+    { date_label: 'Present', title: 'Building & shipping', description: 'Working across the stack on production-grade products, with an eye on performance and craft.', tags: ['Full-stack', 'Performance'] },
   ],
   about: {
     headline: 'From idea to production — this is who I am.',

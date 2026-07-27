@@ -46,6 +46,11 @@ export default function CaseStudyRail({ blocks }) {
               )}
               <a
                 href={`#${b.id}`}
+                // The rail is aria-hidden decoration (the blocks carry their
+                // own headings), so it must not be reachable by keyboard
+                // either — a focusable node inside aria-hidden traps AT users
+                // on an element their software cannot announce.
+                tabIndex={-1}
                 className={`block font-mono text-eyebrow font-medium uppercase tracking-[0.06em] transition-colors duration-300 ${
                   current ? 'text-ink-100' : 'text-ink-700 hover:text-ink-500'
                 }`}

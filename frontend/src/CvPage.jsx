@@ -6,6 +6,7 @@ import Button from './components/ui/Button'
 import { Mail, Github, Linkedin, MapPin, Download, ArrowLeft } from './components/ui/Icons'
 import { fetchCv } from './lib/api'
 import useCvDownload from './hooks/useCvDownload'
+import useDocumentTitle from './hooks/useDocumentTitle'
 
 const cleanUrl = (u) => (u ? String(u).replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/$/, '') : '')
 const initials = (name) =>
@@ -81,9 +82,7 @@ export default function CvPage() {
     }
   }, [])
 
-  useEffect(() => {
-    document.title = cv?.name ? `${cv.name} — CV` : 'CV'
-  }, [cv])
+  useDocumentTitle(cv?.name ? `${cv.name} — CV` : 'CV')
 
   if (status === 'loading') {
     return (
