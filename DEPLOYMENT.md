@@ -74,9 +74,23 @@ php artisan tinker --execute="\App\Models\User::create(['name'=>'Hamza','email'=
 
 ## 2. Vercel — frontend
 
-1. New Project → same repo → **Root Directory: `frontend`**.
-2. Framework preset: Vite (already declared in `vercel.json`).
-3. Environment variable:
+This is a monorepo: the app is in `frontend/`, and the repository root holds no
+`package.json`. Vercel builds from the root by default, finds nothing there and
+fails — which is exactly what the first deploy did.
+
+Two configurations work, and **both are committed**, so it deploys either way:
+
+| Vercel Root Directory | Config used | Notes |
+|---|---|---|
+| *(left at the repo root)* | `/vercel.json` | Works with no dashboard changes. Runs `cd frontend && npm ci && npm run build` and publishes `frontend/dist`. |
+| `frontend` | `/frontend/vercel.json` | Slightly faster — Vercel only uploads that directory. Set it in Settings → General → Root Directory. |
+
+Keep both files. If you set the Root Directory to `frontend`, the root
+`vercel.json` is ignored; if you ever unset it, the root one takes over again.
+They carry the same rewrites and headers, so behaviour doesn't change either
+way.
+
+Then the one environment variable:
 
 ```
 VITE_API_URL=https://<service>.up.railway.app/api
@@ -85,9 +99,9 @@ VITE_API_URL=https://<service>.up.railway.app/api
 Set it for Production **and** Preview, then redeploy — Vite inlines env values
 at build time, so changing it later needs a rebuild, not just a restart.
 
-`vercel.json` handles the rest: SPA rewrites so `/work/12` and `/about` resolve
-on a hard refresh, immutable caching on the fingerprinted `/assets/*` bundles,
-and the usual security headers.
+Both configs handle the rest: SPA rewrites so `/work/12` and `/about` resolve on
+a hard refresh, immutable caching on the fingerprinted `/assets/*` bundles, and
+the usual security headers.
 
 ---
 
