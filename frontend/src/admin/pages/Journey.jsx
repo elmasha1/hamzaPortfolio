@@ -6,7 +6,10 @@ import { Plus, Trash2, Pencil, X, ChevronUp, ChevronDown } from '../../component
 const field =
   'w-full rounded-xl border border-line bg-white/[0.04] px-3 py-2 text-sm text-heading outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20'
 
-const EMPTY = { date_label: '', title: '', description: '', tags: [] }
+const EMPTY = { date_label: '', kind: '', title: '', description: '', tags: [] }
+
+/* Milestone kinds — shown as a mono chip on the public timeline. */
+const KINDS = ['', 'Education', 'Internship', 'Freelance', 'Product', 'Employment']
 
 export default function Journey() {
   const toast = useToast()
@@ -92,10 +95,18 @@ export default function Journey() {
             </button>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-[0.35fr_1fr]">
+          <div className="grid gap-4 sm:grid-cols-[0.35fr_0.35fr_1fr]">
             <label className="block">
               <span className="eyebrow mb-1 block">Date / period</span>
               <input value={editing.date_label || ''} onChange={(e) => setField('date_label', e.target.value)} className={field} placeholder="2021 / Present" />
+            </label>
+            <label className="block">
+              <span className="eyebrow mb-1 block">Kind</span>
+              <select value={editing.kind || ''} onChange={(e) => setField('kind', e.target.value)} className={field}>
+                {KINDS.map((k) => (
+                  <option key={k} value={k}>{k || '— none —'}</option>
+                ))}
+              </select>
             </label>
             <label className="block">
               <span className="eyebrow mb-1 block">Title</span>

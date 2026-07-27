@@ -1,160 +1,115 @@
 /** @type {import('tailwindcss').Config} */
+
+/* ============================================================
+   DESIGN SYSTEM v2
+   Eight measured colours, nine type tokens, two radii, one
+   section rhythm. Ratios are against `paper` (#0D0D0D).
+
+   LEGACY BLOCK: the tokens under "legacy aliases" exist only so
+   the admin dashboard (out of scope for the redesign) keeps
+   rendering exactly as before. Do not use them in new public
+   code — and note `ink` (no suffix) is the LEGACY near-black
+   page colour, while `ink-100…700` is the v2 text ramp. New
+   code writes `bg-paper` / `text-ink-100`.
+   ============================================================ */
 export default {
   content: ['./index.html', './src/**/*.{js,jsx}'],
   theme: {
     extend: {
       colors: {
-        // Editorial monochrome base — near-black ink + white paper.
-        ink: '#0D0D0D',
-        paper: '#FFFFFF',
-        deep: '#0D0D0D',
-        glow: '#0D0D0D',
+        /* ---- v2: surfaces ---- */
+        paper: '#0D0D0D', // page
+        'paper-2': '#141414', // bands, media plates
 
-        base: {
-          white: 'rgba(255,255,255,0.03)', // faint glass card
-          soft: '#0D0D0D', // page base
-          indigo: '#141414', // slightly raised panel
-          hero: '#141414',
+        /* ---- v2: text ramp (contrast vs paper) ---- */
+        ink: {
+          DEFAULT: '#0D0D0D', // LEGACY page colour — see note above
+          100: '#F5F5F4', // 17.6:1 — headings
+          300: '#A8A5A0', // 7.4:1  — body
+          500: '#7E7B76', // 5.3:1  — meta (smallest text in the system)
+          700: '#3A3835', // never text — dividers on media, disabled marks
         },
-        surface: 'rgba(255,255,255,0.03)',
-        'surface-2': 'rgba(255,255,255,0.06)',
 
-        // "Primary" is now monochrome white — a single, disciplined accent.
-        // (Token name kept so existing components keep working.)
-        primary: {
-          DEFAULT: '#FFFFFF',
-          soft: '#A1A1A1',
-          50: '#1A1A1A',
-          100: '#202020',
-          300: '#FFFFFF',
-          500: '#FFFFFF',
-          600: '#E5E5E5',
-          700: '#FFFFFF',
-          800: '#FFFFFF',
-        },
-        teal: '#A1A1A1',
-        secondary: '#A1A1A1',
+        /* ---- v2: rules (two weights) ---- */
+        rule: 'rgba(255,255,255,0.20)', // structural: sections, frames, outlines
+        'rule-soft': 'rgba(255,255,255,0.10)', // interior: grid gaps, list separators
 
-        dark: '#000000',
+        /* ---- v2: the one non-mono colour ---- */
+        signal: '#F87171', // form errors only
 
-        // Legacy decorative names neutralised to mono.
-        sky: '#FFFFFF',
-        mint: '#A1A1A1',
-        coral: '#F87171', // validation errors only
-        amber: '#A1A1A1',
-        lavender: '#A1A1A1',
-        pink: '#A1A1A1',
-
-        // Text — white on near-black, Swiss contrast.
+        /* ---- legacy aliases (admin dashboard only) ---- */
+        line: 'rgba(255,255,255,0.12)',
         heading: '#FAFAFA',
         body: '#8A8A8A',
         muted: '#6B6B6B',
-        eyebrow: '#A1A1A1',
-
-        // Hairline borders.
-        line: 'rgba(255,255,255,0.12)',
+        coral: '#F87171',
+        teal: '#A1A1A1',
+        dark: '#000000',
+        paperwhite: '#FFFFFF',
+        primary: {
+          DEFAULT: '#FFFFFF',
+          300: '#FFFFFF',
+        },
+        base: {
+          soft: '#0D0D0D',
+          indigo: '#141414',
+        },
       },
+
       fontFamily: {
-        // Body/UI: Inter. Headings & stats: Space Grotesk (geometric grotesk).
+        // Inter explains, Space Grotesk states, JetBrains Mono annotates.
         sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
         heading: ['"Space Grotesk"', 'Inter', 'system-ui', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
       },
+
+      /* Nine tokens on a ~1.28 desktop ratio. Line-height and tracking are
+         baked in, so call sites never write clamp() again.
+         NOTE: there is deliberately NO `body` size token — body copy is the
+         base <body> style. A `body` entry here would collide with the `body`
+         colour and silently resize every `text-body` call site. */
       fontSize: {
-        // Refined, editorial scale — dialed down ~10–15% for elegance.
-        body: ['0.9375rem', { lineHeight: '1.7', letterSpacing: '-0.01em' }], // 15px
-        eyebrow: ['0.6875rem', { lineHeight: '1', letterSpacing: '0.14em' }], // 11px caps
-        h3: ['1.25rem', { lineHeight: '1.4', letterSpacing: '-0.01em' }], // 20px
-        h2: ['1.875rem', { lineHeight: '1.15', letterSpacing: '-0.02em' }], // 30px
-        // Fluid hero: 32px → 54px (refined, airier line-height)
-        hero: ['clamp(2rem, 4.5vw, 3.375rem)', { lineHeight: '1.15', letterSpacing: '-0.02em' }],
+        display: ['clamp(3.5rem, 10vw, 8rem)', { lineHeight: '0.90', letterSpacing: '-0.04em' }],
+        h1: ['clamp(2.75rem, 6.2vw, 5.25rem)', { lineHeight: '0.98', letterSpacing: '-0.035em' }],
+        h2: ['clamp(2rem, 4.2vw, 3.25rem)', { lineHeight: '1.04', letterSpacing: '-0.03em' }],
+        h3: ['clamp(1.375rem, 1.9vw, 1.75rem)', { lineHeight: '1.15', letterSpacing: '-0.02em' }],
+        lead: ['clamp(1.0625rem, 1.4vw, 1.375rem)', { lineHeight: '1.55', letterSpacing: '-0.011em' }],
+        small: ['0.9375rem', { lineHeight: '1.6' }],
+        meta: ['0.75rem', { lineHeight: '1.5', letterSpacing: '0.02em' }],
+        eyebrow: ['0.6875rem', { lineHeight: '1.5', letterSpacing: '0.09em' }],
       },
+
       letterSpacing: {
         tightish: '-0.02em',
-        eyebrow: '0.14em',
+        eyebrow: '0.09em',
       },
+
+      spacing: {
+        // The single section rhythm token — one value for the whole site.
+        section: 'clamp(6rem, 9vw, 8.5rem)',
+      },
+
+      /* Two radii: 0 for everything structural, full for pills/dots/FABs.
+         Tailwind's defaults stay available for the admin dashboard only. */
       borderRadius: {
-        btn: '10px',
-        '2xl': '1rem',
-        '3xl': '1.5rem',
+        none: '0px',
       },
-      boxShadow: {
-        // Flat, gallery-like — definition comes from hairline borders, not shadows.
-        soft: 'none',
-        'soft-lg': 'none',
-        glow: 'none',
-        'glow-teal': 'none',
-        btn: 'none',
-        'btn-hover': 'none',
-        'btn-secondary': 'none',
-      },
+
       keyframes: {
-        float: {
-          '0%, 100%': { transform: 'translateY(0px)' },
-          '50%': { transform: 'translateY(-20px)' },
-        },
-        'spin-slow': {
-          from: { transform: 'rotate(0deg)' },
-          to: { transform: 'rotate(360deg)' },
-        },
-        'gradient-shift': {
-          '0%, 100%': { backgroundPosition: '0% 50%' },
-          '50%': { backgroundPosition: '100% 50%' },
-        },
         // Pulsing "available" dot
         'pulse-ring': {
           '0%': { transform: 'scale(0.9)', opacity: '0.7' },
           '70%, 100%': { transform: 'scale(2.2)', opacity: '0' },
         },
-        // Diagonal light glare sweeping across a button
-        shine: {
-          '0%': { transform: 'translateX(-160%) skewX(-20deg)' },
-          '100%': { transform: 'translateX(260%) skewX(-20deg)' },
-        },
-        // Slowly drifting soft gradient mesh background
-        mesh: {
-          '0%, 100%': { transform: 'translate3d(0,0,0) scale(1)' },
-          '33%': { transform: 'translate3d(3%, -4%, 0) scale(1.08)' },
-          '66%': { transform: 'translate3d(-3%, 3%, 0) scale(0.96)' },
-        },
-        // Text shimmer sweep (footer headline)
-        shimmer: {
-          '0%': { backgroundPosition: '200% 0' },
-          '100%': { backgroundPosition: '-200% 0' },
-        },
-        // Counter "bloom" as a number lands
-        bloom: {
-          '0%': { textShadow: '0 0 0 rgba(59,130,246,0)' },
-          '40%': { textShadow: '0 0 22px rgba(59,130,246,0.55)' },
-          '100%': { textShadow: '0 0 0 rgba(59,130,246,0)' },
-        },
-        // Twinkling star (opacity only)
-        twinkle: {
+        // Hero systems diagram — nodes light up in sequence
+        'node-pulse': {
           '0%, 100%': { opacity: '0.25' },
-          '50%': { opacity: '0.9' },
-        },
-        // Gentle opacity "breathe" for the glowing arcs
-        breathe: {
-          '0%, 100%': { opacity: '0.5' },
-          '50%': { opacity: '0.9' },
-        },
-        // Looping marquee strip (the track is duplicated; move by 50%).
-        marquee: {
-          from: { transform: 'translateX(0)' },
-          to: { transform: 'translateX(-50%)' },
+          '50%': { opacity: '1' },
         },
       },
       animation: {
-        float: 'float 6s ease-in-out infinite',
-        'spin-slow': 'spin-slow 18s linear infinite',
-        'gradient-shift': 'gradient-shift 8s ease infinite',
         'pulse-ring': 'pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-        shine: 'shine 0.85s cubic-bezier(0.22, 1, 0.36, 1)',
-        mesh: 'mesh 22s ease-in-out infinite',
-        shimmer: 'shimmer 6s linear infinite',
-        bloom: 'bloom 0.9s ease-out',
-        twinkle: 'twinkle 3.5s ease-in-out infinite',
-        breathe: 'breathe 9s ease-in-out infinite',
-        marquee: 'marquee 30s linear infinite',
+        'node-pulse': 'node-pulse 4s ease-in-out infinite',
       },
     },
   },

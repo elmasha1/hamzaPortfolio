@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, m } from 'framer-motion'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import {
@@ -12,7 +12,6 @@ import {
   LogOut,
   Menu,
   ArrowUpRight,
-  FileCode2,
   GitBranch,
   Eye,
   LayoutGrid,
@@ -25,9 +24,8 @@ const NAV = [
   { to: '/admin/projects', label: 'Projects', Icon: FolderKanban },
   { to: '/admin/journey', label: 'Journey', Icon: GitBranch },
   { to: '/admin/technologies', label: 'Technologies', Icon: LayoutGrid },
-  { to: '/admin/pricing', label: 'Pricing', Icon: Tag },
+  { to: '/admin/pricing', label: 'Ways to work', Icon: Tag },
   { to: '/admin/about', label: 'About page', Icon: Eye },
-  { to: '/admin/posts', label: 'Blog', Icon: FileCode2 },
   { to: '/admin/cv', label: 'CV / Resume', Icon: FileText },
   { to: '/admin/settings', label: 'Settings', Icon: Settings },
 ]
@@ -96,14 +94,14 @@ export default function AdminLayout() {
       <AnimatePresence>
         {open && (
           <>
-            <motion.div
+            <m.div
               className="fixed inset-0 z-40 bg-dark/40 lg:hidden"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setOpen(false)}
             />
-            <motion.aside
+            <m.aside
               className="fixed inset-y-0 left-0 z-50 w-64 border-r border-line bg-white/[0.04] lg:hidden"
               initial={{ x: -280 }}
               animate={{ x: 0 }}
@@ -111,7 +109,7 @@ export default function AdminLayout() {
               transition={{ type: 'spring', stiffness: 300, damping: 30 }}
             >
               {SidebarContent}
-            </motion.aside>
+            </m.aside>
           </>
         )}
       </AnimatePresence>
@@ -148,7 +146,7 @@ export default function AdminLayout() {
         {/* Page content with smooth transitions */}
         <main className="p-5 sm:p-8">
           <AnimatePresence mode="wait">
-            <motion.div
+            <m.div
               key={location.pathname}
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
@@ -156,7 +154,7 @@ export default function AdminLayout() {
               transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
             >
               <Outlet />
-            </motion.div>
+            </m.div>
           </AnimatePresence>
         </main>
       </div>

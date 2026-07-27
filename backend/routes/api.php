@@ -13,6 +13,7 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\TechnologyController;
 use App\Http\Controllers\Admin\AboutController as AdminAboutController;
+use App\Http\Controllers\Admin\AboutVideoController as AdminAboutVideoController;
 use App\Http\Controllers\Admin\CvController as AdminCvController;
 use App\Http\Controllers\Admin\CvPhotoController as AdminCvPhotoController;
 use App\Http\Controllers\Admin\JourneyController as AdminJourneyController;
@@ -22,6 +23,7 @@ use App\Http\Controllers\Admin\PostController as AdminPostController;
 use App\Http\Controllers\Admin\ProfilePhotoController as AdminProfilePhotoController;
 use App\Http\Controllers\Admin\PricingController as AdminPricingController;
 use App\Http\Controllers\Admin\ProjectController as AdminProjectController;
+use App\Http\Controllers\Admin\ProjectVideoController as AdminProjectVideoController;
 use App\Http\Controllers\Admin\SettingController as AdminSettingController;
 use App\Http\Controllers\Admin\TechnologyController as AdminTechnologyController;
 use Illuminate\Support\Facades\Route;
@@ -86,6 +88,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::match(['put', 'patch'], '/projects/{project}', [AdminProjectController::class, 'update']);
         Route::delete('/projects/{project}', [AdminProjectController::class, 'destroy']);
 
+        // Case-study hero video (uploaded separately from the project form)
+        Route::post('/projects/{project}/video', [AdminProjectVideoController::class, 'store']);
+        Route::delete('/projects/{project}/video', [AdminProjectVideoController::class, 'destroy']);
+
         // Blog posts (full CRUD) — bound by id in admin.
         Route::get('/posts', [AdminPostController::class, 'index']);
         Route::post('/posts', [AdminPostController::class, 'store']);
@@ -102,6 +108,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/journey/{milestone}', [AdminJourneyController::class, 'destroy']);
 
         // About page content
+        // Story video (upload / remove)
+        Route::post('/about-video', [AdminAboutVideoController::class, 'store']);
+        Route::delete('/about-video', [AdminAboutVideoController::class, 'destroy']);
+
         Route::get('/about', [AdminAboutController::class, 'show']);
         Route::put('/about', [AdminAboutController::class, 'update']);
 

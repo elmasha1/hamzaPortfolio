@@ -26,6 +26,11 @@ export default function LocalTime({
     return () => clearInterval(id)
   }, [timeZone, showSeconds])
 
+  // Time only — the caller supplies its own place label.
+  if (!label) {
+    return <span className={className}>{now}</span>
+  }
+
   return (
     <span className={className}>
       {label} <span className="tabular">{now}</span>

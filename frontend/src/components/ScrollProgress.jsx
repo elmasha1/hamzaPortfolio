@@ -1,4 +1,4 @@
-import { motion, useScroll, useSpring } from 'framer-motion'
+import { m, useScroll, useSpring } from 'framer-motion'
 
 /**
  * ScrollProgress — a slim gradient bar pinned to the very top of the page
@@ -14,7 +14,7 @@ export default function ScrollProgress() {
   })
 
   return (
-    <motion.div
+    <m.div
       aria-hidden="true"
       style={{ scaleX }}
       className="fixed inset-x-0 top-0 z-[80] h-px origin-left bg-white"

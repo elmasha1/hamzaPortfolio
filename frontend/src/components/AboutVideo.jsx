@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import {
-  motion,
+  m,
   useInView,
   useReducedMotion,
   useScroll,
@@ -9,6 +9,7 @@ import {
   useSpring,
 } from 'framer-motion'
 import { Play, Pause, Code } from './ui/Icons'
+import { video as cldVideo, videoPoster } from '../lib/cloudinary'
 
 /* Monochrome poster placeholder when none is provided. */
 const posterPlaceholder =
@@ -75,20 +76,20 @@ export default function AboutVideo({ src, poster }) {
   const showPlay = !playing
 
   return (
-    <motion.div
+    <m.div
       ref={wrapRef}
       initial={{ clipPath: 'inset(100% 0% 0% 0%)' }}
       whileInView={{ clipPath: 'inset(0% 0% 0% 0%)' }}
       viewport={{ once: true, amount: 0.25 }}
       transition={{ duration: 1, ease: [0.76, 0, 0.24, 1] }}
       data-cursor={playing ? undefined : 'play'}
-      className="group relative aspect-video w-full overflow-hidden rounded-[6px] border border-line bg-base-indigo"
+      className="group relative aspect-video w-full overflow-hidden rounded-[6px] border border-rule bg-paper-2"
     >
       {src ? (
-        <motion.video
+        <m.video
           ref={videoRef}
-          src={src}
-          poster={poster || posterPlaceholder}
+          src={cldVideo(src)}
+          poster={poster || videoPoster(src) || posterPlaceholder}
           muted
           loop
           playsInline
@@ -101,7 +102,7 @@ export default function AboutVideo({ src, poster }) {
         />
       ) : (
         // No video set yet — on-theme placeholder frame.
-        <div className="flex h-full w-full flex-col items-center justify-center gap-3 text-muted">
+        <div className="flex h-full w-full flex-col items-center justify-center gap-3 text-ink-500">
           <Code size={44} strokeWidth={1.1} aria-hidden="true" />
           <span className="text-xs uppercase tracking-[0.16em]">Intro video</span>
         </div>
@@ -110,22 +111,22 @@ export default function AboutVideo({ src, poster }) {
       {/* Custom control button */}
       <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
         {(showPlay || !engaged) && (
-          <motion.button
+          <m.button
             type="button"
             onClick={togglePlay}
             onMouseMove={onBtnMove}
             onMouseLeave={onBtnLeave}
             style={{ x: sx, y: sy }}
             aria-label={playing ? 'Pause intro video' : 'Play intro video'}
-            className="pointer-events-auto flex h-16 w-16 items-center justify-center rounded-full border border-white/40 bg-ink/50 text-white backdrop-blur-sm transition-colors hover:bg-white hover:text-ink sm:h-20 sm:w-20"
+            className="pointer-events-auto flex h-16 w-16 items-center justify-center rounded-full border border-white/40 bg-paper/50 text-white backdrop-blur-sm transition-colors hover:bg-ink-100 hover:text-paper sm:h-20 sm:w-20"
           >
             {playing ? <Pause size={22} /> : <Play size={22} className="ml-0.5" />}
-          </motion.button>
+          </m.button>
         )}
       </div>
 
       {/* subtle vignette for readability of the button */}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/40 via-transparent to-transparent" />
-    </motion.div>
+    </m.div>
   )
 }

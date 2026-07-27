@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
-import { projectsApi } from '../../lib/adminApi'
+import { AnimatePresence, m } from 'framer-motion'
+import { projectsApi, projectVideoApi } from '../../lib/adminApi'
 import { useToast } from '../../context/ToastContext'
 import { Plus, Pencil, Trash2, X, ChevronUp, ChevronDown } from '../../components/ui/Icons'
 import ConfirmModal from '../components/ConfirmModal'
+import VideoUploader from '../components/VideoUploader'
 
 /* Build multipart FormData from the form state. */
 function toFormData(form, file) {
@@ -14,14 +15,21 @@ function toFormData(form, file) {
   fd.append('architecture_notes', form.architecture_notes || '')
   fd.append('challenges', form.challenges || '')
   fd.append('outcome', form.outcome || '')
+  fd.append('outcome_metric', form.outcome_metric || '')
   fd.append('key_features', JSON.stringify(form.key_features || []))
+  fd.append('architecture', JSON.stringify(form.architecture || []))
   fd.append('live_url', form.live_url || '')
   fd.append('github_url', form.github_url || '')
   fd.append('role', form.role || '')
+  fd.append('year', form.year || '')
+  fd.append('team_size', form.team_size || '')
+  fd.append('status', form.status || '')
   fd.append('featured', form.featured ? '1' : '0')
   fd.append('tech_tags', JSON.stringify(form.tech_tags))
+  // Always send `image`: an empty value is how the API is told to drop the
+  // stored screenshot. Omitting it would make the API keep the current one.
   if (file) fd.append('image', file)
-  else if (form.image) fd.append('image', form.image) // keep existing URL
+  else fd.append('image', form.image || '')
   return fd
 }
 
@@ -33,6 +41,12 @@ const EMPTY = {
   key_features: [],
   challenges: '',
   outcome: '',
+  outcome_metric: '',
+  video_url: '',
+  architecture: [],
+  year: '',
+  team_size: '',
+  status: '',
   tech_tags: [],
   live_url: '',
   github_url: '',
@@ -64,11 +78,25 @@ function ProjectForm({ initial, onClose, onSaved }) {
   const removeFeature = (t) =>
     set('key_features', (form.key_features || []).filter((x) => x !== t))
 
+  /* Architecture layers — [{ layer, items[] }] drives the case-study diagram. */
+  const setLayer = (i, k, v) =>
+    set('architecture', (form.architecture || []).map((l, idx) => (idx === i ? { ...l, [k]: v } : l)))
+  const addLayer = () => set('architecture', [...(form.architecture || []), { layer: '', items: [] }])
+  const removeLayer = (i) => set('architecture', (form.architecture || []).filter((_, idx) => idx !== i))
+
   const onFile = (e) => {
     const f = e.target.files?.[0]
     if (!f) return
     setFile(f)
     setPreview(URL.createObjectURL(f))
+  }
+
+  /* Clear the screenshot. The empty `image` is sent on save, which is what
+     tells the API to drop the stored file rather than keep the current one. */
+  const removeImage = () => {
+    setFile(null)
+    setPreview('')
+    set('image', '')
   }
 
   const addTag = (e) => {
@@ -107,14 +135,14 @@ function ProjectForm({ initial, onClose, onSaved }) {
     'w-full rounded-xl border border-line bg-white/[0.04] px-3 py-2 text-sm text-heading outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20'
 
   return (
-    <motion.div
+    <m.div
       className="fixed inset-0 z-[115] flex justify-end bg-dark/50 backdrop-blur-sm"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       onClick={onClose}
     >
-      <motion.form
+      <m.form
         onSubmit={submit}
         onClick={(e) => e.stopPropagation()}
         initial={{ x: 460 }}
@@ -139,7 +167,57 @@ function ProjectForm({ initial, onClose, onSaved }) {
               </div>
             )}
           </div>
-          <input type="file" accept="image/*" onChange={onFile} className="mt-2 text-sm text-body" />
+          <div className="mt-2 flex flex-wrap items-center gap-4">
+            <input type="file" accept="image/*" onChange={onFile} className="text-sm text-body" />
+            {preview && (
+              <button
+                type="button"
+                onClick={removeImage}
+                className="inline-flex items-center gap-1.5 text-sm text-muted transition hover:text-coral"
+              >
+                <Trash2 size={15} /> Remove image
+              </button>
+            )}
+          </div>
+          <p className="mt-1 text-xs text-muted">
+            Removing takes effect when you save. Without an image this project shows the mono
+            &ldquo;No preview&rdquo; plate and is skipped by the home page&rsquo;s colour anchor.
+          </p>
+        </div>
+
+        {/* Case-study hero video — uploaded on its own so a large file can't
+            take the rest of the edit down with it. Needs the project to exist. */}
+        <div className="mt-6">
+          <label className="eyebrow mb-2 block">Case-study video</label>
+          {form.id ? (
+            <VideoUploader
+              value={form.video_url}
+              poster={form.image}
+              uploadFn={(file, onProgress) => projectVideoApi.upload(form.id, file, onProgress)}
+              onUploaded={(d) => {
+                set('video_url', d.video_url)
+                toast.success('Video uploaded — it now opens this case study.')
+              }}
+              onRemove={async () => {
+                try {
+                  await projectVideoApi.remove(form.id)
+                  set('video_url', '')
+                  toast.success('Video removed — the still image opens the case study again.')
+                } catch {
+                  toast.error('Could not remove the video.')
+                }
+              }}
+            />
+          ) : (
+            <p className="rounded-xl border border-line bg-white/[0.02] p-4 text-sm text-muted">
+              Save the project first, then reopen it to attach a video.
+            </p>
+          )}
+          <p className="mt-1 text-xs text-muted">
+            Plays silently on loop at the top of <span className="text-heading">/work/{form.id || ':id'}</span>,
+            with the screenshot above as its poster frame. Saves straight away — no need to press
+            Save changes.
+          </p>
         </div>
 
         <div className="mt-4 space-y-3">
@@ -210,6 +288,54 @@ function ProjectForm({ initial, onClose, onSaved }) {
             <textarea value={form.outcome} onChange={(e) => set('outcome', e.target.value)} rows={2} className={`${field} resize-none`} placeholder="Measurable result, e.g. reduced load time 40%" />
           </div>
 
+          <div>
+            <label className="eyebrow mb-1 block">Outcome figure (work index)</label>
+            <input value={form.outcome_metric} onChange={(e) => set('outcome_metric', e.target.value)} className={field} placeholder="−38% dispatch time · 2.4k invoices / mo" maxLength={80} />
+            <p className="mt-1 text-xs text-muted">
+              Short and numeric — it prints at the right edge of this project&rsquo;s row in Selected
+              work. Separate up to three figures with &ldquo;·&rdquo; and the case study prints them
+              large under Result.
+            </p>
+          </div>
+
+          <div className="!mt-5 border-t border-line pt-4" />
+
+          {/* Case-study datasheet */}
+          <div>
+            <label className="eyebrow mb-1 block">Datasheet (case-study spec table)</label>
+            <div className="grid gap-3 sm:grid-cols-3">
+              <input value={form.year} onChange={(e) => set('year', e.target.value)} className={field} placeholder="Year (2025)" maxLength={20} />
+              <input value={form.team_size} onChange={(e) => set('team_size', e.target.value)} className={field} placeholder="Team size (Solo / 4 engineers)" maxLength={40} />
+              <input value={form.status} onChange={(e) => set('status', e.target.value)} className={field} placeholder="Status (Live / Archived)" maxLength={40} />
+            </div>
+            <p className="mt-1 text-xs text-muted">Each row disappears from the case study when left empty.</p>
+          </div>
+
+          {/* Architecture layers */}
+          <div>
+            <label className="eyebrow mb-1 block">Architecture (case-study block 04)</label>
+            <div className="space-y-3">
+              {(form.architecture || []).map((l, i) => (
+                <div key={i} className="relative rounded-xl border border-line bg-white/[0.02] p-3">
+                  <button type="button" onClick={() => removeLayer(i)} aria-label="Remove layer" className="absolute right-2 top-2 text-muted hover:text-coral">
+                    <X size={15} />
+                  </button>
+                  <input value={l.layer || ''} onChange={(e) => setLayer(i, 'layer', e.target.value)} className={`${field} pr-8`} placeholder="Layer (Frontend / API / Data / Infra)" maxLength={60} />
+                  <input
+                    value={(l.items || []).join(', ')}
+                    onChange={(e) => setLayer(i, 'items', e.target.value.split(',').map((x) => x.trim()).filter(Boolean))}
+                    className={`${field} mt-2`}
+                    placeholder="Items, comma separated (React, Vite, Tailwind)"
+                  />
+                </div>
+              ))}
+              <button type="button" onClick={addLayer} className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline">
+                <Plus size={15} /> Add layer
+              </button>
+            </div>
+            <p className="mt-1 text-xs text-muted">Leave empty to hide block 04 entirely.</p>
+          </div>
+
           <div className="!mt-5 border-t border-line pt-4" />
 
           {/* Tech tags */}
@@ -265,8 +391,8 @@ function ProjectForm({ initial, onClose, onSaved }) {
             </span>
           </button>
         </div>
-      </motion.form>
-    </motion.div>
+      </m.form>
+    </m.div>
   )
 }
 

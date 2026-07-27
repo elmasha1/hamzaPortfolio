@@ -15,13 +15,13 @@ export const EASE = {
 export const DUR = {
   micro: 0.3,
   fast: 0.5,
-  reveal: 0.8,
-  mask: 1,
+  reveal: 0.6, // v2: reveals are shorter, so the page never feels held back
+  mask: 0.9,
   slow: 1.2,
 }
 
 /** Stagger step between sibling reveals. */
-export const STAGGER = 0.08
+export const STAGGER = 0.06
 
 /** Soft spring for magnetic pulls / cursor followers. */
 export const SPRING = { stiffness: 180, damping: 18, mass: 0.6 }
@@ -42,7 +42,7 @@ export const staggerContainer = (stagger = STAGGER, delay = 0) => ({
 })
 
 /** Fade + slide up. The default reveal for almost every element. */
-export const fadeUp = (y = 40, duration = DUR.reveal) => ({
+export const fadeUp = (y = 24, duration = DUR.reveal) => ({
   hidden: { opacity: 0, y },
   show: {
     opacity: 1,
@@ -65,6 +65,17 @@ export const fadeIn = (direction = 'left', distance = 60, duration = DUR.reveal)
     transition: { duration, ease: EASE.out },
   },
 })
+
+/**
+ * Crossfade for the work-index preview panel — the one interaction on the site
+ * that carries information (which project you are pointing at, in colour).
+ * Under reduced motion the caller swaps instantly instead.
+ */
+export const revealPreview = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { duration: DUR.micro, ease: EASE.out } },
+  exit: { opacity: 0, transition: { duration: DUR.micro, ease: EASE.out } },
+}
 
 // Sensible defaults for whileInView so every section reveals consistently.
 export const viewportOnce = { once: true, amount: 0.25 }

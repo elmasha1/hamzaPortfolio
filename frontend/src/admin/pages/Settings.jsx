@@ -53,18 +53,44 @@ export default function Settings() {
       bio: '',
       available: true,
       overview_intro: '',
+      response_time: '',
       journey_heading: '',
       journey_intro: '',
+      process_heading: '',
       ...data,
       // Guarantee nested shapes exist so every input stays controlled.
       socials: { linkedin: '', github: '', email: '', ...(data.socials || {}) },
       hero_roles: Array.isArray(data.hero_roles) ? data.hero_roles : [],
       overview_items: Array.isArray(data.overview_items) ? data.overview_items : [],
+      hero_chain: {
+        label: '',
+        nodes: [],
+        ...(data.hero_chain && typeof data.hero_chain === 'object' ? data.hero_chain : {}),
+      },
+      metrics: Array.isArray(data.metrics) ? data.metrics : [],
+      // `statement` used to be a plain string — accept both shapes.
+      statement:
+        typeof data.statement === 'string'
+          ? { text: data.statement, label: '' }
+          : { text: '', label: '', ...(data.statement || {}) },
+      process: Array.isArray(data.process) ? data.process : [],
+      whats_next: Array.isArray(data.whats_next) ? data.whats_next : [],
     }
   }
 
   const set = (k, v) => setS((p) => ({ ...p, [k]: v }))
   const setSocial = (k, v) => setS((p) => ({ ...p, socials: { ...p.socials, [k]: v } }))
+  const setNested = (key, k, v) => setS((p) => ({ ...p, [key]: { ...p[key], [k]: v } }))
+
+  /* Generic repeatable-list helpers for the v2 content blocks. */
+  const setItem = (key, i, k, v) =>
+    setS((p) => {
+      const list = [...(p[key] || [])]
+      list[i] = { ...list[i], [k]: v }
+      return { ...p, [key]: list }
+    })
+  const addItem = (key, blank) => set(key, [...(s[key] || []), blank])
+  const removeItem = (key, i) => set(key, (s[key] || []).filter((_, idx) => idx !== i))
 
   const setOverview = (i, k, v) =>
     setS((p) => {
@@ -126,11 +152,32 @@ export default function Settings() {
         <Labeled label="Subtitle">
           <textarea value={s.hero_subtitle} onChange={(e) => set('hero_subtitle', e.target.value)} rows={3} className={`${field} resize-none`} />
         </Labeled>
-        <Labeled label="Location / rhythm line (e.g. Rabat ⇄ Remote · Code · Deploy)">
+        <Labeled label="Utility rail — short facts separated by · (e.g. Rabat, MA · UTC+1 · Available now · Remote or on-site)">
           <input value={s.hero_location} onChange={(e) => set('hero_location', e.target.value)} className={field} />
+        </Labeled>
+        <Labeled label="Stack chain label (under the CTAs)">
+          <input
+            value={s.hero_chain.label}
+            onChange={(e) => setNested('hero_chain', 'label', e.target.value)}
+            className={field}
+            placeholder="What I own, end to end"
+          />
+        </Labeled>
+        <Labeled label="Stack chain nodes (comma separated — the request path)">
+          <input
+            value={(s.hero_chain.nodes || []).join(', ')}
+            onChange={(e) =>
+              setNested('hero_chain', 'nodes', e.target.value.split(',').map((x) => x.trim()).filter(Boolean))
+            }
+            className={field}
+            placeholder="Client, API, Queue, DB, CI / CD, Monitoring"
+          />
         </Labeled>
         <Labeled label="Location (footer meta, e.g. Rabat, Morocco)">
           <input value={s.location} onChange={(e) => set('location', e.target.value)} className={field} />
+        </Labeled>
+        <Labeled label="Response time (footer status, e.g. Replies within 24h)">
+          <input value={s.response_time} onChange={(e) => set('response_time', e.target.value)} className={field} />
         </Labeled>
         <Labeled label="Profile photo (used by the hero, About portrait and CV)">
           <ImageUploader
@@ -163,6 +210,90 @@ export default function Settings() {
           <input type="checkbox" checked={s.available} onChange={(e) => set('available', e.target.checked)} className="h-4 w-4 accent-white" />
           <span className="text-sm font-medium text-heading">Show "Available for work" badge</span>
         </label>
+      </Section>
+
+      <Section title="Proof strip — the four numbers under the hero">
+        <p className="text-sm text-muted">
+          Numbers count up when they scroll into view. Leading zeros are kept (&ldquo;06&rdquo; stays
+          &ldquo;06&rdquo;), and units work too (&ldquo;24h&rdquo;). Leave empty to hide the strip.
+        </p>
+        <div className="space-y-3 pt-2">
+          {s.metrics.map((m, i) => (
+            <div key={i} className="relative rounded-xl border border-line bg-white/[0.02] p-4">
+              <button type="button" onClick={() => removeItem('metrics', i)} aria-label="Remove metric" className="absolute right-3 top-3 text-muted transition hover:text-coral">
+                <X size={16} />
+              </button>
+              <div className="grid gap-3 pr-6 sm:grid-cols-[7rem_5rem_1fr]">
+                <input value={m.value || ''} onChange={(e) => setItem('metrics', i, 'value', e.target.value)} className={field} placeholder="Value (06)" />
+                <input value={m.suffix || ''} onChange={(e) => setItem('metrics', i, 'suffix', e.target.value)} className={field} placeholder="Suffix (+)" />
+                <input value={m.label || ''} onChange={(e) => setItem('metrics', i, 'label', e.target.value)} className={field} placeholder="Label (Years shipping)" />
+              </div>
+            </div>
+          ))}
+          <button type="button" onClick={() => addItem('metrics', { value: '', suffix: '', label: '' })} className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline">
+            <Plus size={16} /> Add metric
+          </button>
+        </div>
+      </Section>
+
+      <Section title="Statement band">
+        <p className="text-sm text-muted">
+          The full-bleed sentence between Selected work and How I work. Leave the text empty to hide
+          the band entirely.
+        </p>
+        <Labeled label="Statement">
+          <textarea
+            value={s.statement.text}
+            onChange={(e) => setNested('statement', 'text', e.target.value)}
+            rows={3}
+            className={`${field} resize-none`}
+            placeholder="Shipping is a feature. Everything I build is designed to be maintained by whoever comes next."
+          />
+        </Labeled>
+        <Labeled label="Attribution (small mono label at the right)">
+          <input value={s.statement.label} onChange={(e) => setNested('statement', 'label', e.target.value)} className={field} placeholder="Working principle" />
+        </Labeled>
+      </Section>
+
+      <Section title="How I work — scope → build → ship → maintain">
+        <Labeled label="Heading">
+          <input value={s.process_heading} onChange={(e) => set('process_heading', e.target.value)} className={field} placeholder="How I work." />
+        </Labeled>
+        <p className="text-sm text-muted">
+          Each step ends with one concrete artefact — that is what makes the process credible.
+          Leave the list empty to hide the section.
+        </p>
+        <div className="space-y-3 pt-2">
+          {s.process.map((step, i) => (
+            <div key={i} className="relative rounded-xl border border-line bg-white/[0.02] p-4">
+              <button type="button" onClick={() => removeItem('process', i)} aria-label="Remove step" className="absolute right-3 top-3 text-muted transition hover:text-coral">
+                <X size={16} />
+              </button>
+              <div className="space-y-3 pr-6">
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <input value={step.title || ''} onChange={(e) => setItem('process', i, 'title', e.target.value)} className={field} placeholder="Step title (Scope)" />
+                  <input value={step.artifact || ''} onChange={(e) => setItem('process', i, 'artifact', e.target.value)} className={field} placeholder="Artefact (Written spec + estimate)" />
+                </div>
+                <textarea value={step.body || ''} onChange={(e) => setItem('process', i, 'body', e.target.value)} rows={2} className={`${field} resize-none`} placeholder="Two lines on what happens in this step" />
+              </div>
+            </div>
+          ))}
+          <button type="button" onClick={() => addItem('process', { title: '', body: '', artifact: '' })} className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline">
+            <Plus size={16} /> Add step
+          </button>
+        </div>
+      </Section>
+
+      <Section title="Contact — what happens next">
+        <Labeled label="Steps (one per line, shown under the contact heading)">
+          <textarea
+            value={(s.whats_next || []).join('\n')}
+            onChange={(e) => set('whats_next', e.target.value.split('\n').map((x) => x.trim()).filter(Boolean))}
+            rows={3}
+            className={`${field} resize-none`}
+            placeholder={'A real reply within 24 hours — with questions, not a template.'}
+          />
+        </Labeled>
       </Section>
 
       <Section title="About">

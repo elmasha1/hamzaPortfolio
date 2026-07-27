@@ -1,11 +1,11 @@
 import { Fragment } from 'react'
-import { motion, useReducedMotion } from 'framer-motion'
+import { m, useReducedMotion } from 'framer-motion'
 
 /**
  * SplitTextReveal — word-by-word reveal from behind overflow-hidden masks
  * (GSAP SplitText-style), staggered, triggered when it scrolls into view.
  * Spaces sit outside the masks so words wrap naturally for headings AND
- * paragraphs. Falls back to a plain fade under prefers-reduced-motion.
+ * paragraphs. Falls back to a plain fade under prefers-reduced-m.
  *
  * @param {string} as        element tag ('h2', 'p', 'span', …)
  * @param {string} text      the text to split + reveal
@@ -28,11 +28,11 @@ export default function SplitTextReveal({
   amount = 0.6,
 }) {
   const reduce = useReducedMotion()
-  const Comp = motion[as] || motion.div
+  const Comp = m[as] || m.div
   const words = String(text).trim().split(/\s+/)
 
   if (reduce) {
-    const Plain = motion[as] || motion.div
+    const Plain = m[as] || m.div
     return (
       <Plain
         className={className}
@@ -61,9 +61,9 @@ export default function SplitTextReveal({
       {words.map((w, i) => (
         <Fragment key={i}>
           <span aria-hidden="true" className="inline-block overflow-hidden align-bottom">
-            <motion.span variants={wordInner} className={`inline-block ${wordClassName}`}>
+            <m.span variants={wordInner} className={`inline-block ${wordClassName}`}>
               {w}
-            </motion.span>
+            </m.span>
           </span>
           {i < words.length - 1 ? ' ' : ''}
         </Fragment>

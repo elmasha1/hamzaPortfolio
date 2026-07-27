@@ -72,6 +72,9 @@ class JourneyController extends Controller
 
         $data = $request->validate([
             'date_label' => ['nullable', 'string', 'max:60'],
+            // EDUCATION / INTERNSHIP / FREELANCE / PRODUCT — shown as a chip so
+            // the mix of milestone types is legible at a glance.
+            'kind' => ['nullable', 'string', 'max:40'],
             'title' => ['required', 'string', 'max:160'],
             'description' => ['nullable', 'string', 'max:2000'],
             'tags' => ['nullable', 'array'],

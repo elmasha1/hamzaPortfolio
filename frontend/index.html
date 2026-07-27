@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#040A18" />
+    <meta name="theme-color" content="#0D0D0D" />
     <meta
       name="description"
       content="EL MASDOUKI Hamza — Full Stack Engineer building production-grade web applications with React & Laravel: scalable APIs, performant frontends, clean architecture."
@@ -13,29 +13,40 @@
     <meta name="keywords" content="Full Stack Engineer, React, Laravel, MySQL, REST API, Software Engineer, Portfolio, Web Developer" />
     <link rel="canonical" href="https://your-domain.com/" />
 
-    <!-- Open Graph / social sharing -->
+    <!-- Open Graph / social sharing.
+         NOTE: og:image and twitter:image are intentionally absent — the file
+         they pointed at (/og-image.png) does not exist, so every share preview
+         was requesting a 404. To restore the large image card: drop a 1200×630
+         PNG at public/og-image.png, re-add
+           <meta property="og:image" content="https://your-domain.com/og-image.png" />
+           <meta name="twitter:image" content="https://your-domain.com/og-image.png" />
+         and set twitter:card back to "summary_large_image". Crawlers need
+         absolute URLs here, so use the real domain. -->
     <meta property="og:type" content="website" />
     <meta property="og:title" content="EL MASDOUKI Hamza — Full Stack Engineer" />
     <meta
       property="og:description"
       content="Refined, high-end web experiences built with React, Laravel & MySQL."
     />
-    <meta property="og:image" content="/og-image.png" />
     <meta property="og:url" content="https://your-domain.com/" />
 
     <!-- Twitter card -->
-    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="EL MASDOUKI Hamza — Full Stack Engineer" />
     <meta
       name="twitter:description"
       content="Refined, high-end web experiences built with React, Laravel & MySQL."
     />
-    <meta name="twitter:image" content="/og-image.png" />
-    <!-- Google Fonts: Space Grotesk (geometric grotesk headings) + Inter (body/UI) -->
+    <!-- Three voices: Space Grotesk states, Inter explains, JetBrains Mono annotates. -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
     <title>EL MASDOUKI Hamza — Full Stack Engineer</title>

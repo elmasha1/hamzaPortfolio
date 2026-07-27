@@ -20,6 +20,7 @@ class JourneyMilestone extends Model
     protected $fillable = [
         'order',
         'date_label',
+        'kind',
         'title',
         'description',
         'tags',

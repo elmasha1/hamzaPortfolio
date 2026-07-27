@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, useLocation, Navigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import { useAuth } from '../../context/AuthContext'
 import { useToast } from '../../context/ToastContext'
 
@@ -56,7 +56,7 @@ export default function Login() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-base-soft px-4">
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 24, filter: 'blur(8px)' }}
         animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
@@ -120,7 +120,7 @@ export default function Login() {
           Seeded admin — email <code>admin@portfolio.test</code>, password{' '}
           <code>password</code>
         </p>
-      </motion.div>
+      </m.div>
     </div>
   )
 }

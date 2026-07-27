@@ -1,17 +1,16 @@
 import { useMemo } from 'react'
-import { motion, useReducedMotion } from 'framer-motion'
+import { m } from 'framer-motion'
 import useMagnetic from '../../hooks/useMagnetic'
 
 /**
- * Button — a luxury, tactile button/link.
+ * Button — the three v2 variants.
  *
- * Features:
- *  - Magnetic hover (gently follows the cursor, springs back).
- *  - A diagonal shine sweep that crosses the surface once on hover.
- *  - Press feedback: scale(0.97) on tap.
- *  - Variants: primary (gradient sheen + depth), secondary (white),
- *    ghost (frosted + border-glow).
- *  - Icons placed inside with `group-hover` classes get their own micro-motion.
+ *  - `primary`   solid ink-100 pill with paper text. One per screen.
+ *  - `secondary` hairline pill that inverts on hover.
+ *  - `ghost`     mono text link with a growing underline.
+ *
+ * Keeps a light magnetic pull (0.15) and press feedback. The diagonal shine
+ * sweep is gone — it was the one motion on the site that read as a template.
  *
  * Pass `as="a"` to render an anchor, or a component (e.g. `as={Link}`) for
  * router links. Extra props pass through.
@@ -27,14 +26,13 @@ export default function Button({
   variant = 'primary',
   children,
   className = '',
-  strength = 0.3,
+  strength = 0.15,
   ...rest
 }) {
-  const reduce = useReducedMotion()
   const { ref, x, y, handlers } = useMagnetic(strength)
-  // Strings map to motion.<tag>; components (Link, …) are wrapped via motion().
+  // Strings map to m.<tag>; components (Link, …) are wrapped via m().
   const Comp = useMemo(
-    () => (typeof as === 'string' ? motion[as] || motion.button : motion(as)),
+    () => (typeof as === 'string' ? m[as] || m.button : m(as)),
     [as]
   )
 
@@ -43,24 +41,11 @@ export default function Button({
       ref={ref}
       style={{ x, y }}
       {...handlers}
-      whileTap={{ scale: 0.97 }}
+      whileTap={{ scale: 0.98 }}
       className={`group ${VARIANTS[variant] ?? VARIANTS.primary} ${className}`}
       {...rest}
     >
-      {/* Shine sweep — runs once per hover, skipped for reduced motion */}
-      {!reduce && (
-        <span
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 -z-0 overflow-hidden rounded-[inherit]"
-        >
-          <span className="absolute top-0 h-full w-1/3 -translate-x-[160%] skew-x-[-20deg] bg-white/30 blur-md group-hover:animate-shine" />
-        </span>
-      )}
-
-      {/* Label + icons sit above the sheen */}
-      <span className="relative z-10 inline-flex items-center gap-2">
-        {children}
-      </span>
+      {children}
     </Comp>
   )
 }

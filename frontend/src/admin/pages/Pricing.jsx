@@ -6,47 +6,70 @@ import { Plus, ChevronUp, ChevronDown, Trash2, X } from '../../components/ui/Ico
 const field =
   'w-full rounded-xl border border-line bg-white/[0.04] px-3 py-2 text-sm text-heading outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20'
 
-const emptyTier = () => ({
-  name: '',
-  price: '',
-  period: '',
-  description: '',
-  features: [],
-  highlighted: false,
-  cta: 'Start a project',
+const emptyRow = () => ({
+  title: '',
+  best_for: '',
+  deliverables: [],
+  timeline: '',
+  price_from: '',
+  price_note: '',
+  cta_label: '',
 })
+
+/**
+ * Legacy pricing tiers → v2 engagement rows. Runs once on load when the new
+ * shape is still empty, so existing dashboard content is carried over instead
+ * of being retyped; nothing is deleted until you save.
+ */
+function rowsFromTiers(tiers) {
+  return tiers.map((t) => ({
+    title: t.name || '',
+    best_for: t.description || '',
+    deliverables: Array.isArray(t.features) ? t.features : [],
+    timeline: '',
+    price_from: t.price || '',
+    price_note: t.period || '',
+    cta_label: '',
+  }))
+}
 
 export default function Pricing() {
   const toast = useToast()
   const [p, setP] = useState(null)
   const [saving, setSaving] = useState(false)
+  const [migrated, setMigrated] = useState(false)
 
   useEffect(() => {
     pricingApi
       .get()
-      .then((d) =>
+      .then((d) => {
+        const tiers = Array.isArray(d.tiers) ? d.tiers : []
+        const rows = Array.isArray(d.rows) ? d.rows : []
+        const carried = rows.length === 0 && tiers.length > 0
+        setMigrated(carried)
         setP({
           heading: d.heading || '',
           subline: d.subline || '',
           note: d.note || '',
-          tiers: Array.isArray(d.tiers) ? d.tiers : [],
+          rows: carried ? rowsFromTiers(tiers) : rows,
+          tiers,
           faq: Array.isArray(d.faq) ? d.faq : [],
         })
-      )
-      .catch(() => toast.error('Could not load pricing.'))
+      })
+      .catch(() => toast.error('Could not load the engagement models.'))
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const set = (k, v) => setP((prev) => ({ ...prev, [k]: v }))
 
-  /* tiers */
-  const setTier = (i, k, v) => set('tiers', p.tiers.map((t, idx) => (idx === i ? { ...t, [k]: v } : t)))
-  const moveTier = (i, dir) =>
+  /* rows */
+  const setRow = (i, k, v) => set('rows', p.rows.map((r, idx) => (idx === i ? { ...r, [k]: v } : r)))
+  const moveRow = (i, dir) =>
     set(
-      'tiers',
+      'rows',
       (() => {
         const t = i + dir
-        if (t < 0 || t >= p.tiers.length) return p.tiers
-        const n = [...p.tiers]
+        if (t < 0 || t >= p.rows.length) return p.rows
+        const n = [...p.rows]
         ;[n[i], n[t]] = [n[t], n[i]]
         return n
       })()
@@ -60,7 +83,8 @@ export default function Pricing() {
     setSaving(true)
     try {
       await pricingApi.update(p)
-      toast.success('Pricing saved.')
+      setMigrated(false)
+      toast.success('Saved.')
     } catch {
       toast.error('Save failed.')
     } finally {
@@ -74,58 +98,76 @@ export default function Pricing() {
     <form onSubmit={save} className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="font-heading text-2xl font-semibold text-heading">Pricing</h2>
-          <p className="mt-1 text-sm text-muted">Tiers, footnote and FAQ shown on the /pricing page.</p>
+          <h2 className="font-heading text-2xl font-semibold text-heading">Ways to work together</h2>
+          <p className="mt-1 text-sm text-muted">
+            The engagement rows, footnote and FAQ on the home page. The FAQ shows under the contact
+            form.
+          </p>
         </div>
         <button type="submit" disabled={saving} className="btn-primary px-5 py-2.5 text-sm disabled:opacity-60">
           {saving ? 'Saving…' : 'Save changes'}
         </button>
       </div>
 
+      {migrated && (
+        <p className="rounded-xl border border-primary/30 bg-primary/10 px-4 py-3 text-sm text-heading">
+          Your old pricing tiers were carried over into the new row format below. Review them and
+          press <span className="font-semibold">Save changes</span> to keep them.
+        </p>
+      )}
+
       {/* Header copy */}
       <div className="space-y-3 rounded-2xl border border-line bg-white/[0.04] p-5 shadow-soft">
-        <input value={p.heading} onChange={(e) => set('heading', e.target.value)} className={field} placeholder="Heading (e.g. Simple, transparent pricing.)" />
-        <input value={p.subline} onChange={(e) => set('subline', e.target.value)} className={field} placeholder="Subline" />
-        <input value={p.note} onChange={(e) => set('note', e.target.value)} className={field} placeholder="Footnote (VAT / retainer note)" />
+        <input value={p.heading} onChange={(e) => set('heading', e.target.value)} className={field} placeholder="Heading (e.g. Three ways this usually starts.)" />
+        <input value={p.subline} onChange={(e) => set('subline', e.target.value)} className={field} placeholder="Subline (scope and price are set after a call…)" />
+        <input value={p.note} onChange={(e) => set('note', e.target.value)} className={field} placeholder="Note next to the CTA under the rows" />
       </div>
 
-      {/* Tiers */}
-      {p.tiers.map((t, i) => (
+      {/* Engagement rows */}
+      {p.rows.map((r, i) => (
         <div key={i} className="rounded-2xl border border-line bg-white/[0.04] p-5 shadow-soft">
           <div className="mb-3 flex items-center gap-2">
             <div className="flex flex-col">
-              <button type="button" onClick={() => moveTier(i, -1)} disabled={i === 0} aria-label="Move tier up" className="text-muted hover:text-heading disabled:opacity-30"><ChevronUp size={16} /></button>
-              <button type="button" onClick={() => moveTier(i, 1)} disabled={i === p.tiers.length - 1} aria-label="Move tier down" className="text-muted hover:text-heading disabled:opacity-30"><ChevronDown size={16} /></button>
+              <button type="button" onClick={() => moveRow(i, -1)} disabled={i === 0} aria-label="Move row up" className="text-muted hover:text-heading disabled:opacity-30"><ChevronUp size={16} /></button>
+              <button type="button" onClick={() => moveRow(i, 1)} disabled={i === p.rows.length - 1} aria-label="Move row down" className="text-muted hover:text-heading disabled:opacity-30"><ChevronDown size={16} /></button>
             </div>
-            <input value={t.name} onChange={(e) => setTier(i, 'name', e.target.value)} className={`${field} font-heading font-semibold`} placeholder="Tier name" />
-            <label className="flex shrink-0 items-center gap-2 text-sm text-body">
-              <input type="checkbox" checked={!!t.highlighted} onChange={(e) => setTier(i, 'highlighted', e.target.checked)} className="h-4 w-4 accent-white" />
-              Highlighted
-            </label>
-            <button type="button" onClick={() => set('tiers', p.tiers.filter((_, idx) => idx !== i))} aria-label="Remove tier" className="shrink-0 rounded-lg p-2 text-muted hover:text-coral"><Trash2 size={16} /></button>
+            <input value={r.title} onChange={(e) => setRow(i, 'title', e.target.value)} className={`${field} font-heading font-semibold`} placeholder="Row title (Build from scratch)" />
+            <button type="button" onClick={() => set('rows', p.rows.filter((_, idx) => idx !== i))} aria-label="Remove row" className="shrink-0 rounded-lg p-2 text-muted hover:text-coral"><Trash2 size={16} /></button>
           </div>
-          <div className="grid gap-3 sm:grid-cols-3">
-            <input value={t.price} onChange={(e) => setTier(i, 'price', e.target.value)} className={field} placeholder="Price (from $2,500 / Let's talk)" />
-            <input value={t.period} onChange={(e) => setTier(i, 'period', e.target.value)} className={field} placeholder="Delivery (3–6 weeks)" />
-            <input value={t.cta} onChange={(e) => setTier(i, 'cta', e.target.value)} className={field} placeholder="CTA label" />
-          </div>
-          <textarea value={t.description} onChange={(e) => setTier(i, 'description', e.target.value)} rows={2} className={`${field} mt-3 resize-none`} placeholder="Short description" />
+
+          <textarea value={r.best_for} onChange={(e) => setRow(i, 'best_for', e.target.value)} rows={2} className={`${field} resize-none`} placeholder="Best for — who this row is aimed at" />
+
           <textarea
-            value={(t.features || []).join('\n')}
-            onChange={(e) => setTier(i, 'features', e.target.value.split('\n').map((s) => s.trim()).filter(Boolean))}
+            value={(r.deliverables || []).join('\n')}
+            onChange={(e) => setRow(i, 'deliverables', e.target.value.split('\n').map((s) => s.trim()).filter(Boolean))}
             rows={4}
             className={`${field} mt-3 resize-none`}
-            placeholder={'Included features — one per line'}
+            placeholder={'Deliverables — one per line'}
           />
+
+          <div className="mt-3 grid gap-3 sm:grid-cols-3">
+            <input value={r.timeline} onChange={(e) => setRow(i, 'timeline', e.target.value)} className={field} placeholder="Typical timeline · 6–12 weeks" />
+            <input value={r.price_from} onChange={(e) => setRow(i, 'price_from', e.target.value)} className={field} placeholder="From $6,000" />
+            <input value={r.price_note} onChange={(e) => setRow(i, 'price_note', e.target.value)} className={field} placeholder="fixed scope, milestone billed" />
+          </div>
+
+          <p className="mt-3 text-sm text-muted">
+            Leave <span className="font-medium text-heading">From</span> empty for the hiring row —
+            it shows a CV download instead of a price.
+          </p>
+          {!r.price_from && (
+            <input value={r.cta_label} onChange={(e) => setRow(i, 'cta_label', e.target.value)} className={`${field} mt-2`} placeholder="CV link label (Download CV)" />
+          )}
         </div>
       ))}
-      <button type="button" onClick={() => set('tiers', [...p.tiers, emptyTier()])} className="inline-flex items-center gap-1.5 rounded-xl border border-line px-4 py-2.5 text-sm font-medium text-body hover:text-heading">
-        <Plus size={16} /> Add tier
+      <button type="button" onClick={() => set('rows', [...p.rows, emptyRow()])} className="inline-flex items-center gap-1.5 rounded-xl border border-line px-4 py-2.5 text-sm font-medium text-body hover:text-heading">
+        <Plus size={16} /> Add row
       </button>
 
       {/* FAQ */}
       <div className="rounded-2xl border border-line bg-white/[0.04] p-5 shadow-soft">
-        <h3 className="mb-4 font-heading text-lg font-semibold text-heading">FAQ</h3>
+        <h3 className="mb-1 font-heading text-lg font-semibold text-heading">Before you write (FAQ)</h3>
+        <p className="mb-4 text-sm text-muted">Shown under the contact form, where the objections come up.</p>
         <div className="space-y-3">
           {p.faq.map((f, i) => (
             <div key={i} className="relative rounded-xl border border-line bg-white/[0.02] p-3">

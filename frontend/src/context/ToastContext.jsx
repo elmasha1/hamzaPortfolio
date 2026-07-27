@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, m } from 'framer-motion'
 import { Check, X, Info } from '../components/ui/Icons'
 
 /**
@@ -13,7 +13,7 @@ let idCounter = 0
 const ICONS = { success: Check, error: X, info: Info }
 const STYLES = {
   success: 'border-teal/30 text-teal',
-  error: 'border-coral/30 text-coral',
+  error: 'border-signal/30 text-signal',
   info: 'border-primary/30 text-primary',
 }
 
@@ -50,7 +50,7 @@ export function ToastProvider({ children }) {
       <div className="pointer-events-none fixed right-4 top-4 z-[120] flex w-[min(92vw,22rem)] flex-col gap-2">
         <AnimatePresence>
           {toasts.map((t) => (
-            <motion.div
+            <m.div
               key={t.id}
               layout
               initial={{ opacity: 0, x: 60, scale: 0.9 }}
@@ -67,8 +67,8 @@ export function ToastProvider({ children }) {
                   return <Icon size={14} strokeWidth={2.5} />
                 })()}
               </span>
-              <span className="text-heading">{t.message}</span>
-            </motion.div>
+              <span className="text-ink-100">{t.message}</span>
+            </m.div>
           ))}
         </AnimatePresence>
       </div>

@@ -1,227 +1,282 @@
-import { useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion'
+import { useEffect, useState } from 'react'
+import { m, useReducedMotion } from 'framer-motion'
 import { Code2 } from 'lucide-react'
 import Button from './ui/Button'
-import HeroBackground from './HeroBackground'
-import { ArrowRight, ArrowDown, MapPin } from './ui/Icons'
-import { scrollToSelector } from '../lib/smoothScroll'
+import Meta from './ui/Meta'
+import MetricsRule from './MetricsRule'
+import {
+  ArrowRight,
+  Cpu,
+  Database,
+  GitBranch,
+  Layers,
+  MonitorSmartphone,
+  Rocket,
+  Server,
+  Terminal,
+} from './ui/Icons'
+import { img, imgSrcSet } from '../lib/cloudinary'
+import useSectionNav from '../hooks/useSectionNav'
 import { useSettings } from '../context/SettingsContext'
 
-/* Per-word mask reveal: each word sits in an overflow-hidden box and slides up. */
-const lineParent = {
+/* One reveal, 900ms, 60ms apart: rail → H1 words → paragraph/CTAs → portrait
+   → proof strip. Nothing here is scroll-linked. */
+const seq = (i) => ({
+  hidden: { opacity: 0, y: 16 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.6, delay: 0.06 * i, ease: [0.22, 1, 0.36, 1] } },
+})
+
+const headline = {
   hidden: {},
-  show: { transition: { staggerChildren: 0.08, delayChildren: 0.35 } },
+  show: { transition: { staggerChildren: 0.04, delayChildren: 0.12 } },
 }
-const wordInner = {
+const word = {
   hidden: { y: '115%' },
-  show: { y: '0%', transition: { duration: 0.85, ease: [0.22, 1, 0.36, 1] } },
-}
-const fadeRise = {
-  hidden: { opacity: 0, y: 24 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } },
+  show: { y: '0%', transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } },
 }
 
-// Diagonal-cut panel: left edge slants from 22% (top) to 0% (bottom).
-const DIAG_SHOWN = 'polygon(22% 0%, 100% 0%, 100% 100%, 0% 100%)'
-const DIAG_HIDDEN = 'polygon(100% 0%, 100% 0%, 100% 100%, 100% 100%)'
+/* The straight-crop plate behind / instead of the portrait. */
+const HATCH = {
+  backgroundImage:
+    'repeating-linear-gradient(135deg, rgba(255,255,255,.045) 0 1px, transparent 1px 9px)',
+}
 
-/* The portrait itself — grayscale, anchored to the bottom, with a graceful
-   code-glyph placeholder if the image is missing. */
-function HeroPhoto({ src, error, onError, className = '' }) {
-  if (error) {
+/**
+ * Each node gets the icon its layer earns. The dashboard field stays a plain
+ * comma-separated list, so the icon is matched from the label's own keywords —
+ * rename a node and it keeps working; invent one and it falls back to the
+ * generic layer mark rather than to nothing.
+ */
+const NODE_ICONS = [
+  [/client|browser|front|ui|web|app/i, MonitorSmartphone],
+  [/api|server|backend|service/i, Server],
+  [/queue|job|worker|event|bus/i, Layers],
+  [/db|database|data|sql|store/i, Database],
+  [/ci|cd|deploy|pipeline|build|release/i, GitBranch],
+  [/monitor|observ|alert|log|metric|uptime/i, Cpu],
+  [/cache|redis|cdn|edge/i, Rocket],
+  [/infra|cloud|docker|server|linux|ops/i, Terminal],
+]
+
+function nodeIcon(label) {
+  const match = NODE_ICONS.find(([pattern]) => pattern.test(label))
+  return match ? match[1] : Layers
+}
+
+/**
+ * StackChain — "what I own, end to end" as a request path: CLIENT → API →
+ * QUEUE → DB → CI/CD → MONITORING. Nodes light up in sequence (CSS only).
+ * This is the old decorative constellation given a job.
+ *
+ * The path reads left-to-right where there is room and top-to-bottom where
+ * there isn't — six labelled nodes never fit a 320px column, and turning the
+ * chain rather than scrolling it keeps the whole diagram visible at once,
+ * which is the only reason it exists.
+ */
+function StackChain({ label, nodes }) {
+  if (!nodes.length) return null
+
+  return (
+    <div className="mt-14 border-t border-rule-soft pt-6">
+      <Meta caps>{label}</Meta>
+
+      <ol className="mt-6 flex flex-col sm:flex-row sm:items-start">
+        {nodes.map((node, i) => {
+          const Icon = nodeIcon(node)
+          return (
+            <li key={node} className="contents">
+              {i > 0 && (
+                <span
+                  aria-hidden="true"
+                  className="ml-[15px] h-4 w-px bg-rule sm:ml-0 sm:mt-[15px] sm:h-px sm:min-w-[20px] sm:flex-1"
+                />
+              )}
+              <div className="flex shrink-0 items-center gap-3 sm:flex-col sm:items-center sm:gap-2.5">
+                <span
+                  aria-hidden="true"
+                  className="hero-node flex h-[31px] w-[31px] shrink-0 items-center justify-center border border-white/35 text-ink-100"
+                  style={{ animationDelay: `${i * 0.6}s` }}
+                >
+                  <Icon size={15} strokeWidth={1.5} />
+                </span>
+                <Meta caps className="tracking-[0.06em] sm:whitespace-nowrap">
+                  {node}
+                </Meta>
+              </div>
+            </li>
+          )
+        })}
+      </ol>
+    </div>
+  )
+}
+
+/* The portrait itself — grayscale, bottom-anchored, straight crop. */
+function Portrait({ src, error, onError }) {
+  if (error || !src) {
     return (
-      <div className={`flex h-full w-full items-center justify-center bg-base-indigo text-heading ${className}`}>
-        <Code2 size={72} strokeWidth={1.1} aria-hidden="true" />
+      <div
+        style={HATCH}
+        className="flex h-full w-full flex-col items-center justify-end gap-3 bg-paper-2 pb-8 text-ink-500"
+      >
+        <Code2 size={56} strokeWidth={1} aria-hidden="true" />
+        <Meta className="tracking-[0.06em]">PORTRAIT / 4:5</Meta>
       </div>
     )
   }
   return (
-    /* REPLACE WITH YOUR PHOTO — right-side portrait, a transparent/cutout PNG
-       works best. Set it in Admin → Settings (profile_photo) or drop a file at
-       /public/assets/me.png */
     <img
-      src={src}
+      src={img(src, 800)}
+      srcSet={imgSrcSet(src, [400, 600, 800, 1200])}
+      sizes="(min-width: 1024px) 33vw, 100vw"
       alt="Portrait of EL MASDOUKI Hamza, full-stack developer"
-      loading="lazy"
+      loading="eager"
       decoding="async"
+      width="800"
+      height="1000"
       onError={onError}
-      className={`h-full w-full object-cover object-bottom grayscale ${className}`}
+      className="h-full w-full object-cover object-bottom grayscale"
     />
   )
 }
 
+const DEFAULT_RAIL = ['Rabat, MA', 'UTC+1', 'Available Sep 2026', 'Remote or on-site']
+const DEFAULT_CHAIN = ['Client', 'API', 'Queue', 'DB', 'CI / CD', 'Monitoring']
+
 export default function Hero() {
   const reduce = useReducedMotion()
-  const navigate = useNavigate()
+  const goToSection = useSectionNav()
   const { settings } = useSettings()
   const [photoError, setPhotoError] = useState(false)
-  const sectionRef = useRef(null)
 
-  const words = (settings.hero_title || 'I turn ideas into working software.').trim().split(/\s+/)
-  const eyebrow = settings.hero_eyebrow || 'Full-Stack Developer'
-  const photoSrc = settings.profile_photo || '/assets/me.png'
+  const words = String(
+    settings.hero_title || 'Full-stack engineer. I build, ship and maintain production software.'
+  )
+    .trim()
+    .split(/\s+/)
+  const photoSrc = settings.profile_photo || ''
+
+  // The utility rail reuses the existing dashboard field: one line of short
+  // facts separated by "·".
+  const rail = String(settings.hero_location || '')
+    .split('·')
+    .map((s) => s.trim())
+    .filter(Boolean)
+  const railItems = rail.length ? rail : DEFAULT_RAIL
+
+  const chain = settings.hero_chain || {}
+  const chainNodes = Array.isArray(chain.nodes) && chain.nodes.length ? chain.nodes : DEFAULT_CHAIN
 
   // If the fallback 404'd before settings arrived, give the REAL photo URL a
-  // fresh chance once it lands — otherwise the placeholder would stick even
-  // after a photo is uploaded in the dashboard.
+  // fresh chance once it lands.
   useEffect(() => {
     setPhotoError(false)
   }, [photoSrc])
 
-  // Subtle photo parallax on scroll.
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ['start start', 'end start'],
-  })
-  const photoY = useTransform(scrollYProgress, [0, 1], [0, reduce ? 0 : 70])
-
   return (
-    <section ref={sectionRef} id="home" className="relative min-h-screen overflow-hidden">
-      {/* Animated constellation / network-map background */}
-      <HeroBackground />
+    <section
+      id="home"
+      className="relative flex min-h-[88svh] flex-col justify-center pt-28 sm:pt-32 lg:min-h-0 lg:pt-40"
+    >
+      <div className="container-px">
+        {/* BAND 1 — utility rail */}
+        <m.div
+          variants={seq(0)}
+          initial="hidden"
+          animate="show"
+          className="flex flex-wrap items-center gap-x-3.5 gap-y-2 font-mono text-eyebrow font-medium uppercase text-ink-500"
+        >
+          {settings.available !== false && (
+            <span aria-hidden="true" className="relative flex h-[7px] w-[7px]">
+              <span className="absolute inline-flex h-full w-full rounded-full bg-white/50 motion-safe:animate-pulse-ring" />
+              <span className="relative inline-flex h-[7px] w-[7px] rounded-full bg-ink-100" />
+            </span>
+          )}
+          {railItems.map((item, i) => (
+            <span key={item} className={i === 0 ? 'text-ink-300' : undefined}>
+              {i > 0 && <span className="mr-3.5 text-ink-700">·</span>}
+              {item}
+            </span>
+          ))}
+        </m.div>
 
-      {/* Readability gradient: solid dark under the text, clearing to the right */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-ink via-ink/85 to-ink/40 lg:via-ink/70 lg:to-transparent" />
+        {/* BANDS 2–4 — headline + positioning + portrait + proof strip.
+            Mobile order: text → proof strip → portrait (full-bleed band).
+            Desktop order: text | portrait, then the proof strip beneath. */}
+        <div className="mt-10 flex flex-col gap-y-14 lg:mt-11 lg:grid lg:grid-cols-12 lg:gap-x-6 lg:gap-y-0">
+          {/* BAND 2 + positioning */}
+          <div className="order-1 lg:col-span-8 lg:pr-6">
+            <m.h1
+              variants={headline}
+              initial="hidden"
+              animate="show"
+              className="font-heading text-h1 font-semibold text-ink-100"
+            >
+              {words.map((w, i) => (
+                <span key={i} className="mr-[0.22em] inline-block overflow-hidden align-bottom">
+                  <m.span variants={word} className="inline-block">
+                    {w}
+                  </m.span>
+                </span>
+              ))}
+            </m.h1>
 
-      {/* Right diagonal-cut photo panel (desktop) — clip-path wipe reveal */}
-      <motion.div
-        initial={{ clipPath: reduce ? DIAG_SHOWN : DIAG_HIDDEN }}
-        animate={{ clipPath: DIAG_SHOWN }}
-        transition={{ duration: 1.15, ease: [0.76, 0, 0.24, 1], delay: 0.45 }}
-        className="absolute inset-y-0 right-0 z-[1] hidden w-[56%] xl:w-[52%] lg:block"
-      >
-        <motion.div style={{ y: reduce ? 0 : photoY }} className="h-[112%] w-full">
-          <HeroPhoto src={photoSrc} error={photoError} onError={() => setPhotoError(true)} />
-        </motion.div>
-        {/* Blend the panel's left edge into the dark background */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-ink/70 via-ink/10 to-transparent" />
-      </motion.div>
-
-      {/* CONTENT */}
-      <div className="relative z-10 flex min-h-screen items-center pt-28 pb-24 sm:pt-32">
-        <div className="container-px w-full">
-          <div className="flex gap-6 sm:gap-8">
-            {/* Vertical rule */}
-            <motion.span
-              aria-hidden="true"
-              initial={{ scaleY: 0 }}
-              animate={{ scaleY: 1 }}
-              transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.3 }}
-              className="mt-1 w-px shrink-0 origin-top self-stretch bg-white/20"
-            />
-
-            <div className="max-w-3xl">
-              {/* Eyebrow */}
-              <motion.div
-                variants={fadeRise}
+            {settings.hero_subtitle && (
+              <m.p
+                variants={seq(3)}
                 initial="hidden"
                 animate="show"
-                className="mb-7 flex items-center gap-3"
+                className="mt-8 max-w-[52ch] text-lead text-ink-300"
               >
-                {settings.available !== false && (
-                  <span className="relative flex h-2 w-2">
-                    <span className="absolute inline-flex h-full w-full rounded-full bg-white/60 motion-safe:animate-pulse-ring" />
-                    <span className="relative inline-flex h-2 w-2 rounded-full bg-white" />
-                  </span>
-                )}
-                <span className="eyebrow">{eyebrow}</span>
-              </motion.div>
+                {settings.hero_subtitle}
+              </m.p>
+            )}
 
-              {/* Headline — per-word mask reveal */}
-              <motion.h1
-                variants={lineParent}
-                initial="hidden"
-                animate="show"
-                className="font-heading font-semibold leading-[1.02] tracking-[-0.03em] text-heading text-[clamp(2.5rem,7vw,5.75rem)]"
+            <m.div
+              variants={seq(4)}
+              initial="hidden"
+              animate="show"
+              className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4"
+            >
+              <Button as="a" href="#contact" onClick={(e) => goToSection('#contact', e)}>
+                Start a project
+                <ArrowRight size={16} className="transition-transform duration-300 ease-out group-hover:translate-x-1" />
+              </Button>
+              <Button
+                variant="secondary"
+                as="a"
+                href="#projects"
+                onClick={(e) => goToSection('#projects', e)}
               >
-                {words.map((w, i) => (
-                  <span key={i} className="mr-[0.22em] inline-block overflow-hidden align-bottom">
-                    <motion.span variants={wordInner} className="inline-block">
-                      {w}
-                    </motion.span>
-                  </span>
-                ))}
-              </motion.h1>
+                See selected work
+              </Button>
+            </m.div>
 
-              {/* Supporting line — location / rhythm */}
-              {settings.hero_location && (
-                <motion.div
-                  variants={fadeRise}
-                  initial="hidden"
-                  animate="show"
-                  transition={{ delay: 0.9 }}
-                  className="mt-8 flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-muted sm:text-sm"
-                >
-                  <MapPin size={15} aria-hidden="true" className="shrink-0" />
-                  <span>{settings.hero_location}</span>
-                </motion.div>
-              )}
-
-              {/* CTAs */}
-              <motion.div
-                variants={fadeRise}
-                initial="hidden"
-                animate="show"
-                transition={{ delay: 1.05 }}
-                className="mt-10 flex flex-wrap gap-3"
-              >
-                <Button
-                  as="a"
-                  href="/contact"
-                  onClick={(e) => {
-                    e.preventDefault()
-                    navigate('/contact')
-                  }}
-                  className="px-7 py-3"
-                >
-                  Get in touch
-                  <ArrowRight size={16} className="transition-transform duration-300 ease-out group-hover:translate-x-1" />
-                </Button>
-                <Button
-                  variant="secondary"
-                  as="a"
-                  href="#projects"
-                  onClick={(e) => {
-                    e.preventDefault()
-                    scrollToSelector('#projects')
-                  }}
-                  className="px-7 py-3"
-                >
-                  View work
-                </Button>
-              </motion.div>
-            </div>
+            <m.div variants={seq(5)} initial="hidden" animate="show">
+              <StackChain
+                label={chain.label || 'What I own, end to end'}
+                nodes={chainNodes}
+              />
+            </m.div>
           </div>
 
-          {/* Photo (mobile / tablet) — stacked below the text, subtle diagonal top */}
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.6 }}
-            className="relative mx-auto mt-14 aspect-[4/5] w-full max-w-sm overflow-hidden rounded-[4px] border border-line lg:hidden"
-            style={{ clipPath: 'polygon(0 7%, 100% 0, 100% 100%, 0 100%)' }}
+          {/* BAND 3 — portrait. Full-bleed 3:2 band on mobile, 4:5 crop on the
+              grid from lg up. No diagonal, no parallax. */}
+          <m.div
+            initial={{ clipPath: reduce ? 'inset(0% 0% 0% 0%)' : 'inset(0% 0% 100% 0%)' }}
+            animate={{ clipPath: 'inset(0% 0% 0% 0%)' }}
+            transition={{ duration: 0.9, delay: 0.36, ease: [0.76, 0, 0.24, 1] }}
+            className="order-3 -mx-5 aspect-[3/2] border-y border-rule-soft sm:-mx-8 lg:order-2 lg:col-span-4 lg:mx-0 lg:aspect-[4/5] lg:border lg:border-rule-soft"
           >
-            <HeroPhoto src={photoSrc} error={photoError} onError={() => setPhotoError(true)} />
-            <div className="pointer-events-none absolute bottom-0 left-0 right-0 flex items-center justify-between p-4 text-[11px] uppercase tracking-[0.14em] text-white/70">
-              <span>Based remotely</span>
-              <span>{new Date().getFullYear()}</span>
-            </div>
-          </motion.div>
+            <Portrait src={photoSrc} error={photoError} onError={() => setPhotoError(true)} />
+          </m.div>
+
+          {/* BAND 4 — proof strip, full-bleed on every breakpoint */}
+          <div className="order-2 -mx-5 sm:-mx-8 lg:order-3 lg:col-span-12 lg:-mx-14">
+            <MetricsRule metrics={settings.metrics} />
+          </div>
         </div>
       </div>
-
-      {/* Scroll cue */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.4 }}
-        className="absolute bottom-10 left-1/2 z-10 hidden -translate-x-1/2 text-muted sm:block"
-      >
-        <motion.div animate={reduce ? {} : { y: [0, 8, 0] }} transition={{ duration: 1.6, repeat: Infinity }}>
-          <ArrowDown size={20} aria-hidden="true" />
-        </motion.div>
-      </motion.div>
     </section>
   )
 }

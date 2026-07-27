@@ -10,13 +10,62 @@ import { fetchBootstrap, fetchSettings } from '../lib/api'
 const DEFAULTS = {
   whatsapp_number: '212600000000',
   whatsapp_message: 'Hi, I came across your portfolio and would like to discuss a project.',
-  hero_title: 'I build production-grade web applications.',
+  hero_title: 'Full-stack engineer. I build, ship and maintain production software.',
   hero_subtitle:
-    'Full-stack engineer working with React & Laravel — from API design and database modeling to performance, testing and deployment.',
+    'Years turning product ideas into React front-ends on Laravel APIs — then keeping them alive in production. I take a brief from scope to deploy pipeline, and I document what I leave behind.',
   hero_roles: ['Full Stack Engineer', 'React & Laravel Specialist', 'API & Systems Design'],
   hero_eyebrow: 'Full-Stack Developer',
-  hero_location: 'Rabat ⇄ Remote · Code · Deploy · Maintain',
+  // The hero's utility rail: short facts separated by "·".
+  hero_location: 'Rabat, MA · UTC+1 · Available now · Remote or on-site',
+  // "What I own, end to end" — the request path under the headline.
+  hero_chain: {
+    label: 'What I own, end to end',
+    nodes: ['Client', 'API', 'Queue', 'DB', 'CI / CD', 'Monitoring'],
+  },
+  // The hero proof strip / metrics rule.
+  metrics: [
+    { value: '04', label: 'Years shipping' },
+    { value: '30', suffix: '+', label: 'Projects delivered' },
+    { value: '02', label: 'Stacks, deeply — React · Laravel' },
+    { value: '24h', label: 'Reply time on enquiries' },
+  ],
+  // The full-bleed statement band between work and process.
+  statement: {
+    text: 'Shipping is a feature. Everything I build is designed to be maintained by whoever comes next.',
+    label: 'Working principle',
+  },
+  // "How I work" — each step carries one concrete artefact.
+  process_heading: 'How I work.',
+  process: [
+    {
+      title: 'Scope',
+      body: 'We agree what is being built and what it costs before any code exists.',
+      artifact: 'Written spec + estimate',
+    },
+    {
+      title: 'Build',
+      body: 'Small, reviewable increments against a real environment, not a demo branch.',
+      artifact: 'CI on every PR',
+    },
+    {
+      title: 'Ship',
+      body: 'Deployed behind a pipeline you can run yourself, with a rollback that works.',
+      artifact: 'One-command deploy',
+    },
+    {
+      title: 'Maintain',
+      body: 'Monitoring, alerting and documentation, so the next person is not stuck.',
+      artifact: 'Uptime alerts + handover doc',
+    },
+  ],
+  // The three steps under the contact form.
+  whats_next: [
+    'A real reply within 24 hours — with questions, not a template.',
+    'A 30-minute call to pin down scope, constraints and deadline.',
+    'A written scope, estimate and timeline within three days.',
+  ],
   location: 'Rabat, Morocco',
+  response_time: 'Replies within 24h',
   bio: "I'm a full-stack engineer with 4+ years building and shipping web applications — React and Tailwind on the frontend, Laravel and MySQL on the backend. I care about clean architecture, performance, accessibility and tested, maintainable code.",
   // Profile photo URL (set from the dashboard); empty → local placeholder.
   profile_photo: '',
@@ -64,12 +113,12 @@ const DEFAULTS = {
   journey_heading: 'From zero to full-stack.',
   journey_intro: 'A short version of how I went from writing my first lines of code to shipping full-stack products.',
   journey: [
-    { date: '2020', title: 'The beginning', description: 'Wrote my first HTML/CSS and got hooked on turning ideas into things that run in a browser.', tags: ['HTML', 'CSS', 'JavaScript'] },
-    { date: '2021', title: 'Learning full-stack', description: 'Went deep on React and Laravel — building real CRUD apps, auth flows and REST APIs.', tags: ['React', 'Laravel', 'MySQL'] },
-    { date: '2022', title: 'First freelance projects', description: 'Shipped paid work for real clients: landing pages, dashboards and e-commerce.', tags: ['Freelance', 'Client work'] },
-    { date: '2023', title: 'Studies & fundamentals', description: 'Formalised the theory — algorithms, databases and system design — alongside building.', tags: ['CS', 'System design'] },
-    { date: '2024', title: 'DevOps & cloud', description: 'Owned deployment: Docker, CI/CD pipelines and running apps in production on Linux.', tags: ['Docker', 'CI/CD', 'Linux'] },
-    { date: 'Present', title: 'Building & shipping', description: 'Working across the stack on production-grade products, with an eye on performance and craft.', tags: ['Full-stack', 'Performance'] },
+    { date_label: '2020', title: 'The beginning', description: 'Wrote my first HTML/CSS and got hooked on turning ideas into things that run in a browser.', tags: ['HTML', 'CSS', 'JavaScript'] },
+    { date_label: '2021', title: 'Learning full-stack', description: 'Went deep on React and Laravel — building real CRUD apps, auth flows and REST APIs.', tags: ['React', 'Laravel', 'MySQL'] },
+    { date_label: '2022', title: 'First freelance projects', description: 'Shipped paid work for real clients: landing pages, dashboards and e-commerce.', tags: ['Freelance', 'Client work'] },
+    { date_label: '2023', title: 'Studies & fundamentals', description: 'Formalised the theory — algorithms, databases and system design — alongside building.', tags: ['CS', 'System design'] },
+    { date_label: '2024', title: 'DevOps & cloud', description: 'Owned deployment: Docker, CI/CD pipelines and running apps in production on Linux.', tags: ['Docker', 'CI/CD', 'Linux'] },
+    { date_label: 'Present', title: 'Building & shipping', description: 'Working across the stack on production-grade products, with an eye on performance and craft.', tags: ['Full-stack', 'Performance'] },
   ],
   about: {
     headline: 'From idea to production — this is who I am.',

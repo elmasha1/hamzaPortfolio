@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Project;
+use App\Support\Cloudinary;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -78,8 +79,8 @@ class ProjectController extends Controller
 
     private function validateData(Request $request): array
     {
-        // tech_tags / key_features may arrive as JSON strings (multipart) or arrays.
-        foreach (['tech_tags', 'key_features'] as $jsonField) {
+        // JSON fields may arrive as JSON strings (multipart) or as arrays.
+        foreach (['tech_tags', 'key_features', 'architecture'] as $jsonField) {
             if (is_string($request->input($jsonField))) {
                 $decoded = json_decode($request->input($jsonField), true);
                 $request->merge([$jsonField => is_array($decoded) ? $decoded : []]);
@@ -95,6 +96,8 @@ class ProjectController extends Controller
             'key_features.*' => ['string', 'max:200'],
             'challenges' => ['nullable', 'string', 'max:2000'],
             'outcome' => ['nullable', 'string', 'max:2000'],
+            // Short outcome figure printed in the work index ("−38% dispatch time").
+            'outcome_metric' => ['nullable', 'string', 'max:80'],
             'tech_tags' => ['nullable', 'array'],
             'tech_tags.*' => ['string', 'max:40'],
             'live_url' => ['nullable', 'url', 'max:255'],
@@ -102,6 +105,16 @@ class ProjectController extends Controller
             'featured' => ['boolean'],
             'order' => ['nullable', 'integer'],
             'role' => ['nullable', 'string', 'max:120'],
+
+            // Case-study datasheet — every row hides when empty.
+            'year' => ['nullable', 'string', 'max:20'],
+            'team_size' => ['nullable', 'string', 'max:40'],
+            'status' => ['nullable', 'string', 'max:40'],
+            // [{ layer: "Frontend", items: ["React", "Vite"] }, …]
+            'architecture' => ['nullable', 'array'],
+            'architecture.*.layer' => ['nullable', 'string', 'max:60'],
+            'architecture.*.items' => ['nullable', 'array'],
+            'architecture.*.items.*' => ['string', 'max:60'],
             // image is handled separately (file OR url string)
         ]);
     }
@@ -114,23 +127,29 @@ class ProjectController extends Controller
     {
         if ($request->hasFile('image')) {
             $this->deleteStoredImage($project?->image);
-            $path = $request->file('image')->store('projects', 'public');
-            return Storage::disk('public')->url($path); // /storage/projects/xxx.jpg
+
+            // Cloudinary when configured — a container filesystem is ephemeral,
+            // and its CDN is what serves the responsive variants. Local public
+            // disk otherwise, so development needs no account.
+            return Cloudinary::upload($request->file('image'), 'projects')
+                ?? Storage::disk('public')->url($request->file('image')->store('projects', 'public'));
+        }
+
+        // An explicitly empty `image` means "remove it" — clear the stored file
+        // so deleting a screenshot doesn't leave an orphan on disk.
+        if ($request->has('image') && trim((string) $request->input('image')) === '') {
+            $this->deleteStoredImage($project?->image);
+
+            return null;
         }
 
         // No new file: keep existing or accept a provided URL string.
         return $request->input('image', $project?->image);
     }
 
+    /** Deletes from whichever backend holds it; ignores external URLs. */
     private function deleteStoredImage(?string $url): void
     {
-        if (! $url) {
-            return;
-        }
-        // Only delete files we stored locally under /storage.
-        if (str_contains($url, '/storage/projects/')) {
-            $relative = 'projects/'.basename($url);
-            Storage::disk('public')->delete($relative);
-        }
+        Cloudinary::forget($url, 'projects');
     }
 }

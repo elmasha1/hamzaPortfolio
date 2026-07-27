@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import { Phone, Globe } from 'lucide-react'
 import Button from './components/ui/Button'
 import { Mail, Github, Linkedin, MapPin, Download, ArrowLeft } from './components/ui/Icons'
 import { fetchCv } from './lib/api'
 import useCvDownload from './hooks/useCvDownload'
+import useDocumentTitle from './hooks/useDocumentTitle'
 
 const cleanUrl = (u) => (u ? String(u).replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/$/, '') : '')
 const initials = (name) =>
@@ -35,7 +36,7 @@ function Heading({ children }) {
 function Entry({ title, subtitle, dates, link, description, tech }) {
   const bullets = String(description || '').split('\n').map((s) => s.trim()).filter(Boolean)
   return (
-    <motion.div variants={rise} className="mb-5 last:mb-0">
+    <m.div variants={rise} className="mb-5 last:mb-0">
       <div className="flex flex-wrap items-baseline justify-between gap-x-3">
         <h3 className="text-[15px] font-semibold text-neutral-900">{title}</h3>
         {dates && <span className="text-xs text-neutral-500">{dates}</span>}
@@ -57,7 +58,7 @@ function Entry({ title, subtitle, dates, link, description, tech }) {
         </ul>
       )}
       {tech && <p className="mt-1 text-xs italic text-neutral-500">{tech}</p>}
-    </motion.div>
+    </m.div>
   )
 }
 
@@ -81,22 +82,20 @@ export default function CvPage() {
     }
   }, [])
 
-  useEffect(() => {
-    document.title = cv?.name ? `${cv.name} — CV` : 'CV'
-  }, [cv])
+  useDocumentTitle(cv?.name ? `${cv.name} — CV` : 'CV')
 
   if (status === 'loading') {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-ink">
+      <div className="flex min-h-screen items-center justify-center bg-paper">
         <span className="h-9 w-9 animate-spin rounded-full border-2 border-white/20 border-t-white" />
       </div>
     )
   }
   if (status === 'error' || !cv) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-ink text-center">
-        <p className="text-body">Could not load the CV right now.</p>
-        <Link to="/" className="text-sm font-medium text-heading hover:underline">← Back to site</Link>
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-paper text-center">
+        <p className="text-ink-300">Could not load the CV right now.</p>
+        <Link to="/" className="text-sm font-medium text-ink-100 hover:underline">← Back to site</Link>
       </div>
     )
   }
@@ -112,10 +111,10 @@ export default function CvPage() {
   ].filter(Boolean)
 
   return (
-    <div className="min-h-screen bg-ink px-4 py-8 sm:px-6 sm:py-12">
+    <div className="min-h-screen bg-paper px-4 py-8 sm:px-6 sm:py-12">
       {/* Toolbar */}
       <div className="mx-auto mb-6 flex max-w-3xl items-center justify-between">
-        <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-body transition-colors hover:text-heading">
+        <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-ink-300 transition-colors hover:text-ink-100">
           <ArrowLeft size={16} /> Back to site
         </Link>
         <Button variant="secondary" onClick={download} disabled={loading} className="px-5 py-2.5 text-sm disabled:opacity-70">
@@ -129,32 +128,32 @@ export default function CvPage() {
       </div>
 
       {/* A4 paper */}
-      <motion.article
+      <m.article
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         className="mx-auto w-full max-w-3xl rounded-[6px] bg-white p-8 text-neutral-800 shadow-[0_20px_60px_-20px_rgba(0,0,0,0.6)] sm:p-12"
       >
         {/* Header */}
-        <motion.header variants={stagger} initial="hidden" animate="show" className="flex items-start justify-between gap-6">
+        <m.header variants={stagger} initial="hidden" animate="show" className="flex items-start justify-between gap-6">
           <div>
-            <motion.h1 variants={rise} className="font-heading text-[28px] font-bold leading-tight tracking-tight text-neutral-900 sm:text-[34px]">
+            <m.h1 variants={rise} className="font-heading text-[28px] font-bold leading-tight tracking-tight text-neutral-900 sm:text-[34px]">
               {cv.name}
-            </motion.h1>
+            </m.h1>
             {cv.role && (
-              <motion.p variants={rise} className="mt-1 text-xs font-bold uppercase tracking-[0.12em] text-neutral-500">
+              <m.p variants={rise} className="mt-1 text-xs font-bold uppercase tracking-[0.12em] text-neutral-500">
                 {cv.role}
-              </motion.p>
+              </m.p>
             )}
             {cv.tagline && (
-              <motion.p variants={rise} className="mt-3 max-w-md text-[13px] leading-[1.6] text-neutral-600">
+              <m.p variants={rise} className="mt-3 max-w-md text-[13px] leading-[1.6] text-neutral-600">
                 {cv.tagline}
-              </motion.p>
+              </m.p>
             )}
           </div>
 
           {/* Photo (rounded-square) */}
-          <motion.div variants={rise} className="shrink-0">
+          <m.div variants={rise} className="shrink-0">
             <div className="h-24 w-24 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 sm:h-28 sm:w-28">
               {/* REPLACE WITH YOUR PHOTO: /assets/cv-photo.jpg (or set profile_photo in the dashboard) */}
               {photoError || !cv.photo ? (
@@ -174,8 +173,8 @@ export default function CvPage() {
                 />
               )}
             </div>
-          </motion.div>
-        </motion.header>
+          </m.div>
+        </m.header>
 
         {/* Contact row */}
         {contact.length > 0 && (
@@ -197,8 +196,8 @@ export default function CvPage() {
         {/* Body: sidebar + main */}
         <div className="mt-8 grid gap-8 sm:grid-cols-[0.85fr_1.6fr] sm:gap-10">
           {/* Sidebar */}
-          <motion.aside variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true }} className="space-y-7">
-            <motion.section variants={rise}>
+          <m.aside variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true }} className="space-y-7">
+            <m.section variants={rise}>
               <Heading>Skills</Heading>
               {groups ? (
                 <div className="space-y-3">
@@ -212,10 +211,10 @@ export default function CvPage() {
               ) : (
                 <p className="text-[12.5px] leading-[1.5] text-neutral-600">{(cv.skills || []).join(', ')}</p>
               )}
-            </motion.section>
+            </m.section>
 
             {Array.isArray(cv.languages) && cv.languages.length > 0 && (
-              <motion.section variants={rise}>
+              <m.section variants={rise}>
                 <Heading>Languages</Heading>
                 <ul className="space-y-1.5">
                   {cv.languages.map((l) => (
@@ -225,11 +224,11 @@ export default function CvPage() {
                     </li>
                   ))}
                 </ul>
-              </motion.section>
+              </m.section>
             )}
 
             {Array.isArray(cv.certifications) && cv.certifications.length > 0 && (
-              <motion.section variants={rise}>
+              <m.section variants={rise}>
                 <Heading>Certifications</Heading>
                 <ul className="space-y-1.5 text-[12.5px] text-neutral-700">
                   {cv.certifications.map((c, i) => (
@@ -239,17 +238,17 @@ export default function CvPage() {
                     </li>
                   ))}
                 </ul>
-              </motion.section>
+              </m.section>
             )}
-          </motion.aside>
+          </m.aside>
 
           {/* Main */}
-          <motion.div variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true }} className="space-y-7">
+          <m.div variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true }} className="space-y-7">
             {cv.summary && (
-              <motion.section variants={rise}>
+              <m.section variants={rise}>
                 <Heading>Profile</Heading>
                 <p className="text-[13px] leading-[1.6] text-neutral-700">{cv.summary}</p>
-              </motion.section>
+              </m.section>
             )}
 
             {Array.isArray(cv.experiences) && cv.experiences.length > 0 && (
@@ -278,9 +277,9 @@ export default function CvPage() {
                 ))}
               </section>
             )}
-          </motion.div>
+          </m.div>
         </div>
-      </motion.article>
+      </m.article>
     </div>
   )
 }

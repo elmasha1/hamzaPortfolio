@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, m } from 'framer-motion'
 import { messagesApi } from '../../lib/adminApi'
 import { useToast } from '../../context/ToastContext'
 import { Check, Mail, Trash2 } from '../../components/ui/Icons'
@@ -147,7 +147,7 @@ export default function Messages() {
       <div className="lg:sticky lg:top-24 lg:self-start">
         <AnimatePresence mode="wait">
           {selected ? (
-            <motion.div
+            <m.div
               key={selected.id}
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -189,7 +189,7 @@ export default function Messages() {
                   <Trash2 size={16} /> Delete
                 </button>
               </div>
-            </motion.div>
+            </m.div>
           ) : (
             <div className="rounded-2xl border border-dashed border-line p-8 text-center text-sm text-muted">
               Select a message to read it.

@@ -29,6 +29,22 @@ class PricingController extends Controller
             'heading' => ['nullable', 'string', 'max:200'],
             'subline' => ['nullable', 'string', 'max:500'],
             'note' => ['nullable', 'string', 'max:500'],
+
+            // v2 — engagement rows ("Ways to work together"). A row with no
+            // price_from renders the CV link instead: that asymmetry is what
+            // stops the section reading as a subscription table.
+            'rows' => ['nullable', 'array'],
+            'rows.*.title' => ['nullable', 'string', 'max:120'],
+            'rows.*.best_for' => ['nullable', 'string', 'max:300'],
+            'rows.*.deliverables' => ['nullable', 'array'],
+            'rows.*.deliverables.*' => ['string', 'max:160'],
+            'rows.*.timeline' => ['nullable', 'string', 'max:120'],
+            'rows.*.price_from' => ['nullable', 'string', 'max:60'],
+            'rows.*.price_note' => ['nullable', 'string', 'max:120'],
+            'rows.*.cta_label' => ['nullable', 'string', 'max:60'],
+
+            // Legacy pricing tiers — still accepted so an un-migrated
+            // dashboard keeps working.
             'tiers' => ['nullable', 'array'],
             'tiers.*.name' => ['nullable', 'string', 'max:120'],
             'tiers.*.price' => ['nullable', 'string', 'max:60'],
