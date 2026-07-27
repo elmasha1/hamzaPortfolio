@@ -25,6 +25,7 @@ class Project extends Model
         'description',
         'problem',
         'architecture_notes',
+        'architecture',
         'key_features',
         'challenges',
         'outcome',
@@ -36,6 +37,9 @@ class Project extends Model
         'featured',
         'order',
         'role',
+        'year',
+        'team_size',
+        'status',
     ];
 
     /**
@@ -45,6 +49,7 @@ class Project extends Model
     protected $casts = [
         'tech_tags' => 'array',
         'key_features' => 'array',
+        'architecture' => 'array',
         'featured' => 'boolean',
         'order' => 'integer',
     ];

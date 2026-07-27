@@ -78,8 +78,8 @@ class ProjectController extends Controller
 
     private function validateData(Request $request): array
     {
-        // tech_tags / key_features may arrive as JSON strings (multipart) or arrays.
-        foreach (['tech_tags', 'key_features'] as $jsonField) {
+        // JSON fields may arrive as JSON strings (multipart) or as arrays.
+        foreach (['tech_tags', 'key_features', 'architecture'] as $jsonField) {
             if (is_string($request->input($jsonField))) {
                 $decoded = json_decode($request->input($jsonField), true);
                 $request->merge([$jsonField => is_array($decoded) ? $decoded : []]);
@@ -104,6 +104,16 @@ class ProjectController extends Controller
             'featured' => ['boolean'],
             'order' => ['nullable', 'integer'],
             'role' => ['nullable', 'string', 'max:120'],
+
+            // Case-study datasheet — every row hides when empty.
+            'year' => ['nullable', 'string', 'max:20'],
+            'team_size' => ['nullable', 'string', 'max:40'],
+            'status' => ['nullable', 'string', 'max:40'],
+            // [{ layer: "Frontend", items: ["React", "Vite"] }, …]
+            'architecture' => ['nullable', 'array'],
+            'architecture.*.layer' => ['nullable', 'string', 'max:60'],
+            'architecture.*.items' => ['nullable', 'array'],
+            'architecture.*.items.*' => ['string', 'max:60'],
             // image is handled separately (file OR url string)
         ]);
     }

@@ -43,16 +43,10 @@ export default function App() {
             }
           />
           <Route path="/cv" element={<CvPage />} />
-          <Route
-            path="/work/:id"
-            element={
-              <SettingsProvider>
-                <ProjectDetail />
-              </SettingsProvider>
-            }
-          />
-          {/* Public site — shared chrome (nav/footer/cursor/smooth-scroll) with
-              routed pages inside a smooth page transition. */}
+          {/* Public site — shared chrome (nav/footer/cursor) with routed pages
+              inside a smooth page transition. Case studies live here too: a
+              visitor arriving from LinkedIn needs a way into the rest of the
+              site. */}
           <Route
             element={
               <SettingsProvider>
@@ -62,6 +56,7 @@ export default function App() {
           >
             <Route path="/" element={<HomePage />} />
             <Route path="/about" element={<AboutPage />} />
+            <Route path="/work/:id" element={<ProjectDetail />} />
             {/* Retired pages — their content now lives on the home scroll, so
                 old links / bookmarks land on the matching section. */}
             <Route path="/contact" element={<Navigate to="/#contact" replace />} />

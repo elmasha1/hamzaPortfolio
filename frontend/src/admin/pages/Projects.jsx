@@ -16,9 +16,13 @@ function toFormData(form, file) {
   fd.append('outcome', form.outcome || '')
   fd.append('outcome_metric', form.outcome_metric || '')
   fd.append('key_features', JSON.stringify(form.key_features || []))
+  fd.append('architecture', JSON.stringify(form.architecture || []))
   fd.append('live_url', form.live_url || '')
   fd.append('github_url', form.github_url || '')
   fd.append('role', form.role || '')
+  fd.append('year', form.year || '')
+  fd.append('team_size', form.team_size || '')
+  fd.append('status', form.status || '')
   fd.append('featured', form.featured ? '1' : '0')
   fd.append('tech_tags', JSON.stringify(form.tech_tags))
   if (file) fd.append('image', file)
@@ -35,6 +39,10 @@ const EMPTY = {
   challenges: '',
   outcome: '',
   outcome_metric: '',
+  architecture: [],
+  year: '',
+  team_size: '',
+  status: '',
   tech_tags: [],
   live_url: '',
   github_url: '',
@@ -65,6 +73,12 @@ function ProjectForm({ initial, onClose, onSaved }) {
   }
   const removeFeature = (t) =>
     set('key_features', (form.key_features || []).filter((x) => x !== t))
+
+  /* Architecture layers — [{ layer, items[] }] drives the case-study diagram. */
+  const setLayer = (i, k, v) =>
+    set('architecture', (form.architecture || []).map((l, idx) => (idx === i ? { ...l, [k]: v } : l)))
+  const addLayer = () => set('architecture', [...(form.architecture || []), { layer: '', items: [] }])
+  const removeLayer = (i) => set('architecture', (form.architecture || []).filter((_, idx) => idx !== i))
 
   const onFile = (e) => {
     const f = e.target.files?.[0]
@@ -214,10 +228,50 @@ function ProjectForm({ initial, onClose, onSaved }) {
 
           <div>
             <label className="eyebrow mb-1 block">Outcome figure (work index)</label>
-            <input value={form.outcome_metric} onChange={(e) => set('outcome_metric', e.target.value)} className={field} placeholder="−38% dispatch time" maxLength={80} />
+            <input value={form.outcome_metric} onChange={(e) => set('outcome_metric', e.target.value)} className={field} placeholder="−38% dispatch time · 2.4k invoices / mo" maxLength={80} />
             <p className="mt-1 text-xs text-muted">
-              Short and numeric — it prints at the right edge of this project&rsquo;s row in Selected work.
+              Short and numeric — it prints at the right edge of this project&rsquo;s row in Selected
+              work. Separate up to three figures with &ldquo;·&rdquo; and the case study prints them
+              large under Result.
             </p>
+          </div>
+
+          <div className="!mt-5 border-t border-line pt-4" />
+
+          {/* Case-study datasheet */}
+          <div>
+            <label className="eyebrow mb-1 block">Datasheet (case-study spec table)</label>
+            <div className="grid gap-3 sm:grid-cols-3">
+              <input value={form.year} onChange={(e) => set('year', e.target.value)} className={field} placeholder="Year (2025)" maxLength={20} />
+              <input value={form.team_size} onChange={(e) => set('team_size', e.target.value)} className={field} placeholder="Team size (Solo / 4 engineers)" maxLength={40} />
+              <input value={form.status} onChange={(e) => set('status', e.target.value)} className={field} placeholder="Status (Live / Archived)" maxLength={40} />
+            </div>
+            <p className="mt-1 text-xs text-muted">Each row disappears from the case study when left empty.</p>
+          </div>
+
+          {/* Architecture layers */}
+          <div>
+            <label className="eyebrow mb-1 block">Architecture (case-study block 04)</label>
+            <div className="space-y-3">
+              {(form.architecture || []).map((l, i) => (
+                <div key={i} className="relative rounded-xl border border-line bg-white/[0.02] p-3">
+                  <button type="button" onClick={() => removeLayer(i)} aria-label="Remove layer" className="absolute right-2 top-2 text-muted hover:text-coral">
+                    <X size={15} />
+                  </button>
+                  <input value={l.layer || ''} onChange={(e) => setLayer(i, 'layer', e.target.value)} className={`${field} pr-8`} placeholder="Layer (Frontend / API / Data / Infra)" maxLength={60} />
+                  <input
+                    value={(l.items || []).join(', ')}
+                    onChange={(e) => setLayer(i, 'items', e.target.value.split(',').map((x) => x.trim()).filter(Boolean))}
+                    className={`${field} mt-2`}
+                    placeholder="Items, comma separated (React, Vite, Tailwind)"
+                  />
+                </div>
+              ))}
+              <button type="button" onClick={addLayer} className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline">
+                <Plus size={15} /> Add layer
+              </button>
+            </div>
+            <p className="mt-1 text-xs text-muted">Leave empty to hide block 04 entirely.</p>
           </div>
 
           <div className="!mt-5 border-t border-line pt-4" />
