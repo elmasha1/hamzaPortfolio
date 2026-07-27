@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowUp } from './ui/Icons'
-import { scrollToSelector } from '../lib/smoothScroll'
+import { scrollToTop } from '../lib/scroll'
 
 /**
  * ScrollToTop — a subtle button that appears after scrolling down a bit and
- * smooth-scrolls (via Lenis) back to the top.
+ * smooth-scrolls back to the top.
  */
 export default function ScrollToTop() {
   const [show, setShow] = useState(false)
@@ -22,7 +22,7 @@ export default function ScrollToTop() {
       {show && (
         <motion.button
           aria-label="Scroll to top"
-          onClick={() => scrollToSelector('#home')}
+          onClick={scrollToTop}
           initial={{ opacity: 0, y: 20, scale: 0.8 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 20, scale: 0.8 }}

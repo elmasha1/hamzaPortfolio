@@ -3,50 +3,54 @@
 @tailwind utilities;
 
 /* ============================================================
-   GLOBAL BASE STYLES — "Cool Slate Tech"
+   GLOBAL BASE — design system v2
+   Near-black paper, near-white ink, hairlines instead of
+   shadows. Three voices: Space Grotesk states, Inter explains,
+   JetBrains Mono annotates.
    ============================================================ */
 @layer base {
   html {
-    scroll-behavior: smooth; /* native smooth-scroll for nav links */
+    scroll-behavior: smooth; /* native smooth-scroll — replaces Lenis */
+    color-scheme: dark; /* native controls, scrollbars and autofill stay dark */
+  }
+
+  /* Anchored sections clear the fixed navbar when scrolled to. */
+  [id] {
+    scroll-margin-top: 6rem;
   }
 
   body {
-    /* Inter body copy on a near-black editorial base */
-    @apply text-body font-sans antialiased;
-    color: #8a8a8a;
-    font-size: 1rem; /* 16px — comfortable reading size, esp. on mobile */
-    line-height: 1.7;
-    letter-spacing: -0.01em;
+    @apply bg-paper font-sans text-ink-300 antialiased;
+    font-size: 1rem; /* 16px — up from the accidental 15px */
+    line-height: 1.65;
+    letter-spacing: -0.005em;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
-    background-color: #0d0d0d;
   }
 
-  /* Space Grotesk headings: geometric, tightly tracked, near-white */
   h1,
   h2,
   h3,
   h4,
   h5,
   h6 {
-    @apply font-heading text-heading;
+    @apply font-heading text-ink-100;
     letter-spacing: -0.02em;
   }
 
-  /* Tabular figures for clean, aligned numbers/stats */
-  .tabular {
+  /* Every number in the system aligns. */
+  .tabular,
+  .font-mono {
     font-variant-numeric: tabular-nums;
     font-feature-settings: 'tnum' 1;
   }
 
-  /* High-contrast selection */
   ::selection {
-    background-color: #ffffff;
+    background-color: #f5f5f4;
     color: #0d0d0d;
   }
 
-  /* Hairline custom scrollbar (mono) */
   ::-webkit-scrollbar {
     width: 9px;
   }
@@ -61,92 +65,108 @@
     background: rgba(255, 255, 255, 0.3);
   }
 
-  /* Visible keyboard focus everywhere (accessibility) */
   :focus-visible {
-    outline: 2px solid #ffffff;
+    outline: 2px solid #f5f5f4;
     outline-offset: 2px;
     border-radius: 2px;
   }
 }
 
 /* ============================================================
-   REUSABLE COMPONENT CLASSES
+   COMPONENT CLASSES
    ============================================================ */
 @layer components {
+  /* Measure discipline: 1280 container, 20 / 32 / 56px gutters. */
   .container-px {
-    @apply mx-auto w-full max-w-7xl px-5 sm:px-8 lg:px-12;
+    @apply mx-auto w-full max-w-7xl px-5 sm:px-8 lg:px-14;
   }
 
-  .section-title {
-    @apply font-heading text-2xl sm:text-3xl font-semibold text-heading;
-    letter-spacing: -0.02em;
+  /* The one section rhythm. Full-bleed anchors opt out and own their height. */
+  .section-y {
+    @apply py-section;
   }
 
-  .pill {
-    @apply inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-medium;
+  /* Standard padding for any cell or row interior. */
+  .pad {
+    @apply p-8 lg:p-10;
   }
 
-  /* Wide-tracked small caps — the "premium" eyebrow label */
-  .eyebrow {
-    @apply inline-block font-sans text-eyebrow font-semibold uppercase text-eyebrow;
-    letter-spacing: 0.14em;
-  }
+  /* ---- The two primitives: the cell and the row ---- */
 
-  /* Glassmorphism card — translucent navy, blurred, hairline white border */
-  .glass {
-    @apply backdrop-blur-xl border border-line shadow-soft;
+  /* A cell lives inside a 1px hairline-gap grid (the gaps are the rules). */
+  .cell {
+    @apply bg-paper transition-colors duration-300;
+  }
+  .cell:hover {
     background-color: rgba(255, 255, 255, 0.04);
   }
 
-  /* ---- Buttons ----
-     Magnetic motion + shine sweep come from the <Button> wrapper;
-     these classes supply the surface (radius, sheen, depth, highlight). */
-  .btn {
-    @apply relative isolate inline-flex items-center justify-center gap-2 overflow-hidden rounded-btn text-base font-medium;
-    transition:
-      box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
-      border-color 0.35s cubic-bezier(0.22, 1, 0.36, 1),
-      transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
-      background-color 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  /* A row is full width, separated by an interior hairline, fills on hover. */
+  .row {
+    @apply border-b border-rule-soft transition-colors duration-300;
   }
-  /* Primary: solid white pill with black text (high-contrast, editorial) */
+  .row:hover {
+    background-color: rgba(255, 255, 255, 0.04);
+  }
+
+  /* A structural hairline (sections, frames, group tops). */
+  .rule-t {
+    @apply border-t border-rule;
+  }
+
+  /* ---- The mono annotation voice ---- */
+  .meta {
+    @apply font-mono text-meta text-ink-500;
+  }
+  .meta-caps {
+    @apply font-mono text-eyebrow font-medium uppercase text-ink-500;
+  }
+
+  /* ---- Buttons: primary (one per screen), secondary, mono text link ---- */
+  .btn {
+    @apply relative inline-flex min-h-[48px] items-center justify-center gap-3 rounded-full px-8 text-[0.9375rem] font-medium;
+    transition:
+      background-color 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+      color 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
   .btn-primary {
-    @apply btn rounded-full px-6 py-3 shadow-btn;
-    background-color: #ffffff;
-    color: #0d0d0d;
+    @apply btn bg-ink-100 text-paper;
   }
   .btn-primary:hover {
-    @apply shadow-btn-hover;
-    background-color: #e5e5e5;
+    background-color: #ffffff;
   }
-  /* Secondary: hairline outline button */
   .btn-secondary {
-    @apply btn rounded-full border border-line px-6 py-3 text-heading;
-    background-color: transparent;
+    @apply btn border border-rule bg-transparent text-ink-100;
   }
   .btn-secondary:hover {
-    border-color: rgba(255, 255, 255, 0.35);
-    background-color: rgba(255, 255, 255, 0.04);
+    @apply bg-ink-100 text-paper;
+    border-color: #f5f5f4;
   }
-  /* Ghost: minimal outline */
+  /* Mono text link with a growing underline — the third button variant. */
   .btn-ghost {
-    @apply btn rounded-full border border-line px-6 py-3 text-heading;
-    background-color: transparent;
+    @apply relative inline-flex min-h-[44px] items-center gap-2 font-mono text-meta uppercase tracking-[0.06em] text-ink-300;
+    transition: color 0.3s cubic-bezier(0.22, 1, 0.36, 1);
   }
   .btn-ghost:hover {
-    border-color: rgba(255, 255, 255, 0.35);
+    @apply text-ink-100;
   }
 
-  /* Strict mono — no gradients. Kept as a class so call sites don't change. */
-  .gradient-text {
-    color: #ffffff;
+  /* ---- Legacy (admin dashboard only — do not use in public code) ---- */
+  .eyebrow {
+    @apply inline-block font-sans text-eyebrow font-semibold uppercase;
+    color: #a1a1a1;
+    letter-spacing: 0.14em;
+  }
+  .section-title {
+    @apply font-heading text-2xl font-semibold text-heading sm:text-3xl;
+    letter-spacing: -0.02em;
   }
 }
 
 /* ============================================================
-   ACCESSIBILITY — reduced motion fallback.
-   Framer Motion respects useReducedMotion(), and we also kill
-   CSS animations/transitions for users who prefer reduced motion.
+   ACCESSIBILITY — reduced motion.
+   Policy: opacity only, 0.2s, no transforms, no crossfades.
    ============================================================ */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -154,55 +174,39 @@
   *::after {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
+    transition-duration: 0.2s !important;
     scroll-behavior: auto !important;
+  }
+  html {
+    scroll-behavior: auto;
   }
 }
 
-/* Hide the native cursor only when the custom cursor is active (desktop) */
-.custom-cursor-active,
-.custom-cursor-active * {
+/* Hide the native cursor only where the custom cursor takes over (desktop,
+   media only — text and form fields keep the native caret/pointer). */
+.custom-cursor-active [data-cursor='view'],
+.custom-cursor-active [data-cursor='open'] {
   cursor: none;
 }
 
 /* ============================================================
-   LENIS smooth scroll — required base styles.
+   HERO SYSTEMS DIAGRAM — nodes light up in sequence (CSS only)
    ============================================================ */
-html.lenis,
-html.lenis body {
-  height: auto;
+.hero-node {
+  animation: heroNode 4s ease-in-out infinite;
 }
-.lenis.lenis-smooth {
-  scroll-behavior: auto !important;
-}
-.lenis.lenis-smooth [data-lenis-prevent] {
-  overscroll-behavior: contain;
-}
-.lenis.lenis-stopped {
-  overflow: hidden;
-}
-.lenis.lenis-smooth iframe {
-  pointer-events: none;
-}
-
-/* ============================================================
-   HERO CONSTELLATION — subtle twinkling map nodes (opacity only)
-   ============================================================ */
-@keyframes heroTwinkle {
+@keyframes heroNode {
   0%,
   100% {
-    opacity: 0.12;
+    opacity: 0.25;
   }
   50% {
-    opacity: 0.5;
+    opacity: 1;
   }
-}
-.hero-node {
-  animation: heroTwinkle 5s ease-in-out infinite;
 }
 @media (prefers-reduced-motion: reduce) {
   .hero-node {
     animation: none;
-    opacity: 0.28;
+    opacity: 0.55;
   }
 }

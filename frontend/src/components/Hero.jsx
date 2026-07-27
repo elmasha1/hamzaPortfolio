@@ -171,7 +171,7 @@ export default function Hero() {
                   onClick={(e) => goToSection('#contact', e)}
                   className="px-7 py-3"
                 >
-                  Get in touch
+                  Start a project
                   <ArrowRight size={16} className="transition-transform duration-300 ease-out group-hover:translate-x-1" />
                 </Button>
                 <Button
@@ -181,7 +181,7 @@ export default function Hero() {
                   onClick={(e) => goToSection('#projects', e)}
                   className="px-7 py-3"
                 >
-                  View work
+                  See selected work
                 </Button>
               </motion.div>
             </div>

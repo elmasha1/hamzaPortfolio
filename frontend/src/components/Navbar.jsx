@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { getLenis } from '../lib/smoothScroll'
 import { useSettings } from '../context/SettingsContext'
 import useCvDownload from '../hooks/useCvDownload'
 import useSectionNav from '../hooks/useSectionNav'
@@ -39,21 +38,13 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // Lock scroll + pause Lenis while the overlay is open; close on Escape.
+  // Lock scroll while the overlay is open; close on Escape.
   useEffect(() => {
-    const lenis = getLenis()
-    if (open) {
-      document.body.style.overflow = 'hidden'
-      lenis?.stop()
-    } else {
-      document.body.style.overflow = ''
-      lenis?.start()
-    }
+    document.body.style.overflow = open ? 'hidden' : ''
     const onKey = (e) => e.key === 'Escape' && setOpen(false)
     window.addEventListener('keydown', onKey)
     return () => {
       document.body.style.overflow = ''
-      getLenis()?.start()
       window.removeEventListener('keydown', onKey)
     }
   }, [open])
@@ -137,7 +128,7 @@ export default function Navbar() {
               data-cursor="hover"
               className="group inline-flex items-center gap-1.5 rounded-full border border-line px-4 py-2 text-sm text-heading transition-colors hover:bg-white hover:text-ink"
             >
-              Get in touch
+              Start a project
               <ArrowRight size={14} className="transition-transform duration-300 group-hover:translate-x-0.5" />
             </Link>
           </div>

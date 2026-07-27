@@ -10,7 +10,7 @@ import { useMotionValue, useSpring, useReducedMotion } from 'framer-motion'
  *
  * @param {number} strength  0..1 — how strongly it follows the cursor.
  */
-export default function useMagnetic(strength = 0.3, spring = { stiffness: 220, damping: 16, mass: 0.5 }) {
+export default function useMagnetic(strength = 0.15, spring = { stiffness: 220, damping: 16, mass: 0.5 }) {
   const reduce = useReducedMotion()
   const ref = useRef(null)
   const mx = useMotionValue(0)

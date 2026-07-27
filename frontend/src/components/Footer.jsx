@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import { ArrowRight, ArrowUp, ArrowUpRight, Github, Linkedin, Mail, Whatsapp } from './ui/Icons'
 import Marquee from './Marquee'
 import LocalTime from './LocalTime'
-import { getLenis } from '../lib/smoothScroll'
+import { scrollToTop } from '../lib/scroll'
 import { useSettings } from '../context/SettingsContext'
 import useSectionNav from '../hooks/useSectionNav'
 
@@ -15,12 +15,6 @@ const NAV = [
   { label: 'Pricing', to: '/', hash: '#pricing' },
   { label: 'Contact', to: '/', hash: '#contact' },
 ]
-
-function backToTop() {
-  const l = getLenis()
-  if (l) l.scrollTo(0, { duration: 1.2 })
-  else window.scrollTo({ top: 0, behavior: 'smooth' })
-}
 
 const reveal = {
   hidden: { opacity: 0, y: 24 },
@@ -136,7 +130,7 @@ export default function Footer() {
 
         {/* Oversized wordmark → back to top */}
         <button
-          onClick={backToTop}
+          onClick={scrollToTop}
           data-cursor="hover"
           aria-label="Back to top"
           className="group mt-16 flex w-full items-end justify-between gap-6 text-left"

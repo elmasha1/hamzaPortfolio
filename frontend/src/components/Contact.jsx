@@ -33,9 +33,10 @@ function buildSocials(settings) {
 }
 
 /* Minimal underline field: transparent bg, 1px bottom border that brightens on
-   focus, and a label that floats up to a small wide-tracked caption. */
-function Field({ label, name, value, onChange, type = 'text', textarea, error }) {
+   focus, and a real <label> that floats up to a small mono caption. */
+function Field({ label, name, value, onChange, type = 'text', textarea, error, autoComplete }) {
   const Comp = textarea ? 'textarea' : 'input'
+  const errorId = `${name}-error`
   return (
     <motion.div variants={fadeIn('right')} className="relative">
       <Comp
@@ -47,18 +48,24 @@ function Field({ label, name, value, onChange, type = 'text', textarea, error })
         required
         rows={textarea ? 4 : undefined}
         placeholder=" "
-        aria-label={label}
-        className={`peer w-full border-0 border-b bg-transparent px-0 pb-2.5 pt-7 text-lg text-heading outline-none transition-colors duration-300 placeholder-transparent focus:border-white ${
+        autoComplete={autoComplete}
+        aria-invalid={error ? 'true' : undefined}
+        aria-describedby={error ? errorId : undefined}
+        className={`peer w-full border-0 border-b bg-transparent px-0 pb-2.5 pt-7 text-lg text-ink-100 outline-none transition-colors duration-300 placeholder-transparent focus:border-ink-100 ${
           textarea ? 'resize-none' : ''
-        } ${error ? 'border-coral' : 'border-line'}`}
+        } ${error ? 'border-signal' : 'border-rule'}`}
       />
       <label
         htmlFor={name}
-        className="pointer-events-none absolute left-0 top-7 origin-left text-base text-muted transition-all duration-300 peer-focus:top-0 peer-focus:text-[11px] peer-focus:font-medium peer-focus:uppercase peer-focus:tracking-[0.14em] peer-focus:text-heading peer-[:not(:placeholder-shown)]:top-0 peer-[:not(:placeholder-shown)]:text-[11px] peer-[:not(:placeholder-shown)]:uppercase peer-[:not(:placeholder-shown)]:tracking-[0.14em]"
+        className="pointer-events-none absolute left-0 top-7 origin-left text-base text-ink-500 transition-all duration-300 peer-focus:top-0 peer-focus:font-mono peer-focus:text-eyebrow peer-focus:font-medium peer-focus:uppercase peer-focus:text-ink-100 peer-[:not(:placeholder-shown)]:top-0 peer-[:not(:placeholder-shown)]:font-mono peer-[:not(:placeholder-shown)]:text-eyebrow peer-[:not(:placeholder-shown)]:uppercase"
       >
         {label}
       </label>
-      {error && <p className="mt-2 text-sm text-coral">{error}</p>}
+      {error && (
+        <p id={errorId} className="mt-2 font-mono text-meta text-signal">
+          {error}
+        </p>
+      )}
     </motion.div>
   )
 }
@@ -126,7 +133,7 @@ export default function Contact({ num = '05', className = '' }) {
   }
 
   return (
-    <section id="contact" className={`relative overflow-hidden py-24 sm:py-32 ${className}`}>
+    <section id="contact" className={`section-y relative overflow-hidden ${className}`}>
 
       <div className="container-px relative z-10 grid items-center gap-12 lg:grid-cols-2">
         {/* Left — intro + socials */}
@@ -136,16 +143,17 @@ export default function Contact({ num = '05', className = '' }) {
           whileInView="show"
           viewport={viewportOnce}
         >
-          <SectionLabel num={num}>Get in touch</SectionLabel>
+          <SectionLabel num={num}>Contact</SectionLabel>
           <SplitTextReveal
             as="h2"
-            text="Let's work together."
+            text="Tell me what you're building."
             amount={0.3}
-            className="mt-3 font-heading text-[clamp(2.5rem,6vw,4.5rem)] font-semibold leading-[1.02] tracking-[-0.03em] text-heading"
+            className="mt-3 max-w-[16ch] font-heading text-h2 font-semibold text-ink-100"
           />
-          <motion.p variants={fadeUp()} className="mt-6 max-w-md text-base text-body">
-            Have a project, a role, or an idea in mind? I'm available for freelance
-            and full-time work — I usually reply within a day.
+          <motion.p variants={fadeUp()} className="mt-6 max-w-[42ch] text-lead text-ink-300">
+            Product builds, rescue work and full-stack roles — React and Laravel,
+            remote from Rabat or on-site. If it ships and someone has to maintain
+            it, it&rsquo;s the right message.
           </motion.p>
 
           <motion.div variants={fadeUp()} className="mt-8 flex flex-wrap gap-3">
@@ -178,6 +186,7 @@ export default function Contact({ num = '05', className = '' }) {
             <Field
               label="Your name"
               name="name"
+              autoComplete="name"
               value={form.name}
               onChange={onChange}
               error={errors.name?.[0]}
@@ -186,12 +195,13 @@ export default function Contact({ num = '05', className = '' }) {
               label="Your email"
               name="email"
               type="email"
+              autoComplete="email"
               value={form.email}
               onChange={onChange}
               error={errors.email?.[0]}
             />
             <Field
-              label="Tell me about your project..."
+              label="What are you building?"
               name="message"
               textarea
               value={form.message}
@@ -204,7 +214,8 @@ export default function Contact({ num = '05', className = '' }) {
                 type="submit"
                 variant="secondary"
                 disabled={state === 'sending'}
-                className="w-full justify-between px-7 py-4 text-base disabled:opacity-60 sm:w-auto sm:min-w-[15rem]"
+                aria-label="Send message"
+                className="w-full justify-between disabled:opacity-60 sm:w-auto sm:min-w-[16rem]"
               >
                 {state === 'sending' ? (
                   <>
@@ -220,30 +231,42 @@ export default function Contact({ num = '05', className = '' }) {
               </Button>
             </motion.div>
 
-            {/* Animated status messages */}
-            <AnimatePresence>
-              {state === 'success' && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
-                  className="flex items-center gap-3 font-medium text-heading"
-                >
-                  <SuccessCheck />
-                  Message sent — I'll get back to you soon.
-                </motion.div>
-              )}
-              {state === 'error' && Object.keys(errors).length === 0 && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
-                  className="font-medium text-coral"
-                >
-                  Something went wrong. Please try again.
-                </motion.div>
-              )}
-            </AnimatePresence>
+            {/* Animated status messages — announced to assistive tech */}
+            <div aria-live="polite" role="status">
+              <AnimatePresence>
+                {state === 'success' && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    className="flex items-center gap-3 font-medium text-ink-100"
+                  >
+                    <SuccessCheck />
+                    Message sent — I&rsquo;ll get back to you soon.
+                  </motion.div>
+                )}
+                {state === 'error' && Object.keys(errors).length === 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    className="font-medium text-signal"
+                  >
+                    Something went wrong. Please try again.
+                  </motion.div>
+                )}
+                {state === 'error' && Object.keys(errors).length > 0 && (
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="font-mono text-meta text-signal"
+                  >
+                    Please fix the highlighted fields above.
+                  </motion.p>
+                )}
+              </AnimatePresence>
+            </div>
           </motion.div>
         </Reveal>
       </div>
