@@ -17,7 +17,7 @@ import { useSettings } from '../context/SettingsContext'
  * Milestones come from the dashboard-managed `journey_milestones` table
  * (GET /api/journey); falls back to settings.journey / defaults when offline.
  */
-export default function Journey() {
+export default function Journey({ scope = 'Home', index = '04' }) {
   const { settings } = useSettings()
   const reduce = useReducedMotion()
   const trackRef = useRef(null)
@@ -53,15 +53,17 @@ export default function Journey() {
           viewport={viewportOnce}
           className="max-w-3xl"
         >
-          <SectionLabel num="02">My Journey</SectionLabel>
+          <SectionLabel scope={scope} index={index}>
+            Journey
+          </SectionLabel>
           <SplitTextReveal
             as="h2"
             text={settings.journey_heading || 'From zero to full-stack.'}
             amount={0.4}
-            className="font-heading text-[clamp(2rem,4.5vw,3.5rem)] font-semibold leading-[1.06] tracking-[-0.03em] text-heading"
+            className="font-heading text-[clamp(2rem,4.5vw,3.5rem)] font-semibold leading-[1.06] tracking-[-0.03em] text-ink-100"
           />
           {settings.journey_intro && (
-            <motion.p variants={fadeUp(20)} className="mt-6 max-w-[55ch] text-base leading-[1.7] text-body">
+            <motion.p variants={fadeUp(20)} className="mt-6 max-w-[55ch] text-base leading-[1.7] text-ink-300">
               {settings.journey_intro}
             </motion.p>
           )}

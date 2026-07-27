@@ -20,15 +20,15 @@ export default function NotFound() {
         className="relative z-10 text-center"
       >
         <p className="eyebrow mb-5">Error 404</p>
-        <h1 className="font-heading text-[clamp(4rem,16vw,11rem)] font-semibold leading-none tracking-[-0.03em] text-heading">
+        <h1 className="font-heading text-[clamp(4rem,16vw,11rem)] font-semibold leading-none tracking-[-0.03em] text-ink-100">
           404
         </h1>
-        <p className="mx-auto mt-6 max-w-sm text-body">
+        <p className="mx-auto mt-6 max-w-sm text-ink-300">
           The page you're looking for doesn't exist or has moved.
         </p>
         <Link
           to="/"
-          className="mt-9 inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-ink transition hover:bg-white/90"
+          className="mt-9 inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-paper transition hover:bg-white/90"
         >
           <ArrowLeft size={18} /> Back to home
         </Link>

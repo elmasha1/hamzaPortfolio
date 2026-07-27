@@ -95,6 +95,8 @@ class ProjectController extends Controller
             'key_features.*' => ['string', 'max:200'],
             'challenges' => ['nullable', 'string', 'max:2000'],
             'outcome' => ['nullable', 'string', 'max:2000'],
+            // Short outcome figure printed in the work index ("−38% dispatch time").
+            'outcome_metric' => ['nullable', 'string', 'max:80'],
             'tech_tags' => ['nullable', 'array'],
             'tech_tags.*' => ['string', 'max:40'],
             'live_url' => ['nullable', 'url', 'max:255'],

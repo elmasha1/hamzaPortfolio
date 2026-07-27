@@ -100,12 +100,12 @@ export default function AboutPage() {
     <div className="pt-32 sm:pt-40">
       {/* 1 — INTRO */}
       <section className="container-px">
-        <SectionLabel num="01">About</SectionLabel>
+        <SectionLabel scope="About" index="01">Intro</SectionLabel>
         <SplitTextReveal
           as="h1"
           text={about.headline || 'From idea to production — this is who I am.'}
           amount={0.3}
-          className="max-w-[20ch] font-heading text-[clamp(2.25rem,6vw,4.75rem)] font-semibold leading-[1.03] tracking-[-0.03em] text-heading"
+          className="max-w-[20ch] font-heading text-[clamp(2.25rem,6vw,4.75rem)] font-semibold leading-[1.03] tracking-[-0.03em] text-ink-100"
         />
         {about.subline && (
           <motion.p
@@ -113,7 +113,7 @@ export default function AboutPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={viewportOnce}
             transition={{ duration: 0.7, delay: 0.2 }}
-            className="mt-8 max-w-[52ch] text-lg leading-[1.7] text-body"
+            className="mt-8 max-w-[52ch] text-lg leading-[1.7] text-ink-300"
           >
             {about.subline}
           </motion.p>
@@ -128,8 +128,8 @@ export default function AboutPage() {
       {/* 3 — STORY */}
       {story.length > 0 && (
         <section className="container-px mt-24 sm:mt-36">
-          <SectionLabel num="02">My story</SectionLabel>
-          <div className="mt-10 max-w-[62ch] space-y-7 text-lg leading-[1.75] text-body">
+          <SectionLabel scope="About" index="02">My story</SectionLabel>
+          <div className="mt-10 max-w-[62ch] space-y-7 text-lg leading-[1.75] text-ink-300">
             {story.map((para, i) => (
               <div key={i}>
                 <MaskedParagraph>{para}</MaskedParagraph>
@@ -141,7 +141,7 @@ export default function AboutPage() {
                       whileInView={{ y: '0%', opacity: 1 }}
                       viewport={{ once: true, amount: 0.5 }}
                       transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-                      className="border-l border-line pl-6 font-heading text-[clamp(1.6rem,3.4vw,2.6rem)] font-semibold leading-[1.15] tracking-[-0.02em] text-heading"
+                      className="border-l border-rule pl-6 font-heading text-[clamp(1.6rem,3.4vw,2.6rem)] font-semibold leading-[1.15] tracking-[-0.02em] text-ink-100"
                     >
                       “{about.pull_quote}”
                     </motion.blockquote>
@@ -156,33 +156,33 @@ export default function AboutPage() {
       {/* 4 — PHILOSOPHY */}
       {philosophy.length > 0 && (
         <section className="container-px mt-24 sm:mt-36">
-          <SectionLabel num="03">What drives me</SectionLabel>
+          <SectionLabel scope="About" index="03">What drives me</SectionLabel>
           <SplitTextReveal
             as="h2"
             text="Coding philosophy."
             amount={0.4}
-            className="font-heading text-[clamp(1.9rem,4.5vw,3.25rem)] font-semibold leading-[1.06] tracking-[-0.03em] text-heading"
+            className="font-heading text-[clamp(1.9rem,4.5vw,3.25rem)] font-semibold leading-[1.06] tracking-[-0.03em] text-ink-100"
           />
           <motion.div
             variants={staggerContainer(0.1)}
             initial="hidden"
             whileInView="show"
             viewport={viewportOnce}
-            className="mt-12 border-t border-line"
+            className="mt-12 border-t border-rule"
           >
             {philosophy.map((p, i) => (
               <motion.div
                 key={i}
                 variants={fadeUp(24)}
-                className="group grid grid-cols-[3rem_1fr] gap-x-5 gap-y-1 border-b border-line py-7 transition-colors hover:bg-white/[0.02] md:grid-cols-[4rem_0.5fr_1fr] md:items-baseline md:gap-8"
+                className="group grid grid-cols-[3rem_1fr] gap-x-5 gap-y-1 border-b border-rule py-7 transition-colors hover:bg-white/[0.02] md:grid-cols-[4rem_0.5fr_1fr] md:items-baseline md:gap-8"
               >
-                <span className="font-heading text-sm text-muted transition-colors group-hover:text-heading">
+                <span className="font-heading text-sm text-ink-500 transition-colors group-hover:text-ink-100">
                   {String(i + 1).padStart(2, '0')}
                 </span>
-                <h3 className="font-heading text-xl font-semibold tracking-[-0.01em] text-heading sm:text-2xl">
+                <h3 className="font-heading text-xl font-semibold tracking-[-0.01em] text-ink-100 sm:text-2xl">
                   {p.title}
                 </h3>
-                <p className="col-span-2 max-w-md text-[15px] leading-[1.7] text-body md:col-span-1">
+                <p className="col-span-2 max-w-md text-[15px] leading-[1.7] text-ink-300 md:col-span-1">
                   {p.description}
                 </p>
               </motion.div>
@@ -193,7 +193,7 @@ export default function AboutPage() {
 
       {/* 5 — SKILLS (reuses the grouped Technologies block) */}
       <div className="mt-10 sm:mt-16">
-        <Technologies num="04" />
+        <Technologies scope="About" index="04" />
       </div>
 
       {/* 6 — QUICK FACTS */}
@@ -204,14 +204,14 @@ export default function AboutPage() {
             initial="hidden"
             whileInView="show"
             viewport={viewportOnce}
-            className="grid grid-cols-2 gap-x-6 gap-y-12 border-y border-line py-16 sm:py-20 md:grid-cols-3 md:gap-x-0 md:divide-x md:divide-line"
+            className="grid grid-cols-2 gap-x-6 gap-y-12 border-y border-rule py-16 sm:py-20 md:grid-cols-3 md:gap-x-0 md:divide-x md:divide-rule-soft"
           >
             {facts.map((f, i) => (
               <motion.div key={i} variants={fadeUp(24)} className="md:px-10 md:first:pl-0">
-                <div className="font-heading text-[clamp(2.25rem,5vw,3.5rem)] font-semibold leading-[0.95] tracking-[-0.03em] text-heading">
+                <div className="font-heading text-[clamp(2.25rem,5vw,3.5rem)] font-semibold leading-[0.95] tracking-[-0.03em] text-ink-100">
                   {typeof f.value === 'number' ? <Counter value={f.value} suffix={f.suffix || ''} /> : f.text}
                 </div>
-                <p className="mt-4 text-xs uppercase tracking-[0.14em] text-muted">{f.label}</p>
+                <p className="mt-4 text-xs uppercase tracking-[0.14em] text-ink-500">{f.label}</p>
               </motion.div>
             ))}
           </motion.div>
@@ -224,7 +224,7 @@ export default function AboutPage() {
           as="h2"
           text="Let's work together."
           amount={0.4}
-          className="max-w-[16ch] font-heading text-[clamp(2.5rem,7vw,5.5rem)] font-semibold leading-[1.02] tracking-[-0.03em] text-heading"
+          className="max-w-[16ch] font-heading text-[clamp(2.5rem,7vw,5.5rem)] font-semibold leading-[1.02] tracking-[-0.03em] text-ink-100"
         />
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -247,7 +247,7 @@ export default function AboutPage() {
             onClick={cv.download}
             disabled={cv.loading}
             data-cursor="hover"
-            className="group inline-flex items-center gap-2 rounded-full border border-line px-6 py-3 text-sm text-heading transition-colors hover:bg-white hover:text-ink disabled:opacity-60"
+            className="group inline-flex items-center gap-2 rounded-full border border-rule px-6 py-3 text-sm text-ink-100 transition-colors hover:bg-ink-100 hover:text-paper disabled:opacity-60"
           >
             {cv.loading ? 'Preparing…' : 'Download CV'}
             <Download size={16} className="transition-transform duration-300 group-hover:translate-y-0.5" />
@@ -255,7 +255,7 @@ export default function AboutPage() {
         </motion.div>
 
         {socials.length > 0 && (
-          <div className="mt-12 flex flex-wrap gap-x-8 gap-y-3 border-t border-line pt-8">
+          <div className="mt-12 flex flex-wrap gap-x-8 gap-y-3 border-t border-rule pt-8">
             {socials.map((soc) => (
               <a
                 key={soc.label}
@@ -263,7 +263,7 @@ export default function AboutPage() {
                 target="_blank"
                 rel="noreferrer"
                 data-cursor="hover"
-                className="group inline-flex items-center gap-2 text-sm text-body transition-colors hover:text-heading"
+                className="group inline-flex items-center gap-2 text-sm text-ink-300 transition-colors hover:text-ink-100"
               >
                 <soc.Icon size={16} />
                 {soc.label}

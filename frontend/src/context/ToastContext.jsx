@@ -13,7 +13,7 @@ let idCounter = 0
 const ICONS = { success: Check, error: X, info: Info }
 const STYLES = {
   success: 'border-teal/30 text-teal',
-  error: 'border-coral/30 text-coral',
+  error: 'border-signal/30 text-signal',
   info: 'border-primary/30 text-primary',
 }
 
@@ -67,7 +67,7 @@ export function ToastProvider({ children }) {
                   return <Icon size={14} strokeWidth={2.5} />
                 })()}
               </span>
-              <span className="text-heading">{t.message}</span>
+              <span className="text-ink-100">{t.message}</span>
             </motion.div>
           ))}
         </AnimatePresence>

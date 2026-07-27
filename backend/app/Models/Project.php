@@ -28,6 +28,7 @@ class Project extends Model
         'key_features',
         'challenges',
         'outcome',
+        'outcome_metric',
         'image',
         'tech_tags',
         'live_url',

@@ -17,12 +17,12 @@ const placeholder = (title) =>
 function Block({ index, label, children }) {
   if (!children) return null
   return (
-    <div className="grid gap-4 border-t border-line py-10 md:grid-cols-[0.4fr_1fr]">
+    <div className="grid gap-4 border-t border-rule py-10 md:grid-cols-[0.4fr_1fr]">
       <div className="flex items-start gap-3">
-        <span className="font-heading text-xs text-muted">{index}</span>
+        <span className="font-heading text-xs text-ink-500">{index}</span>
         <span className="eyebrow">{label}</span>
       </div>
-      <div className="max-w-2xl whitespace-pre-line text-lg leading-relaxed text-body">
+      <div className="max-w-2xl whitespace-pre-line text-lg leading-relaxed text-ink-300">
         {children}
       </div>
     </div>
@@ -58,7 +58,7 @@ export default function ProjectDetail() {
       {/* Clip-wipe arrival transition */}
       <motion.div
         aria-hidden="true"
-        className="pointer-events-none fixed inset-0 z-[200] bg-ink"
+        className="pointer-events-none fixed inset-0 z-[200] bg-paper"
         initial={{ scaleY: 1 }}
         animate={{ scaleY: 0 }}
         style={{ transformOrigin: 'top' }}
@@ -69,13 +69,13 @@ export default function ProjectDetail() {
         <Link
           to="/"
           data-cursor="hover"
-          className="inline-flex items-center gap-2 text-sm text-muted transition-colors hover:text-heading"
+          className="inline-flex items-center gap-2 text-sm text-ink-500 transition-colors hover:text-ink-100"
         >
           <ArrowLeft size={16} /> Back to work
         </Link>
 
         {status === 'error' && (
-          <p className="mt-20 text-center text-body">Project not found.</p>
+          <p className="mt-20 text-center text-ink-300">Project not found.</p>
         )}
 
         {status === 'loading' && (
@@ -90,31 +90,31 @@ export default function ProjectDetail() {
               text={p.title}
               delay={0.5}
               amount={0.2}
-              className="max-w-5xl font-heading text-[clamp(2.5rem,7vw,5.5rem)] font-semibold leading-[1.02] tracking-[-0.03em] text-heading"
+              className="max-w-5xl font-heading text-[clamp(2.5rem,7vw,5.5rem)] font-semibold leading-[1.02] tracking-[-0.03em] text-ink-100"
             />
 
             {/* Meta row */}
-            <div className="mt-10 flex flex-wrap gap-x-12 gap-y-4 border-y border-line py-5 text-sm">
+            <div className="mt-10 flex flex-wrap gap-x-12 gap-y-4 border-y border-rule py-5 text-sm">
               {p.role && (
                 <div>
                   <span className="eyebrow block">Role</span>
-                  <span className="mt-1 block text-body">{p.role}</span>
+                  <span className="mt-1 block text-ink-300">{p.role}</span>
                 </div>
               )}
               {Array.isArray(p.tech_tags) && p.tech_tags.length > 0 && (
                 <div>
                   <span className="eyebrow block">Stack</span>
-                  <span className="mt-1 block text-body">{p.tech_tags.join(', ')}</span>
+                  <span className="mt-1 block text-ink-300">{p.tech_tags.join(', ')}</span>
                 </div>
               )}
               <div className="ml-auto flex items-end gap-4">
                 {p.live_url && (
-                  <a href={p.live_url} target="_blank" rel="noreferrer" data-cursor="hover" className="inline-flex items-center gap-1.5 text-body transition-colors hover:text-heading">
+                  <a href={p.live_url} target="_blank" rel="noreferrer" data-cursor="hover" className="inline-flex items-center gap-1.5 text-ink-300 transition-colors hover:text-ink-100">
                     <ExternalLink size={16} /> Live
                   </a>
                 )}
                 {p.github_url && (
-                  <a href={p.github_url} target="_blank" rel="noreferrer" data-cursor="hover" className="inline-flex items-center gap-1.5 text-body transition-colors hover:text-heading">
+                  <a href={p.github_url} target="_blank" rel="noreferrer" data-cursor="hover" className="inline-flex items-center gap-1.5 text-ink-300 transition-colors hover:text-ink-100">
                     <Github size={16} /> GitHub
                   </a>
                 )}
@@ -126,7 +126,7 @@ export default function ProjectDetail() {
               initial={{ clipPath: 'inset(100% 0% 0% 0%)' }}
               animate={{ clipPath: 'inset(0% 0% 0% 0%)' }}
               transition={{ duration: 1, ease: [0.76, 0, 0.24, 1], delay: 0.75 }}
-              className="mt-12 overflow-hidden rounded-[4px] border border-line bg-base-indigo"
+              className="mt-12 overflow-hidden rounded-[4px] border border-rule bg-paper-2"
             >
               <img
                 src={p.image || placeholder(p.title)}
@@ -140,7 +140,7 @@ export default function ProjectDetail() {
 
             {/* Overview */}
             {p.description && (
-              <p className="mx-auto mt-16 max-w-3xl text-center font-heading text-2xl font-medium leading-snug text-heading sm:text-3xl">
+              <p className="mx-auto mt-16 max-w-3xl text-center font-heading text-2xl font-medium leading-snug text-ink-100 sm:text-3xl">
                 {p.description}
               </p>
             )}
@@ -151,15 +151,15 @@ export default function ProjectDetail() {
               <Block index="02" label="Approach & Architecture">{p.architecture_notes}</Block>
 
               {Array.isArray(p.key_features) && p.key_features.length > 0 && (
-                <div className="grid gap-4 border-t border-line py-10 md:grid-cols-[0.4fr_1fr]">
+                <div className="grid gap-4 border-t border-rule py-10 md:grid-cols-[0.4fr_1fr]">
                   <div className="flex items-start gap-3">
-                    <span className="font-heading text-xs text-muted">03</span>
+                    <span className="font-heading text-xs text-ink-500">03</span>
                     <span className="eyebrow">Key features</span>
                   </div>
                   <ul className="grid max-w-2xl gap-3 sm:grid-cols-2">
                     {p.key_features.map((f) => (
-                      <li key={f} className="flex items-start gap-2 text-body">
-                        <Check size={16} className="mt-1 shrink-0 text-heading" />
+                      <li key={f} className="flex items-start gap-2 text-ink-300">
+                        <Check size={16} className="mt-1 shrink-0 text-ink-100" />
                         {f}
                       </li>
                     ))}
@@ -172,11 +172,11 @@ export default function ProjectDetail() {
             </div>
 
             {/* Back / next */}
-            <div className="mt-16 border-t border-line pt-10">
+            <div className="mt-16 border-t border-rule pt-10">
               <Link
                 to="/"
                 data-cursor="hover"
-                className="group inline-flex items-center gap-3 font-heading text-[clamp(1.75rem,4vw,3rem)] font-semibold tracking-[-0.02em] text-heading"
+                className="group inline-flex items-center gap-3 font-heading text-[clamp(1.75rem,4vw,3rem)] font-semibold tracking-[-0.02em] text-ink-100"
               >
                 All projects
                 <ArrowUpRight size={32} className="transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1" />

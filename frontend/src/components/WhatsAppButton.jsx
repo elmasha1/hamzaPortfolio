@@ -35,7 +35,7 @@ export default function WhatsAppButton() {
       whileHover={{ scale: 1.08 }}
       whileTap={{ scale: 0.95 }}
       data-cursor="hover"
-      className="group fixed bottom-6 right-6 z-[70] flex h-12 w-12 items-center justify-center rounded-full border border-line bg-ink text-heading transition-colors hover:bg-white hover:text-ink"
+      className="group fixed bottom-6 right-6 z-[70] flex h-12 w-12 items-center justify-center rounded-full border border-rule bg-paper text-ink-100 transition-colors hover:bg-ink-100 hover:text-paper"
     >
       <span className="relative flex">
         <MessageCircle size={22} />
@@ -48,7 +48,7 @@ export default function WhatsAppButton() {
             initial={{ opacity: 0, x: 8 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 8 }}
-            className="pointer-events-none absolute right-[125%] whitespace-nowrap border border-line bg-ink px-3 py-1.5 text-xs uppercase tracking-[0.1em] text-heading"
+            className="pointer-events-none absolute right-[125%] whitespace-nowrap border border-rule bg-paper px-3 py-1.5 text-xs uppercase tracking-[0.1em] text-ink-100"
           >
             WhatsApp
           </motion.span>

@@ -87,16 +87,16 @@ export default function CvPage() {
 
   if (status === 'loading') {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-ink">
+      <div className="flex min-h-screen items-center justify-center bg-paper">
         <span className="h-9 w-9 animate-spin rounded-full border-2 border-white/20 border-t-white" />
       </div>
     )
   }
   if (status === 'error' || !cv) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-ink text-center">
-        <p className="text-body">Could not load the CV right now.</p>
-        <Link to="/" className="text-sm font-medium text-heading hover:underline">← Back to site</Link>
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-paper text-center">
+        <p className="text-ink-300">Could not load the CV right now.</p>
+        <Link to="/" className="text-sm font-medium text-ink-100 hover:underline">← Back to site</Link>
       </div>
     )
   }
@@ -112,10 +112,10 @@ export default function CvPage() {
   ].filter(Boolean)
 
   return (
-    <div className="min-h-screen bg-ink px-4 py-8 sm:px-6 sm:py-12">
+    <div className="min-h-screen bg-paper px-4 py-8 sm:px-6 sm:py-12">
       {/* Toolbar */}
       <div className="mx-auto mb-6 flex max-w-3xl items-center justify-between">
-        <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-body transition-colors hover:text-heading">
+        <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-ink-300 transition-colors hover:text-ink-100">
           <ArrowLeft size={16} /> Back to site
         </Link>
         <Button variant="secondary" onClick={download} disabled={loading} className="px-5 py-2.5 text-sm disabled:opacity-70">

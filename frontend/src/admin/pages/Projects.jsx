@@ -14,6 +14,7 @@ function toFormData(form, file) {
   fd.append('architecture_notes', form.architecture_notes || '')
   fd.append('challenges', form.challenges || '')
   fd.append('outcome', form.outcome || '')
+  fd.append('outcome_metric', form.outcome_metric || '')
   fd.append('key_features', JSON.stringify(form.key_features || []))
   fd.append('live_url', form.live_url || '')
   fd.append('github_url', form.github_url || '')
@@ -33,6 +34,7 @@ const EMPTY = {
   key_features: [],
   challenges: '',
   outcome: '',
+  outcome_metric: '',
   tech_tags: [],
   live_url: '',
   github_url: '',
@@ -208,6 +210,14 @@ function ProjectForm({ initial, onClose, onSaved }) {
           <div>
             <label className="eyebrow mb-1 block">Outcome & impact</label>
             <textarea value={form.outcome} onChange={(e) => set('outcome', e.target.value)} rows={2} className={`${field} resize-none`} placeholder="Measurable result, e.g. reduced load time 40%" />
+          </div>
+
+          <div>
+            <label className="eyebrow mb-1 block">Outcome figure (work index)</label>
+            <input value={form.outcome_metric} onChange={(e) => set('outcome_metric', e.target.value)} className={field} placeholder="−38% dispatch time" maxLength={80} />
+            <p className="mt-1 text-xs text-muted">
+              Short and numeric — it prints at the right edge of this project&rsquo;s row in Selected work.
+            </p>
           </div>
 
           <div className="!mt-5 border-t border-line pt-4" />

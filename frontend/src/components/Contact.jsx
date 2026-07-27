@@ -6,6 +6,9 @@ import Reveal from './Reveal'
 import Button from './ui/Button'
 import SectionLabel from './ui/SectionLabel'
 import SplitTextReveal from './ui/SplitTextReveal'
+import Meta from './ui/Meta'
+import WhatsNext from './WhatsNext'
+import Faq from './Faq'
 import { Send, Linkedin, Github, Mail, Whatsapp } from './ui/Icons'
 import { useSettings } from '../context/SettingsContext'
 import { useToast } from '../context/ToastContext'
@@ -14,21 +17,16 @@ import { useToast } from '../context/ToastContext'
 function buildSocials(settings) {
   const s = settings.socials || {}
   const wa = (settings.whatsapp_number || '').replace(/\D/g, '')
-  const mono = 'hover:bg-white hover:text-ink'
   const list = []
-  if (s.linkedin)
-    list.push({ label: 'LinkedIn', Icon: Linkedin, href: s.linkedin, color: mono })
-  if (s.github)
-    list.push({ label: 'GitHub', Icon: Github, href: s.github, color: mono })
+  if (s.linkedin) list.push({ label: 'LinkedIn', Icon: Linkedin, href: s.linkedin })
+  if (s.github) list.push({ label: 'GitHub', Icon: Github, href: s.github })
   if (wa)
     list.push({
       label: 'WhatsApp',
       Icon: Whatsapp,
       href: `https://wa.me/${wa}?text=${encodeURIComponent(settings.whatsapp_message || 'Hi!')}`,
-      color: mono,
     })
-  if (s.email)
-    list.push({ label: 'Email', Icon: Mail, href: `mailto:${s.email}`, color: mono })
+  if (s.email) list.push({ label: 'Email', Icon: Mail, href: `mailto:${s.email}` })
   return list
 }
 
@@ -73,13 +71,13 @@ function Field({ label, name, value, onChange, type = 'text', textarea, error, a
 /* Success checkmark that draws itself in (circle + tick path length). */
 function SuccessCheck() {
   return (
-    <svg viewBox="0 0 52 52" className="h-7 w-7 shrink-0">
+    <svg viewBox="0 0 52 52" className="h-7 w-7 shrink-0" aria-hidden="true">
       <motion.circle
         cx="26"
         cy="26"
         r="24"
         fill="none"
-        stroke="#FFFFFF"
+        stroke="#F5F5F4"
         strokeWidth="3"
         initial={{ pathLength: 0 }}
         animate={{ pathLength: 1 }}
@@ -88,7 +86,7 @@ function SuccessCheck() {
       <motion.path
         d="M16 27l7 7 14-15"
         fill="none"
-        stroke="#FFFFFF"
+        stroke="#F5F5F4"
         strokeWidth="4"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -100,7 +98,17 @@ function SuccessCheck() {
   )
 }
 
-export default function Contact({ num = '05', className = '' }) {
+/**
+ * Contact — the offer, what happens next, the form, and the objections that
+ * come up right before someone writes.
+ *
+ * The form itself is unchanged: same endpoint, same 422 field errors, same
+ * self-drawing check, same toasts. Only the frame around it is new — the
+ * heading qualifies instead of wishing, the response process is stated, the
+ * social squares lost their radius and their hover hop, and the FAQ moved here
+ * from under the prices.
+ */
+export default function Contact({ scope = 'Home', index = '06', faq = [], className = '' }) {
   const { settings } = useSettings()
   const toast = useToast()
   const socials = buildSocials(settings)
@@ -108,8 +116,7 @@ export default function Contact({ num = '05', className = '' }) {
   const [state, setState] = useState('idle') // idle | sending | success | error
   const [errors, setErrors] = useState({})
 
-  const onChange = (e) =>
-    setForm((f) => ({ ...f, [e.target.name]: e.target.value }))
+  const onChange = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }))
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -133,142 +140,169 @@ export default function Contact({ num = '05', className = '' }) {
   }
 
   return (
-    <section id="contact" className={`section-y relative overflow-hidden ${className}`}>
-
-      <div className="container-px relative z-10 grid items-center gap-12 lg:grid-cols-2">
-        {/* Left — intro + socials */}
+    <section id="contact" className={`section-y relative ${className}`}>
+      <div className="container-px grid items-start gap-14 lg:grid-cols-12 lg:gap-20">
+        {/* Left — the offer, the process, the channels */}
         <motion.div
-          variants={staggerContainer(0.12)}
+          variants={staggerContainer(0.1)}
           initial="hidden"
           whileInView="show"
           viewport={viewportOnce}
+          className="lg:col-span-5"
         >
-          <SectionLabel num={num}>Contact</SectionLabel>
+          <SectionLabel scope={scope} index={index}>
+            Contact
+          </SectionLabel>
           <SplitTextReveal
             as="h2"
             text="Tell me what you're building."
             amount={0.3}
-            className="mt-3 max-w-[16ch] font-heading text-h2 font-semibold text-ink-100"
+            className="max-w-[16ch] font-heading text-h2 font-semibold text-ink-100"
           />
           <motion.p variants={fadeUp()} className="mt-6 max-w-[42ch] text-lead text-ink-300">
-            Product builds, rescue work and full-stack roles — React and Laravel,
-            remote from Rabat or on-site. If it ships and someone has to maintain
-            it, it&rsquo;s the right message.
+            Product builds, rescue work and full-stack roles — React and Laravel, remote from
+            Rabat or on-site. If it ships and someone has to maintain it, it&rsquo;s the right
+            message.
           </motion.p>
 
-          <motion.div variants={fadeUp()} className="mt-8 flex flex-wrap gap-3">
-            {socials.map((s) => (
-              <motion.a
-                key={s.label}
-                href={s.href}
-                target="_blank"
-                rel="noreferrer"
-                aria-label={s.label}
-                whileHover={{ scale: 1.15, y: -4 }}
-                whileTap={{ scale: 0.9 }}
-                className={`flex h-12 w-12 items-center justify-center rounded-2xl border border-line bg-white/[0.04] text-heading shadow-soft transition-colors ${s.color}`}
-              >
-                <s.Icon size={20} />
-              </motion.a>
-            ))}
+          <motion.div variants={fadeUp()}>
+            <WhatsNext steps={settings.whats_next} />
           </motion.div>
+
+          {socials.length > 0 && (
+            <motion.div variants={fadeUp()} className="mt-9 flex flex-wrap gap-2.5">
+              {socials.map((s) => (
+                <a
+                  key={s.label}
+                  href={s.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={s.label}
+                  data-cursor="hover"
+                  className="flex h-12 w-12 items-center justify-center border border-rule bg-white/[0.04] text-ink-300 transition-colors duration-300 hover:bg-ink-100 hover:text-paper"
+                >
+                  <s.Icon size={19} />
+                </a>
+              ))}
+            </motion.div>
+          )}
         </motion.div>
 
-        {/* Right — form */}
-        <Reveal as="form" onSubmit={handleSubmit} delay={0.1}>
-          <motion.div
-            variants={staggerContainer(0.12)}
-            initial="hidden"
-            whileInView="show"
-            viewport={viewportOnce}
-            className="relative space-y-9"
-          >
-            <Field
-              label="Your name"
-              name="name"
-              autoComplete="name"
-              value={form.name}
-              onChange={onChange}
-              error={errors.name?.[0]}
-            />
-            <Field
-              label="Your email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              value={form.email}
-              onChange={onChange}
-              error={errors.email?.[0]}
-            />
-            <Field
-              label="What are you building?"
-              name="message"
-              textarea
-              value={form.message}
-              onChange={onChange}
-              error={errors.message?.[0]}
-            />
+        {/* Right — the form, then the objections */}
+        <div className="lg:col-span-7">
+          <Reveal as="form" onSubmit={handleSubmit} delay={0.1} noValidate>
+            <motion.div
+              variants={staggerContainer(0.1)}
+              initial="hidden"
+              whileInView="show"
+              viewport={viewportOnce}
+              className="relative"
+            >
+              <div className="grid gap-9 sm:grid-cols-2 sm:gap-10">
+                <Field
+                  label="Name"
+                  name="name"
+                  autoComplete="name"
+                  value={form.name}
+                  onChange={onChange}
+                  error={errors.name?.[0]}
+                />
+                <Field
+                  label="Email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  value={form.email}
+                  onChange={onChange}
+                  error={errors.email?.[0]}
+                />
+              </div>
 
-            <motion.div variants={fadeUp()} className="pt-2">
-              <Button
-                type="submit"
-                variant="secondary"
-                disabled={state === 'sending'}
-                aria-label="Send message"
-                className="w-full justify-between disabled:opacity-60 sm:w-auto sm:min-w-[16rem]"
+              <div className="mt-10">
+                <Field
+                  label="What are you building?"
+                  name="message"
+                  textarea
+                  value={form.message}
+                  onChange={onChange}
+                  error={errors.message?.[0]}
+                />
+              </div>
+
+              <motion.div
+                variants={fadeUp()}
+                className="mt-11 flex flex-col items-start gap-5 sm:flex-row sm:items-center sm:justify-between sm:gap-6"
               >
-                {state === 'sending' ? (
-                  <>
-                    Sending
-                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                  </>
-                ) : (
-                  <>
-                    Send message
-                    <Send size={18} className="transition-transform duration-300 ease-out group-hover:translate-x-1" />
-                  </>
-                )}
-              </Button>
-            </motion.div>
+                <Button
+                  type="submit"
+                  variant="secondary"
+                  disabled={state === 'sending'}
+                  aria-label="Send message"
+                  className="w-full justify-between disabled:opacity-60 sm:w-auto sm:min-w-[16rem]"
+                >
+                  {state === 'sending' ? (
+                    <>
+                      Sending
+                      <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                    </>
+                  ) : (
+                    <>
+                      Send message
+                      <Send
+                        size={17}
+                        className="transition-transform duration-300 ease-out group-hover:translate-x-1"
+                      />
+                    </>
+                  )}
+                </Button>
+                <Meta className="leading-[1.6] sm:text-right">
+                  No newsletter, no CRM sequence.
+                  <br />
+                  The reply comes from me.
+                </Meta>
+              </motion.div>
 
-            {/* Animated status messages — announced to assistive tech */}
-            <div aria-live="polite" role="status">
-              <AnimatePresence>
-                {state === 'success' && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
-                    className="flex items-center gap-3 font-medium text-ink-100"
-                  >
-                    <SuccessCheck />
-                    Message sent — I&rsquo;ll get back to you soon.
-                  </motion.div>
-                )}
-                {state === 'error' && Object.keys(errors).length === 0 && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
-                    className="font-medium text-signal"
-                  >
-                    Something went wrong. Please try again.
-                  </motion.div>
-                )}
-                {state === 'error' && Object.keys(errors).length > 0 && (
-                  <motion.p
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="font-mono text-meta text-signal"
-                  >
-                    Please fix the highlighted fields above.
-                  </motion.p>
-                )}
-              </AnimatePresence>
-            </div>
-          </motion.div>
-        </Reveal>
+              {/* Status messages — announced to assistive tech */}
+              <div aria-live="polite" role="status" className="mt-8">
+                <AnimatePresence>
+                  {state === 'success' && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      className="flex items-center gap-3 font-medium text-ink-100"
+                    >
+                      <SuccessCheck />
+                      Message sent — I&rsquo;ll get back to you soon.
+                    </motion.div>
+                  )}
+                  {state === 'error' && Object.keys(errors).length === 0 && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      className="font-medium text-signal"
+                    >
+                      Something went wrong. Please try again.
+                    </motion.div>
+                  )}
+                  {state === 'error' && Object.keys(errors).length > 0 && (
+                    <motion.p
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="font-mono text-meta text-signal"
+                    >
+                      Please fix the highlighted fields above.
+                    </motion.p>
+                  )}
+                </AnimatePresence>
+              </div>
+            </motion.div>
+          </Reveal>
+
+          <Faq items={faq} />
+        </div>
       </div>
     </section>
   )

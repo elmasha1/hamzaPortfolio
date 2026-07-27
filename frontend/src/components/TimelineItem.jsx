@@ -57,7 +57,7 @@ export default function TimelineItem({ milestone, side = 0 }) {
         className={`pl-12 md:w-1/2 md:pl-0 ${left ? 'md:pr-14 md:text-right' : 'md:ml-auto md:pl-14'}`}
       >
         {milestone.date_label && (
-          <motion.p variants={child} className="font-heading text-xs uppercase tracking-[0.16em] text-muted">
+          <motion.p variants={child} className="font-heading text-xs uppercase tracking-[0.16em] text-ink-500">
             {milestone.date_label}
           </motion.p>
         )}
@@ -66,11 +66,11 @@ export default function TimelineItem({ milestone, side = 0 }) {
             as="h3"
             text={milestone.title}
             amount={0.5}
-            className="mt-2 font-heading text-2xl font-semibold tracking-[-0.02em] text-heading transition-colors group-hover:text-white sm:text-3xl"
+            className="mt-2 font-heading text-2xl font-semibold tracking-[-0.02em] text-ink-100 transition-colors group-hover:text-white sm:text-3xl"
           />
         </motion.div>
         {milestone.description && (
-          <motion.p variants={child} className={`mt-3 max-w-[46ch] text-[15px] leading-[1.7] text-body ${left ? 'md:ml-auto' : ''}`}>
+          <motion.p variants={child} className={`mt-3 max-w-[46ch] text-[15px] leading-[1.7] text-ink-300 ${left ? 'md:ml-auto' : ''}`}>
             {milestone.description}
           </motion.p>
         )}
@@ -79,7 +79,7 @@ export default function TimelineItem({ milestone, side = 0 }) {
             {tags.map((t) => (
               <span
                 key={t}
-                className="rounded-full border border-line px-2.5 py-0.5 text-[10px] uppercase tracking-[0.12em] text-muted transition-colors group-hover:border-white/25 group-hover:text-heading"
+                className="rounded-full border border-rule px-2.5 py-0.5 text-[10px] uppercase tracking-[0.12em] text-ink-500 transition-colors group-hover:border-white/25 group-hover:text-ink-100"
               >
                 {t}
               </span>

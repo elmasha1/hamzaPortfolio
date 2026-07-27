@@ -17,7 +17,7 @@ const NotFound = lazy(() => import('./NotFound'))
 /** Minimal full-screen fallback while a route chunk loads (on-theme dark). */
 function RouteFallback() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-ink">
+    <div className="flex min-h-screen items-center justify-center bg-paper">
       <span className="h-8 w-8 animate-spin rounded-full border-2 border-white/20 border-t-white" />
     </div>
   )

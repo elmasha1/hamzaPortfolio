@@ -90,7 +90,7 @@ export default function Cursor() {
           className="absolute inset-0 rounded-full border-white/60"
         />
         <motion.span
-          className="text-[11px] font-medium uppercase tracking-[0.14em] text-ink"
+          className="text-[11px] font-medium uppercase tracking-[0.14em] text-paper"
           animate={{ opacity: isLabel ? 1 : 0 }}
           transition={{ duration: 0.18 }}
         >

@@ -27,7 +27,7 @@ const normalizeItem = (it) => (typeof it === 'string' ? { name: it, icon: '' } :
  * Categories are hairline-divided; cells reveal item-by-item on scroll. Driven
  * by GET /api/technologies (dashboard-editable), with a settings fallback.
  */
-export default function Technologies({ num = '02' }) {
+export default function Technologies({ scope = 'About', index = '04' }) {
   const { settings } = useSettings()
   const [groups, setGroups] = useState(() =>
     (Array.isArray(settings.tech_groups) ? settings.tech_groups : []).map((g) => ({
@@ -55,13 +55,13 @@ export default function Technologies({ num = '02' }) {
   return (
     <section id="technologies" className="relative py-16 sm:py-24">
       <div className="container-px">
-        <SectionLabel num={num}>Technologies</SectionLabel>
+        <SectionLabel scope={scope} index={index}>Technologies</SectionLabel>
 
-        <div className="mt-10 border-t border-line">
+        <div className="mt-10 border-t border-rule">
           {groups.map((g) => (
             <div
               key={g.label}
-              className="grid gap-5 border-b border-line py-8 md:grid-cols-[0.24fr_1fr] md:gap-10"
+              className="grid gap-5 border-b border-rule py-8 md:grid-cols-[0.24fr_1fr] md:gap-10"
             >
               {/* Category */}
               <motion.div
@@ -71,7 +71,7 @@ export default function Technologies({ num = '02' }) {
                 transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
                 className="flex items-center gap-2.5 md:pt-1"
               >
-                <DynamicIcon name={CAT_ICON[g.label] || 'Code'} size={16} strokeWidth={1.5} className="shrink-0 text-heading" />
+                <DynamicIcon name={CAT_ICON[g.label] || 'Code'} size={16} strokeWidth={1.5} className="shrink-0 text-ink-100" />
                 <p className="eyebrow">{g.label}</p>
               </motion.div>
 
@@ -88,14 +88,14 @@ export default function Technologies({ num = '02' }) {
                     key={it.name}
                     variants={fadeUp(16)}
                     data-cursor="hover"
-                    className="group flex items-center gap-3 rounded-[5px] border border-line px-3.5 py-3 transition-all duration-300 hover:-translate-y-0.5 hover:border-white/25 hover:bg-white/[0.03]"
+                    className="group flex items-center gap-3 rounded-[5px] border border-rule px-3.5 py-3 transition-all duration-300 hover:-translate-y-0.5 hover:border-white/25 hover:bg-white/[0.03]"
                   >
                     <TechIcon
                       icon={it.icon}
                       size={20}
-                      className="shrink-0 text-muted transition-colors duration-300 group-hover:text-white"
+                      className="shrink-0 text-ink-500 transition-colors duration-300 group-hover:text-white"
                     />
-                    <span className="truncate text-sm text-body transition-colors duration-300 group-hover:text-heading">
+                    <span className="truncate text-sm text-ink-300 transition-colors duration-300 group-hover:text-ink-100">
                       {it.name}
                     </span>
                   </motion.div>

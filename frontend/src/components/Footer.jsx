@@ -39,12 +39,12 @@ export default function Footer() {
   ].filter(Boolean)
 
   return (
-    <footer className="relative border-t border-line">
+    <footer className="relative border-t border-rule">
       {/* Looping name / role marquee */}
-      <div className="overflow-hidden border-b border-line py-4">
+      <div className="overflow-hidden border-b border-rule py-4">
         <Marquee
           items={['Available for work', "Let's work together", 'Full-Stack Developer', 'React · Laravel', 'EL MASDOUKI Hamza']}
-          className="font-heading text-sm uppercase tracking-[0.14em] text-muted"
+          className="font-heading text-sm uppercase tracking-[0.14em] text-ink-500"
         />
       </div>
 
@@ -61,7 +61,7 @@ export default function Footer() {
           to="/#contact"
           onClick={(e) => goToSection('#contact', e)}
           data-cursor="hover"
-          className="group mt-5 inline-flex items-center gap-4 font-heading text-[clamp(2.5rem,7vw,5.5rem)] font-semibold leading-[1.02] tracking-[-0.03em] text-heading"
+          className="group mt-5 inline-flex items-center gap-4 font-heading text-[clamp(2.5rem,7vw,5.5rem)] font-semibold leading-[1.02] tracking-[-0.03em] text-ink-100"
         >
           Let&rsquo;s work together
           <ArrowRight
@@ -71,7 +71,7 @@ export default function Footer() {
         </Link>
 
         {/* Columns */}
-        <div className="mt-16 grid gap-10 border-t border-line pt-12 sm:grid-cols-3">
+        <div className="mt-16 grid gap-10 border-t border-rule pt-12 sm:grid-cols-3">
           {/* Navigate */}
           <div>
             <p className="eyebrow mb-5">Navigate</p>
@@ -82,7 +82,7 @@ export default function Footer() {
                     to={n.hash ? n.to + n.hash : n.to}
                     onClick={n.hash ? (e) => goToSection(n.hash, e) : undefined}
                     data-cursor="hover"
-                    className="group inline-flex items-center gap-1.5 text-body transition-colors hover:text-heading"
+                    className="group inline-flex items-center gap-1.5 text-ink-300 transition-colors hover:text-ink-100"
                   >
                     {n.label}
                     <ArrowUpRight size={13} className="opacity-0 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:opacity-100" />
@@ -98,7 +98,7 @@ export default function Footer() {
             <ul className="space-y-2.5">
               {socials.map((soc) => (
                 <li key={soc.label}>
-                  <a href={soc.href} target="_blank" rel="noreferrer" data-cursor="hover" className="group inline-flex items-center gap-2.5 text-body transition-colors hover:text-heading">
+                  <a href={soc.href} target="_blank" rel="noreferrer" data-cursor="hover" className="group inline-flex items-center gap-2.5 text-ink-300 transition-colors hover:text-ink-100">
                     <soc.Icon size={16} className="shrink-0" />
                     {soc.label}
                     <ArrowUpRight size={13} className="opacity-0 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:opacity-100" />
@@ -111,17 +111,17 @@ export default function Footer() {
           {/* Status / meta */}
           <div className="space-y-3">
             <p className="eyebrow mb-5">Status</p>
-            <div className="flex items-center gap-2.5 text-body">
+            <div className="flex items-center gap-2.5 text-ink-300">
               <span className="relative flex h-2 w-2">
                 {available && <span className="absolute inline-flex h-full w-full rounded-full bg-white/60 motion-safe:animate-pulse-ring" />}
                 <span className={`relative inline-flex h-2 w-2 rounded-full ${available ? 'bg-white' : 'bg-muted'}`} />
               </span>
               {available ? 'Available for work' : 'Currently booked'}
             </div>
-            {location && <p className="text-body">{location}</p>}
-            <LocalTime className="block text-body" />
+            {location && <p className="text-ink-300">{location}</p>}
+            <LocalTime className="block text-ink-300" />
             {s.email && (
-              <a href={`mailto:${s.email}`} data-cursor="hover" className="block text-body transition-colors hover:text-heading">
+              <a href={`mailto:${s.email}`} data-cursor="hover" className="block text-ink-300 transition-colors hover:text-ink-100">
                 {s.email}
               </a>
             )}
@@ -135,17 +135,17 @@ export default function Footer() {
           aria-label="Back to top"
           className="group mt-16 flex w-full items-end justify-between gap-6 text-left"
         >
-          <span className="font-heading text-[clamp(3.5rem,17vw,13rem)] font-semibold leading-[0.85] tracking-[-0.04em] text-heading">
-            Hamza<span className="text-muted">®</span>
+          <span className="font-heading text-[clamp(3.5rem,17vw,13rem)] font-semibold leading-[0.85] tracking-[-0.04em] text-ink-100">
+            Hamza<span className="text-ink-500">®</span>
           </span>
-          <span className="mb-3 hidden shrink-0 items-center gap-2 text-xs uppercase tracking-[0.14em] text-muted transition-colors group-hover:text-heading sm:inline-flex">
+          <span className="mb-3 hidden shrink-0 items-center gap-2 text-xs uppercase tracking-[0.14em] text-ink-500 transition-colors group-hover:text-ink-100 sm:inline-flex">
             Back to top
             <ArrowUp size={15} className="transition-transform duration-300 group-hover:-translate-y-0.5" />
           </span>
         </button>
 
         {/* Bottom meta */}
-        <div className="mt-10 flex flex-col gap-2 border-t border-line pt-6 text-xs text-muted sm:flex-row sm:justify-between">
+        <div className="mt-10 flex flex-col gap-2 border-t border-rule pt-6 text-xs text-ink-500 sm:flex-row sm:justify-between">
           <span>© {year} EL MASDOUKI Hamza — All rights reserved.</span>
           <span>Built with React, Tailwind, GSAP &amp; Laravel</span>
         </div>

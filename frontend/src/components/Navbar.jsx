@@ -13,7 +13,7 @@ const LINKS = [
   { label: 'Home', to: '/' },
   { label: 'About', to: '/about' },
   { label: 'Work', to: '/', hash: '#projects' },
-  { label: 'Pricing', to: '/', hash: '#pricing' },
+  { label: 'Journey', to: '/', hash: '#journey' },
   { label: 'Contact', to: '/', hash: '#contact' },
 ]
 
@@ -77,17 +77,20 @@ export default function Navbar() {
       {/* Top bar — full-width, scroll-aware */}
       <header
         className={`fixed inset-x-0 top-0 z-[70] transition-[background-color,backdrop-filter,border-color] duration-300 ${
-          scrolled ? 'border-b border-line bg-ink/80 backdrop-blur-md' : 'border-b border-transparent bg-transparent'
+          scrolled
+            ? 'border-b border-rule-soft bg-paper/85 backdrop-blur-md'
+            : 'border-b border-transparent bg-transparent'
         }`}
       >
-        <nav className={`container-px flex items-center justify-between gap-6 transition-all duration-300 ${scrolled ? 'py-3' : 'py-5'}`}>
+        <nav className={`container-px flex items-center justify-between gap-6 transition-all duration-300 ${scrolled ? 'py-3.5' : 'py-5'}`}>
           {/* Wordmark */}
-          <Link to="/" className="shrink-0 font-heading text-base font-semibold tracking-[-0.02em] text-heading">
-            Hamza<span className="text-muted">®</span>
+          <Link to="/" className="shrink-0 font-heading text-lg font-semibold tracking-[-0.02em] text-ink-100">
+            Hamza<span className="text-ink-500">®</span>
           </Link>
 
-          {/* Desktop links */}
-          <ul className="hidden items-center gap-7 lg:flex">
+          {/* Desktop links — the metadata voice, so the growing underline sits
+              under mono rather than under letter-spaced Inter caps. */}
+          <ul className="hidden items-center gap-8 lg:flex">
             {LINKS.map((l) => {
               const active = isActivePath(location.pathname, l)
               return (
@@ -97,12 +100,14 @@ export default function Navbar() {
                     onClick={(e) => go(e, l)}
                     data-cursor="hover"
                     aria-current={active ? 'page' : undefined}
-                    className={`group relative text-sm transition-colors hover:text-heading ${active ? 'text-heading' : 'text-body'}`}
+                    className={`group relative block py-3 font-mono text-meta font-medium uppercase tracking-[0.07em] transition-colors hover:text-ink-100 ${
+                      active ? 'text-ink-100' : 'text-ink-500'
+                    }`}
                   >
                     {l.label}
                     {/* underline-grow */}
                     <span
-                      className={`absolute -bottom-1.5 left-0 h-px bg-white transition-all duration-300 ${active ? 'w-full' : 'w-0 group-hover:w-full'}`}
+                      className={`absolute bottom-1.5 left-0 h-px bg-ink-100 transition-all duration-300 ${active ? 'w-full' : 'w-0 group-hover:w-full'}`}
                     />
                   </Link>
                 </li>
@@ -111,22 +116,22 @@ export default function Navbar() {
           </ul>
 
           {/* Desktop actions */}
-          <div className="hidden shrink-0 items-center gap-5 lg:flex">
+          <div className="hidden shrink-0 items-center gap-6 lg:flex">
             <button
               type="button"
               onClick={downloadCv}
               disabled={cvLoading}
               data-cursor="hover"
-              className="group inline-flex items-center gap-1.5 text-sm text-body transition-colors hover:text-heading disabled:opacity-60"
+              className="group inline-flex items-center gap-1.5 border-b border-rule py-1 font-mono text-meta font-medium uppercase tracking-[0.07em] text-ink-300 transition-colors hover:border-ink-100 hover:text-ink-100 disabled:opacity-60"
             >
               {cvLoading ? 'Preparing…' : 'CV'}
-              <Download size={14} className="transition-transform duration-300 group-hover:translate-y-0.5" />
+              <Download size={13} className="transition-transform duration-300 group-hover:translate-y-0.5" />
             </button>
             <Link
               to="/#contact"
               onClick={(e) => goToSection('#contact', e)}
               data-cursor="hover"
-              className="group inline-flex items-center gap-1.5 rounded-full border border-line px-4 py-2 text-sm text-heading transition-colors hover:bg-white hover:text-ink"
+              className="group inline-flex min-h-[44px] items-center gap-2 rounded-full border border-rule px-5 text-[0.8125rem] font-medium text-ink-100 transition-colors duration-300 hover:bg-ink-100 hover:text-paper"
             >
               Start a project
               <ArrowRight size={14} className="transition-transform duration-300 group-hover:translate-x-0.5" />
@@ -139,7 +144,7 @@ export default function Navbar() {
             aria-expanded={open}
             onClick={() => setOpen((o) => !o)}
             data-cursor="hover"
-            className="group flex items-center gap-2.5 text-xs font-medium uppercase tracking-[0.14em] text-heading lg:hidden"
+            className="group flex min-h-[44px] items-center gap-2.5 font-mono text-meta font-medium uppercase tracking-[0.07em] text-ink-100 lg:hidden"
           >
             {open ? 'Close' : 'Menu'}
             <span className="relative flex h-3.5 w-4 flex-col justify-center gap-1">
@@ -154,7 +159,7 @@ export default function Navbar() {
       <AnimatePresence>
         {open && (
           <motion.div
-            className="fixed inset-0 z-[60] flex flex-col justify-between bg-ink px-5 pb-8 pt-24 sm:px-8 sm:pb-12 lg:hidden"
+            className="fixed inset-0 z-[60] flex flex-col justify-between bg-paper px-5 pb-8 pt-24 sm:px-8 sm:pb-12 lg:hidden"
             initial={{ clipPath: 'inset(0% 0% 100% 0%)' }}
             animate={{ clipPath: 'inset(0% 0% 0% 0%)' }}
             exit={{ clipPath: 'inset(0% 0% 100% 0%)' }}
@@ -176,9 +181,9 @@ export default function Navbar() {
                         onClick={(e) => go(e, l)}
                         data-cursor="hover"
                         aria-current={active ? 'page' : undefined}
-                        className={`group inline-flex items-baseline gap-4 font-heading text-[clamp(2.5rem,9vw,5.5rem)] font-medium leading-[1.05] tracking-[-0.03em] transition-colors hover:text-heading ${active ? 'text-heading' : 'text-muted'}`}
+                        className={`group inline-flex items-baseline gap-4 font-heading text-[clamp(2.5rem,9vw,5.5rem)] font-medium leading-[1.05] tracking-[-0.03em] transition-colors hover:text-ink-100 ${active ? 'text-ink-100' : 'text-ink-500'}`}
                       >
-                        <span className={`font-sans text-xs tracking-[0.1em] ${active ? 'text-heading' : 'text-muted/70'}`}>0{i + 1}</span>
+                        <span className={`font-mono text-meta ${active ? 'text-ink-100' : 'text-ink-700'}`}>0{i + 1}</span>
                         {l.label}
                       </Link>
                     </motion.div>
@@ -192,21 +197,21 @@ export default function Navbar() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ delay: 0.45, duration: 0.4 }}
-              className="mt-12 flex flex-col gap-6 border-t border-line pt-6 sm:flex-row sm:items-end sm:justify-between"
+              className="mt-12 flex flex-col gap-6 border-t border-rule pt-6 sm:flex-row sm:items-end sm:justify-between"
             >
               <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
                 {socials.map((soc) => (
-                  <a key={soc.label} href={soc.href} target="_blank" rel="noreferrer" data-cursor="hover" className="group inline-flex items-center gap-1 text-sm text-muted transition-colors hover:text-heading">
+                  <a key={soc.label} href={soc.href} target="_blank" rel="noreferrer" data-cursor="hover" className="group inline-flex items-center gap-1 text-sm text-ink-500 transition-colors hover:text-ink-100">
                     {soc.label}
                     <ArrowUpRight size={14} className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                   </a>
                 ))}
-                <button type="button" onClick={downloadCv} disabled={cvLoading} data-cursor="hover" className="group inline-flex items-center gap-1 text-sm text-muted transition-colors hover:text-heading disabled:opacity-60">
+                <button type="button" onClick={downloadCv} disabled={cvLoading} data-cursor="hover" className="group inline-flex items-center gap-1 text-sm text-ink-500 transition-colors hover:text-ink-100 disabled:opacity-60">
                   {cvLoading ? 'Preparing…' : 'Download CV'}
                   <Download size={14} className="transition-transform duration-300 group-hover:translate-y-0.5" />
                 </button>
               </div>
-              <LocalTime className="text-xs uppercase tracking-[0.14em] text-muted" />
+              <LocalTime className="text-xs uppercase tracking-[0.14em] text-ink-500" />
             </motion.div>
           </motion.div>
         )}

@@ -2,92 +2,90 @@ import { motion } from 'framer-motion'
 import { staggerContainer, fadeUp, viewportOnce } from '../lib/motion'
 import SectionLabel from './ui/SectionLabel'
 import SplitTextReveal from './ui/SplitTextReveal'
+import Meta from './ui/Meta'
 import { DynamicIcon } from './ui/Icons'
 import { useSettings } from '../context/SettingsContext'
 
 /**
- * Overview — "This is what I do": a small grid of capability cards, each with
- * an icon, title, one-line description, a tech list and two meta tags. All
- * content is dashboard-driven (settings.overview_items / overview_intro).
+ * Overview — "What I do": the hairline-gap capability grid.
+ *
+ * The single strongest component in the build, tightened. It used to carry
+ * five levels of information per cell (icon, right-aligned pill tags, title,
+ * copy, tech row); the pills were redundant with the tech row and set at 10px,
+ * so they are gone. A large mono index takes the icon's place at the top-left
+ * and the lucide icon drops to the tech row, small and right-aligned.
+ *
+ * The 1px grid gaps ARE the rules — no cell has a border of its own.
  */
-export default function Overview() {
+export default function Overview({ scope = 'Home', index = '01' }) {
   const { settings } = useSettings()
   const items = Array.isArray(settings.overview_items) ? settings.overview_items : []
   if (items.length === 0) return null
 
   return (
-    <section id="overview" className="relative py-24 sm:py-32">
+    <section id="overview" className="section-y relative">
       <div className="container-px">
         <motion.div
-          variants={staggerContainer(0.1)}
+          variants={staggerContainer()}
           initial="hidden"
           whileInView="show"
           viewport={viewportOnce}
           className="max-w-3xl"
         >
-          <SectionLabel num="01">Overview</SectionLabel>
+          <SectionLabel scope={scope} index={index}>
+            What I do
+          </SectionLabel>
           <SplitTextReveal
             as="h2"
             text="This is what I do."
             amount={0.4}
-            className="font-heading text-[clamp(2rem,4.5vw,3.5rem)] font-semibold leading-[1.06] tracking-[-0.03em] text-heading"
+            className="font-heading text-h2 font-semibold text-ink-100"
           />
           {settings.overview_intro && (
-            <motion.p variants={fadeUp(20)} className="mt-6 max-w-[55ch] text-base leading-[1.7] text-body">
+            <motion.p variants={fadeUp(20)} className="mt-6 max-w-[55ch] text-ink-300">
               {settings.overview_intro}
             </motion.p>
           )}
         </motion.div>
 
+        {/* The grid survives any item count: one column below 640, two above,
+            three from 1280 when there are enough cells to fill a row. */}
         <motion.div
-          variants={staggerContainer(0.12)}
+          variants={staggerContainer(0.08)}
           initial="hidden"
           whileInView="show"
           viewport={viewportOnce}
-          className="mt-14 grid gap-px overflow-hidden rounded-[4px] border border-line bg-line sm:grid-cols-2"
+          className={`mt-14 grid gap-px border border-rule bg-rule-soft sm:grid-cols-2 lg:mt-16 ${
+            items.length >= 3 ? 'xl:grid-cols-3' : ''
+          }`}
         >
           {items.map((item, i) => {
             const tech = Array.isArray(item.tech) ? item.tech : []
-            const tags = Array.isArray(item.tags) ? item.tags : []
             return (
-              <motion.article
-                key={item.title || i}
-                variants={fadeUp(24)}
-                className="group flex flex-col bg-ink p-7 transition-colors duration-300 hover:bg-white/[0.02] sm:p-9"
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <DynamicIcon
-                    name={item.icon}
-                    size={24}
-                    strokeWidth={1.5}
-                    className="text-muted transition-colors duration-300 group-hover:text-heading"
-                  />
-                  {tags.length > 0 && (
-                    <div className="flex flex-wrap justify-end gap-2">
-                      {tags.map((t) => (
-                        <span
-                          key={t}
-                          className="rounded-full border border-line px-2.5 py-0.5 text-[10px] uppercase tracking-[0.12em] text-muted"
-                        >
-                          {t}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </div>
+              <motion.article key={item.title || i} variants={fadeUp(20)} className="cell pad group flex flex-col">
+                <Meta className="text-ink-300">{String(i + 1).padStart(2, '0')}</Meta>
 
-                <h3 className="mt-8 font-heading text-xl font-semibold tracking-[-0.01em] text-heading sm:text-2xl">
+                <h3 className="mt-10 font-heading text-h3 font-medium text-ink-100">
                   {item.title}
                 </h3>
-                <p className="mt-2 max-w-[42ch] text-[15px] leading-[1.7] text-body">
+                <p className="mt-2.5 max-w-[42ch] flex-1 text-small text-ink-300">
                   {item.description}
                 </p>
 
-                {tech.length > 0 && (
-                  <div className="mt-6 flex flex-wrap gap-x-4 gap-y-1.5 border-t border-line pt-5 text-xs uppercase tracking-[0.1em] text-muted">
-                    {tech.map((t) => (
-                      <span key={t}>{t}</span>
-                    ))}
+                {(tech.length > 0 || item.icon) && (
+                  <div className="mt-8 flex items-center justify-between gap-4 border-t border-rule-soft pt-5">
+                    <Meta caps className="tracking-[0.05em] transition-colors duration-300 group-hover:text-ink-300">
+                      {tech.join(' · ')}
+                    </Meta>
+                    {item.icon && (
+                      <DynamicIcon
+                        name={item.icon}
+                        size={16}
+                        strokeWidth={1.5}
+                        aria-hidden="true"
+                        className="shrink-0 text-ink-700 transition-colors duration-300 group-hover:text-ink-500"
+                      />
+                    )}
                   </div>
                 )}
               </motion.article>
