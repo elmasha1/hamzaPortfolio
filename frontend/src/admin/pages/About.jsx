@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
-import { aboutApi } from '../../lib/adminApi'
+import { aboutApi, aboutVideoApi } from '../../lib/adminApi'
 import { useToast } from '../../context/ToastContext'
 import { Plus, X } from '../../components/ui/Icons'
+import VideoUploader from '../components/VideoUploader'
 
 const field =
   'w-full rounded-xl border border-line bg-white/[0.04] px-3 py-2 text-sm text-heading outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20'
@@ -104,10 +105,34 @@ export default function About() {
       </Section>
 
       <Section title="Story video">
-        <Labeled label="Video URL (mp4 — leave blank to show the placeholder)"><input value={a.video_url} onChange={(e) => set('video_url', e.target.value)} className={field} placeholder="/assets/intro.mp4 or https://…" /></Labeled>
+        <Labeled label="Upload a video">
+          <VideoUploader
+            value={a.video_url}
+            poster={a.video_poster}
+            uploadFn={aboutVideoApi.upload}
+            onUploaded={(d) => {
+              set('video_url', d.video_url)
+              toast.success('Video uploaded — it now shows inside the story.')
+            }}
+            onRemove={async () => {
+              try {
+                await aboutVideoApi.remove()
+                set('video_url', '')
+                toast.success('Video removed — the placeholder frame will show.')
+              } catch {
+                toast.error('Could not remove the video.')
+              }
+            }}
+          />
+        </Labeled>
+        <p className="text-xs text-muted">
+          Uploading saves straight away — you don&rsquo;t need to press Save changes for the video
+          itself. Or paste a URL below if the file is hosted elsewhere.
+        </p>
+        <Labeled label="Video URL (or paste an external one)"><input value={a.video_url} onChange={(e) => set('video_url', e.target.value)} className={field} placeholder="/assets/intro.mp4 or https://…" /></Labeled>
         <Labeled label="Poster image URL"><input value={a.video_poster} onChange={(e) => set('video_poster', e.target.value)} className={field} placeholder="https://… or /assets/poster.jpg" /></Labeled>
         <Labeled label="Caption (mono, under the video)"><input value={a.video_caption} onChange={(e) => set('video_caption', e.target.value)} className={field} placeholder="Ninety seconds on how I work" maxLength={200} /></Labeled>
-        <p className="text-xs text-muted">The video now sits inside the story as a figure — it illustrates the page rather than opening it.</p>
+        <p className="text-xs text-muted">The video sits inside the story as a figure — it illustrates the page rather than opening it.</p>
       </Section>
 
       <Section title="My story (paragraphs)">

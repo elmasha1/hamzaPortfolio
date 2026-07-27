@@ -25,8 +25,10 @@ function toFormData(form, file) {
   fd.append('status', form.status || '')
   fd.append('featured', form.featured ? '1' : '0')
   fd.append('tech_tags', JSON.stringify(form.tech_tags))
+  // Always send `image`: an empty value is how the API is told to drop the
+  // stored screenshot. Omitting it would make the API keep the current one.
   if (file) fd.append('image', file)
-  else if (form.image) fd.append('image', form.image) // keep existing URL
+  else fd.append('image', form.image || '')
   return fd
 }
 
@@ -85,6 +87,14 @@ function ProjectForm({ initial, onClose, onSaved }) {
     if (!f) return
     setFile(f)
     setPreview(URL.createObjectURL(f))
+  }
+
+  /* Clear the screenshot. The empty `image` is sent on save, which is what
+     tells the API to drop the stored file rather than keep the current one. */
+  const removeImage = () => {
+    setFile(null)
+    setPreview('')
+    set('image', '')
   }
 
   const addTag = (e) => {
@@ -155,7 +165,22 @@ function ProjectForm({ initial, onClose, onSaved }) {
               </div>
             )}
           </div>
-          <input type="file" accept="image/*" onChange={onFile} className="mt-2 text-sm text-body" />
+          <div className="mt-2 flex flex-wrap items-center gap-4">
+            <input type="file" accept="image/*" onChange={onFile} className="text-sm text-body" />
+            {preview && (
+              <button
+                type="button"
+                onClick={removeImage}
+                className="inline-flex items-center gap-1.5 text-sm text-muted transition hover:text-coral"
+              >
+                <Trash2 size={15} /> Remove image
+              </button>
+            )}
+          </div>
+          <p className="mt-1 text-xs text-muted">
+            Removing takes effect when you save. Without an image this project shows the mono
+            &ldquo;No preview&rdquo; plate and is skipped by the home page&rsquo;s colour anchor.
+          </p>
         </div>
 
         <div className="mt-4 space-y-3">

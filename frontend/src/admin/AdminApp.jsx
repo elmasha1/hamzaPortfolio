@@ -5,7 +5,6 @@ import Login from './pages/Login'
 import Overview from './pages/Overview'
 import Messages from './pages/Messages'
 import Projects from './pages/Projects'
-import Posts from './pages/Posts'
 import Journey from './pages/Journey'
 import About from './pages/About'
 import Technologies from './pages/Technologies'
@@ -38,7 +37,6 @@ export default function AdminApp() {
         <Route path="dashboard" element={<Overview />} />
         <Route path="messages" element={<Messages />} />
         <Route path="projects" element={<Projects />} />
-        <Route path="posts" element={<Posts />} />
         <Route path="journey" element={<Journey />} />
         <Route path="technologies" element={<Technologies />} />
         <Route path="pricing" element={<Pricing />} />

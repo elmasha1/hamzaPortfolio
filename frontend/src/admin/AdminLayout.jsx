@@ -12,7 +12,6 @@ import {
   LogOut,
   Menu,
   ArrowUpRight,
-  FileCode2,
   GitBranch,
   Eye,
   LayoutGrid,
@@ -27,7 +26,6 @@ const NAV = [
   { to: '/admin/technologies', label: 'Technologies', Icon: LayoutGrid },
   { to: '/admin/pricing', label: 'Ways to work', Icon: Tag },
   { to: '/admin/about', label: 'About page', Icon: Eye },
-  { to: '/admin/posts', label: 'Blog', Icon: FileCode2 },
   { to: '/admin/cv', label: 'CV / Resume', Icon: FileText },
   { to: '/admin/settings', label: 'Settings', Icon: Settings },
 ]

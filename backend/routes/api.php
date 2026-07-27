@@ -13,6 +13,7 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\TechnologyController;
 use App\Http\Controllers\Admin\AboutController as AdminAboutController;
+use App\Http\Controllers\Admin\AboutVideoController as AdminAboutVideoController;
 use App\Http\Controllers\Admin\CvController as AdminCvController;
 use App\Http\Controllers\Admin\CvPhotoController as AdminCvPhotoController;
 use App\Http\Controllers\Admin\JourneyController as AdminJourneyController;
@@ -102,6 +103,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/journey/{milestone}', [AdminJourneyController::class, 'destroy']);
 
         // About page content
+        // Story video (upload / remove)
+        Route::post('/about-video', [AdminAboutVideoController::class, 'store']);
+        Route::delete('/about-video', [AdminAboutVideoController::class, 'destroy']);
+
         Route::get('/about', [AdminAboutController::class, 'show']);
         Route::put('/about', [AdminAboutController::class, 'update']);
 

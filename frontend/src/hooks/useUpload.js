@@ -1,15 +1,23 @@
 import { useCallback, useRef, useState } from 'react'
 
 /**
- * useUpload — client-side validation + upload state for image uploads.
+ * useUpload — client-side validation + upload state for file uploads.
  *
  * @param {(file: File, onProgress: (pct: number) => void) => Promise<any>} uploadFn
- * @param {{ maxMb?: number, types?: string[] }} [opts]
+ * @param {{ maxMb?: number, types?: string[], typeError?: string, sizeError?: string }} [opts]
  * @returns {{ upload, uploading, progress, error, setError }}
  */
 const DEFAULT_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 
-export default function useUpload(uploadFn, { maxMb = 4, types = DEFAULT_TYPES } = {}) {
+export default function useUpload(
+  uploadFn,
+  {
+    maxMb = 4,
+    types = DEFAULT_TYPES,
+    typeError = 'Please choose a JPG, PNG or WEBP image.',
+    sizeError,
+  } = {}
+) {
   const [uploading, setUploading] = useState(false)
   const [progress, setProgress] = useState(0)
   const [error, setError] = useState('')
@@ -21,11 +29,11 @@ export default function useUpload(uploadFn, { maxMb = 4, types = DEFAULT_TYPES }
       setError('')
 
       if (!types.includes(file.type)) {
-        setError('Please choose a JPG, PNG or WEBP image.')
+        setError(typeError)
         return null
       }
       if (file.size > maxMb * 1024 * 1024) {
-        setError(`Image is too large — max ${maxMb} MB.`)
+        setError(sizeError || `File is too large — max ${maxMb} MB.`)
         return null
       }
 
@@ -44,7 +52,7 @@ export default function useUpload(uploadFn, { maxMb = 4, types = DEFAULT_TYPES }
         setUploading(false)
       }
     },
-    [uploadFn, maxMb, types]
+    [uploadFn, maxMb, types, typeError, sizeError]
   )
 
   return { upload, uploading, progress, error, setError }

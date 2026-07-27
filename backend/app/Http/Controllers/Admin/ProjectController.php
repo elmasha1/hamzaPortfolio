@@ -130,6 +130,14 @@ class ProjectController extends Controller
             return Storage::disk('public')->url($path); // /storage/projects/xxx.jpg
         }
 
+        // An explicitly empty `image` means "remove it" — clear the stored file
+        // so deleting a screenshot doesn't leave an orphan on disk.
+        if ($request->has('image') && trim((string) $request->input('image')) === '') {
+            $this->deleteStoredImage($project?->image);
+
+            return null;
+        }
+
         // No new file: keep existing or accept a provided URL string.
         return $request->input('image', $project?->image);
     }
