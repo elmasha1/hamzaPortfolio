@@ -13,6 +13,11 @@ databases:
     user: portfolio
     plan: free
     postgresMajorVersion: "16"
+    # MUST match the web service's region below. Render's internal hostname
+    # (dpg-xxxx-a, no domain) only resolves inside one region — put the two in
+    # different regions and every deploy dies on
+    # "could not translate host name ... Name or service not known".
+    region: frankfurt
 
 services:
   - type: web
@@ -22,7 +27,7 @@ services:
     dockerfilePath: ./Dockerfile
     dockerContext: .
     plan: free
-    region: frankfurt
+    region: frankfurt # keep in sync with the database's region above
     healthCheckPath: /up
     autoDeploy: true
 
