@@ -5,6 +5,36 @@ import { fetchProjects } from '../lib/api'
 import Meta from './ui/Meta'
 
 /**
+ * Which project the anchor shows, advanced once per visit.
+ *
+ * A counter in localStorage steps forward on every page load, so a returning
+ * visitor meets a different piece of work each time and the whole portfolio
+ * eventually gets its turn in colour — in order, not at random, so nothing
+ * repeats until everything has been shown.
+ *
+ * Resolved once per page load and cached in module scope: React's StrictMode
+ * double-mount, and any re-entry to the home route during the same visit, all
+ * see the same project rather than shuffling under the visitor.
+ */
+const VISIT_KEY = 'anchor-visit'
+let visitCounter = null
+
+function resolveVisitCounter() {
+  if (visitCounter !== null) return visitCounter
+  try {
+    const stored = Number(window.localStorage.getItem(VISIT_KEY)) || 0
+    // Wrap well below MAX_SAFE_INTEGER; the modulo makes the value itself
+    // meaningless beyond "one more than last time".
+    window.localStorage.setItem(VISIT_KEY, String((stored + 1) % 100000))
+    visitCounter = stored
+  } catch {
+    // Storage blocked (private mode, cookie settings) — still vary the pick.
+    visitCounter = Math.floor(Math.random() * 100000)
+  }
+  return visitCounter
+}
+
+/**
  * BleedImage — the third visual anchor: a full-bleed 21:9 crop of one real
  * product screen, at full colour, linking to its case study.
  *
@@ -24,9 +54,14 @@ export default function BleedImage() {
     fetchProjects()
       .then((list) => {
         if (!alive || !Array.isArray(list)) return
-        // The list arrives featured-first, so this is the project you chose to
-        // lead with — as long as it actually has a screen to show.
-        setProject(list.find((p) => p?.image) || null)
+        // Only projects with a real screen can take the slot — the anchor is
+        // the one place on the page that must not show a placeholder.
+        const withImage = list.filter((p) => p?.image)
+        if (withImage.length === 0) {
+          setProject(null)
+          return
+        }
+        setProject(withImage[resolveVisitCounter() % withImage.length])
       })
       .catch(() => {})
     return () => {
