@@ -23,6 +23,7 @@ use App\Http\Controllers\Admin\PostController as AdminPostController;
 use App\Http\Controllers\Admin\ProfilePhotoController as AdminProfilePhotoController;
 use App\Http\Controllers\Admin\PricingController as AdminPricingController;
 use App\Http\Controllers\Admin\ProjectController as AdminProjectController;
+use App\Http\Controllers\Admin\ProjectVideoController as AdminProjectVideoController;
 use App\Http\Controllers\Admin\SettingController as AdminSettingController;
 use App\Http\Controllers\Admin\TechnologyController as AdminTechnologyController;
 use Illuminate\Support\Facades\Route;
@@ -86,6 +87,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/projects/{project}', [AdminProjectController::class, 'show']);
         Route::match(['put', 'patch'], '/projects/{project}', [AdminProjectController::class, 'update']);
         Route::delete('/projects/{project}', [AdminProjectController::class, 'destroy']);
+
+        // Case-study hero video (uploaded separately from the project form)
+        Route::post('/projects/{project}/video', [AdminProjectVideoController::class, 'store']);
+        Route::delete('/projects/{project}/video', [AdminProjectVideoController::class, 'destroy']);
 
         // Blog posts (full CRUD) — bound by id in admin.
         Route::get('/posts', [AdminPostController::class, 'index']);

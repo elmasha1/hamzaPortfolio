@@ -15,6 +15,7 @@ import {
   Server,
   Terminal,
 } from './ui/Icons'
+import { img, imgSrcSet } from '../lib/cloudinary'
 import useSectionNav from '../hooks/useSectionNav'
 import { useSettings } from '../context/SettingsContext'
 
@@ -125,7 +126,9 @@ function Portrait({ src, error, onError }) {
   }
   return (
     <img
-      src={src}
+      src={img(src, 800)}
+      srcSet={imgSrcSet(src, [400, 600, 800, 1200])}
+      sizes="(min-width: 1024px) 33vw, 100vw"
       alt="Portrait of EL MASDOUKI Hamza, full-stack developer"
       loading="eager"
       decoding="async"

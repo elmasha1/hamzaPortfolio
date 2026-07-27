@@ -155,6 +155,23 @@ export const projectsApi = {
     adminApi.post('/admin/projects/reorder', { order: ids }).then((r) => r.data),
 }
 
+/* --------------------- Case-study hero video -------------------------- */
+export const projectVideoApi = {
+  upload: (id, file, onProgress) => {
+    const form = new FormData()
+    form.append('video', file)
+    return adminApi
+      .post(`/admin/projects/${id}/video`, form, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+        onUploadProgress: (e) => {
+          if (onProgress && e.total) onProgress(Math.round((e.loaded / e.total) * 100))
+        },
+      })
+      .then((r) => r.data.data)
+  },
+  remove: (id) => adminApi.delete(`/admin/projects/${id}/video`).then((r) => r.data.data),
+}
+
 /* ------------------------- About story video -------------------------- */
 export const aboutVideoApi = {
   upload: (file, onProgress) => {

@@ -1,6 +1,7 @@
 import { m } from 'framer-motion'
 import { DUR, EASE } from '../lib/motion'
 import Meta from './ui/Meta'
+import { img, imgSrcSet } from '../lib/cloudinary'
 
 /* Deliberately unfinished-looking: a mono plate, not a fake screenshot. */
 function NoPreview({ title }) {
@@ -49,7 +50,9 @@ export default function WorkPreview({ projects, active, meta, reduce }) {
             >
               {p.image ? (
                 <img
-                  src={p.image}
+                  src={img(p.image, 960)}
+                  srcSet={imgSrcSet(p.image, [640, 960, 1280])}
+                  sizes="(min-width: 1024px) 40vw, 100vw"
                   alt={`${p.title} — preview`}
                   loading={i === 0 ? 'eager' : 'lazy'}
                   decoding="async"

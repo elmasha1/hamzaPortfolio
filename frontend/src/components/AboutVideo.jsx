@@ -9,6 +9,7 @@ import {
   useSpring,
 } from 'framer-motion'
 import { Play, Pause, Code } from './ui/Icons'
+import { video as cldVideo, videoPoster } from '../lib/cloudinary'
 
 /* Monochrome poster placeholder when none is provided. */
 const posterPlaceholder =
@@ -87,8 +88,8 @@ export default function AboutVideo({ src, poster }) {
       {src ? (
         <m.video
           ref={videoRef}
-          src={src}
-          poster={poster || posterPlaceholder}
+          src={cldVideo(src)}
+          poster={poster || videoPoster(src) || posterPlaceholder}
           muted
           loop
           playsInline

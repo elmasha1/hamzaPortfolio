@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\AboutController as PublicAboutController;
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
+use App\Support\Cloudinary;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -40,12 +41,18 @@ class AboutVideoController extends Controller
         ]);
 
         $file = $request->file('video');
-        $name = 'story-'.now()->format('YmdHis').'.'.$file->getClientOriginalExtension();
-        $stored = $file->storeAs('videos', $name, 'public');
-        $url = Storage::disk('public')->url($stored);
+
+        // Cloudinary when configured (a container filesystem is ephemeral, and
+        // its CDN + f_auto/q_auto is what makes the video load fast); the local
+        // public disk otherwise, so development needs no account.
+        $url = Cloudinary::upload($file, 'videos', 'video');
+        if (! $url) {
+            $name = 'story-'.now()->format('YmdHis').'.'.$file->getClientOriginalExtension();
+            $url = Storage::disk('public')->url($file->storeAs('videos', $name, 'public'));
+        }
 
         $about = $this->about();
-        $this->deleteStored($about['video_url'] ?? null);
+        Cloudinary::forget($about['video_url'] ?? null, 'videos', 'video');
         $about['video_url'] = $url;
         Setting::put('about', $about); // also busts the public cache
 
@@ -56,7 +63,7 @@ class AboutVideoController extends Controller
     public function destroy(): JsonResponse
     {
         $about = $this->about();
-        $this->deleteStored($about['video_url'] ?? null);
+        Cloudinary::forget($about['video_url'] ?? null, 'videos', 'video');
         $about['video_url'] = '';
         Setting::put('about', $about);
 
@@ -70,13 +77,5 @@ class AboutVideoController extends Controller
         $about = Setting::get('about');
 
         return is_array($about) ? $about : PublicAboutController::DEFAULTS;
-    }
-
-    /** Only ever delete files we stored ourselves — never an external URL. */
-    private function deleteStored(?string $url): void
-    {
-        if ($url && str_contains($url, '/storage/videos/')) {
-            Storage::disk('public')->delete('videos/'.basename(parse_url($url, PHP_URL_PATH)));
-        }
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
+use App\Support\Cloudinary;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -37,11 +38,17 @@ class ProfilePhotoController extends Controller
         $dir = 'profile';
         $name = static::NAME_PREFIX.'-'.now()->format('YmdHis');
 
-        $stored = $this->optimizeAndStore($file->getRealPath(), $dir, $name)
-            // GD unavailable or failed → store the original upload as-is.
-            ?? $file->storeAs($dir, $name.'.'.$file->getClientOriginalExtension(), 'public');
+        // Cloudinary does its own optimisation and serves the width variants,
+        // so the local GD pass is only the no-account fallback path.
+        $url = Cloudinary::upload($file, $dir);
 
-        $url = Storage::disk('public')->url($stored);
+        if (! $url) {
+            $stored = $this->optimizeAndStore($file->getRealPath(), $dir, $name)
+                // GD unavailable or failed → store the original upload as-is.
+                ?? $file->storeAs($dir, $name.'.'.$file->getClientOriginalExtension(), 'public');
+
+            $url = Storage::disk('public')->url($stored);
+        }
 
         $this->deleteStored(Setting::get(static::SETTING_KEY));
         Setting::put(static::SETTING_KEY, $url); // also busts the public cache
@@ -110,11 +117,9 @@ class ProfilePhotoController extends Controller
         return $ok ? $relative : null;
     }
 
-    /** Delete a previously stored profile photo (only files we manage). */
+    /** Delete a previously stored photo — Cloudinary or local, never external. */
     private function deleteStored(?string $url): void
     {
-        if ($url && str_contains($url, '/storage/profile/')) {
-            Storage::disk('public')->delete('profile/'.basename(parse_url($url, PHP_URL_PATH)));
-        }
+        Cloudinary::forget($url, 'profile');
     }
 }

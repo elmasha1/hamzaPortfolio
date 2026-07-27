@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Project;
+use App\Support\Cloudinary;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -126,8 +127,12 @@ class ProjectController extends Controller
     {
         if ($request->hasFile('image')) {
             $this->deleteStoredImage($project?->image);
-            $path = $request->file('image')->store('projects', 'public');
-            return Storage::disk('public')->url($path); // /storage/projects/xxx.jpg
+
+            // Cloudinary when configured — a container filesystem is ephemeral,
+            // and its CDN is what serves the responsive variants. Local public
+            // disk otherwise, so development needs no account.
+            return Cloudinary::upload($request->file('image'), 'projects')
+                ?? Storage::disk('public')->url($request->file('image')->store('projects', 'public'));
         }
 
         // An explicitly empty `image` means "remove it" — clear the stored file
@@ -142,15 +147,9 @@ class ProjectController extends Controller
         return $request->input('image', $project?->image);
     }
 
+    /** Deletes from whichever backend holds it; ignores external URLs. */
     private function deleteStoredImage(?string $url): void
     {
-        if (! $url) {
-            return;
-        }
-        // Only delete files we stored locally under /storage.
-        if (str_contains($url, '/storage/projects/')) {
-            $relative = 'projects/'.basename($url);
-            Storage::disk('public')->delete($relative);
-        }
+        Cloudinary::forget($url, 'projects');
     }
 }

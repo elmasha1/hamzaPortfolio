@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 import { AnimatePresence, m } from 'framer-motion'
-import { projectsApi } from '../../lib/adminApi'
+import { projectsApi, projectVideoApi } from '../../lib/adminApi'
 import { useToast } from '../../context/ToastContext'
 import { Plus, Pencil, Trash2, X, ChevronUp, ChevronDown } from '../../components/ui/Icons'
 import ConfirmModal from '../components/ConfirmModal'
+import VideoUploader from '../components/VideoUploader'
 
 /* Build multipart FormData from the form state. */
 function toFormData(form, file) {
@@ -41,6 +42,7 @@ const EMPTY = {
   challenges: '',
   outcome: '',
   outcome_metric: '',
+  video_url: '',
   architecture: [],
   year: '',
   team_size: '',
@@ -180,6 +182,41 @@ function ProjectForm({ initial, onClose, onSaved }) {
           <p className="mt-1 text-xs text-muted">
             Removing takes effect when you save. Without an image this project shows the mono
             &ldquo;No preview&rdquo; plate and is skipped by the home page&rsquo;s colour anchor.
+          </p>
+        </div>
+
+        {/* Case-study hero video — uploaded on its own so a large file can't
+            take the rest of the edit down with it. Needs the project to exist. */}
+        <div className="mt-6">
+          <label className="eyebrow mb-2 block">Case-study video</label>
+          {form.id ? (
+            <VideoUploader
+              value={form.video_url}
+              poster={form.image}
+              uploadFn={(file, onProgress) => projectVideoApi.upload(form.id, file, onProgress)}
+              onUploaded={(d) => {
+                set('video_url', d.video_url)
+                toast.success('Video uploaded — it now opens this case study.')
+              }}
+              onRemove={async () => {
+                try {
+                  await projectVideoApi.remove(form.id)
+                  set('video_url', '')
+                  toast.success('Video removed — the still image opens the case study again.')
+                } catch {
+                  toast.error('Could not remove the video.')
+                }
+              }}
+            />
+          ) : (
+            <p className="rounded-xl border border-line bg-white/[0.02] p-4 text-sm text-muted">
+              Save the project first, then reopen it to attach a video.
+            </p>
+          )}
+          <p className="mt-1 text-xs text-muted">
+            Plays silently on loop at the top of <span className="text-heading">/work/{form.id || ':id'}</span>,
+            with the screenshot above as its poster frame. Saves straight away — no need to press
+            Save changes.
           </p>
         </div>
 

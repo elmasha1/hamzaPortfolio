@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { m } from 'framer-motion'
+import { m, useReducedMotion } from 'framer-motion'
+import { img, imgSrcSet, video, videoPoster } from './lib/cloudinary'
 import SplitTextReveal from './components/ui/SplitTextReveal'
 import Meta from './components/ui/Meta'
 import CaseStudyRail from './components/CaseStudyRail'
@@ -87,6 +88,81 @@ function SpecTable({ project }) {
       )}
     </dl>
   )
+}
+
+/**
+ * HeroMedia — the full-bleed opener: a silent screen recording when the
+ * project has one, otherwise the still.
+ *
+ * Speed is the whole design here. The visitor clicked through from the work
+ * index and must not meet a black rectangle:
+ *
+ *  - The poster paints first. Cloudinary derives it from frame 0 of the video
+ *    itself (`so_0`), so it matches the first frame exactly and there is no
+ *    visible swap when playback starts. It's `fetchpriority="high"` because it
+ *    is the LCP element of this route.
+ *  - `preload="metadata"` — enough for the browser to start, without pulling
+ *    the whole file before it's needed.
+ *  - `f_auto,q_auto` lets Cloudinary send WebM/AV1 where supported and an
+ *    H.264 MP4 to Safari, at a quality picked per clip.
+ *  - Muted + inline + loop, so autoplay is permitted everywhere and the clip
+ *    behaves like a moving screenshot rather than a video player.
+ *  - The box holds its 21:9 aspect from the first paint, so nothing shifts
+ *    whichever branch renders.
+ *
+ * Under prefers-reduced-motion the video never plays — the poster stays, which
+ * is exactly the old design.
+ */
+function HeroMedia({ project }) {
+  const reduce = useReducedMotion()
+  const poster = videoPoster(project.video_url) || img(project.image, 1600)
+
+  if (project.video_url && !reduce) {
+    return (
+      <video
+        key={project.video_url}
+        src={video(project.video_url)}
+        poster={poster}
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="metadata"
+        aria-label={`${project.title} — product walkthrough`}
+        className="aspect-[21/9] w-full bg-paper-2 object-cover"
+      />
+    )
+  }
+
+  if (project.video_url && reduce) {
+    return (
+      <img
+        src={poster}
+        alt={`${project.title} — product screen`}
+        fetchpriority="high"
+        decoding="async"
+        className="aspect-[21/9] w-full object-cover"
+      />
+    )
+  }
+
+  if (project.image) {
+    return (
+      <img
+        src={img(project.image, 1600)}
+        srcSet={imgSrcSet(project.image)}
+        sizes="100vw"
+        alt={`${project.title} — product screen`}
+        fetchpriority="high"
+        decoding="async"
+        width="2400"
+        height="1029"
+        className="aspect-[21/9] w-full object-cover"
+      />
+    )
+  }
+
+  return <NoImage title={project.title} />
 }
 
 /* A numbered case-study block. Renders nothing without content. */
@@ -252,19 +328,7 @@ export default function ProjectDetail() {
             transition={{ duration: 0.9, ease: [0.76, 0, 0.24, 1], delay: 0.6 }}
             className="mt-14 border-y border-rule lg:mt-16"
           >
-            {p.image ? (
-              <img
-                src={p.image}
-                alt={`${p.title} — product screen`}
-                loading="eager"
-                decoding="async"
-                width="2400"
-                height="1029"
-                className="aspect-[21/9] w-full object-cover"
-              />
-            ) : (
-              <NoImage title={p.title} />
-            )}
+            <HeroMedia project={p} />
           </m.div>
 
           <div className="container-px mt-16 grid gap-10 lg:mt-20 lg:grid-cols-12 lg:gap-12">

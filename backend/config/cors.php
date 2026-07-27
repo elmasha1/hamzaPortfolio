@@ -14,13 +14,22 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => [
+    /*
+     * Local dev, plus whatever FRONTEND_URL is set to on the server. Set that
+     * to your Vercel production domain — the patterns below already cover
+     * Vercel's generated preview URLs, so branch deploys work without listing
+     * each one.
+     */
+    'allowed_origins' => array_values(array_filter([
         'http://localhost:5173',
         'http://127.0.0.1:5173',
-        // 'https://your-portfolio-domain.com',
-    ],
+        env('FRONTEND_URL'),
+    ])),
 
-    'allowed_origins_patterns' => [],
+    'allowed_origins_patterns' => [
+        // https://<project>-<hash>-<scope>.vercel.app
+        '#^https://[a-z0-9-]+\.vercel\.app$#i',
+    ],
 
     'allowed_headers' => ['*'],
 

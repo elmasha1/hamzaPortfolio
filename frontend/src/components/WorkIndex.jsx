@@ -9,6 +9,7 @@ import SplitTextReveal from './ui/SplitTextReveal'
 import Meta from './ui/Meta'
 import WorkPreview from './WorkPreview'
 import { ArrowUpRight } from './ui/Icons'
+import { img, imgSrcSet } from '../lib/cloudinary'
 
 const FALLBACK = [
   {
@@ -99,7 +100,9 @@ function Row({ project, index, onActivate }) {
         {project.image && (
           <div className="-mx-7 mt-6 aspect-video overflow-hidden border-y border-rule-soft bg-paper-2 sm:-mx-10 lg:hidden">
             <img
-              src={project.image}
+              src={img(project.image, 960)}
+              srcSet={imgSrcSet(project.image, [640, 960, 1280])}
+              sizes="100vw"
               alt={`${project.title} — preview`}
               loading="lazy"
               decoding="async"

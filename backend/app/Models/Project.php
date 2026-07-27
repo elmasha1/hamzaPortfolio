@@ -31,6 +31,7 @@ class Project extends Model
         'outcome',
         'outcome_metric',
         'image',
+        'video_url',
         'tech_tags',
         'live_url',
         'github_url',

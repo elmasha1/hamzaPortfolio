@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { m } from 'framer-motion'
 import { fetchProjects } from '../lib/api'
 import Meta from './ui/Meta'
+import { img, imgSrcSet } from '../lib/cloudinary'
 
 /**
  * Which project the anchor shows, advanced once per visit.
@@ -81,7 +82,9 @@ export default function BleedImage() {
     >
       <Link to={`/work/${project.id}`} data-cursor="view" className="group relative block">
         <img
-          src={project.image}
+          src={img(project.image, 1920)}
+          srcSet={imgSrcSet(project.image)}
+          sizes="100vw"
           alt={`${project.title} — product screen`}
           loading="lazy"
           decoding="async"
