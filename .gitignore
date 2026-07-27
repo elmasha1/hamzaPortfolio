@@ -26,3 +26,13 @@ Thumbs.db
 .vscode/
 # design-doc viewer runtime (not part of the app)
 support.js
+
+# Working artifacts from the v2 redesign — kept locally, not part of the app.
+# The design canvas from Claude Design, the audit of the build it replaced, and
+# the migration plan it followed. DEPLOYMENT.md is the doc that stays.
+*.dc.html
+DESIGN-SPEC.md
+MIGRATION-PLAN.md
+
+# Stray empty lockfile at the repo root — the real ones live in frontend/ and backend/
+/package-lock.json
