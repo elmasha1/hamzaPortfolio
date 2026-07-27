@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { AnimatePresence, motion, useMotionValue, useSpring, useReducedMotion } from 'framer-motion'
+import { AnimatePresence, m, useMotionValue, useSpring, useReducedMotion } from 'framer-motion'
 
 /**
  * Cursor — a 6px dot, and nothing else until it is over media.
@@ -11,7 +11,7 @@ import { AnimatePresence, motion, useMotionValue, useSpring, useReducedMotion } 
  * labelled disc appears only over things you can actually open —
  * `data-cursor="view"` and `data-cursor="open"`.
  *
- * Disabled on touch and under reduced motion. Text and form fields keep the
+ * Disabled on touch and under reduced m. Text and form fields keep the
  * native caret (see index.css).
  */
 const LABELS = { view: 'View', open: 'Open' }
@@ -66,7 +66,7 @@ export default function Cursor() {
   return (
     <>
       {/* The dot — exact, always */}
-      <motion.div
+      <m.div
         aria-hidden="true"
         className="pointer-events-none fixed left-0 top-0 z-[120] h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-ink-100"
         style={{ x, y }}
@@ -77,7 +77,7 @@ export default function Cursor() {
       {/* The labelled disc — only over media you can open */}
       <AnimatePresence>
         {label && (
-          <motion.div
+          <m.div
             aria-hidden="true"
             className="pointer-events-none fixed left-0 top-0 z-[120] flex h-20 w-20 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-ink-100"
             style={{ x: discX, y: discY }}
@@ -89,7 +89,7 @@ export default function Cursor() {
             <span className="font-mono text-eyebrow font-medium uppercase tracking-[0.09em] text-paper">
               {label}
             </span>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </>

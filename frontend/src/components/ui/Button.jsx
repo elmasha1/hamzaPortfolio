@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import useMagnetic from '../../hooks/useMagnetic'
 
 /**
@@ -30,9 +30,9 @@ export default function Button({
   ...rest
 }) {
   const { ref, x, y, handlers } = useMagnetic(strength)
-  // Strings map to motion.<tag>; components (Link, …) are wrapped via motion().
+  // Strings map to m.<tag>; components (Link, …) are wrapped via m().
   const Comp = useMemo(
-    () => (typeof as === 'string' ? motion[as] || motion.button : motion(as)),
+    () => (typeof as === 'string' ? m[as] || m.button : m(as)),
     [as]
   )
 

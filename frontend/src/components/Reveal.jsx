@@ -1,4 +1,4 @@
-import { motion, useReducedMotion } from 'framer-motion'
+import { m, useReducedMotion } from 'framer-motion'
 import { EASE, DUR } from '../lib/motion'
 
 /**
@@ -27,7 +27,7 @@ export default function Reveal({
   ...rest
 }) {
   const reduce = useReducedMotion()
-  const Comp = motion[as] || motion.div
+  const Comp = m[as] || m.div
 
   const variants = reduce
     ? {

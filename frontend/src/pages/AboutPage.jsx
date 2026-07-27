@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import { staggerContainer, fadeUp, viewportOnce } from '../lib/motion'
 import SectionLabel from '../components/ui/SectionLabel'
 import SplitTextReveal from '../components/ui/SplitTextReveal'
@@ -17,7 +17,7 @@ import useSectionNav from '../hooks/useSectionNav'
 function MaskedParagraph({ children, className = '' }) {
   return (
     <div className="overflow-hidden">
-      <motion.p
+      <m.p
         initial={{ y: '110%', opacity: 0 }}
         whileInView={{ y: '0%', opacity: 1 }}
         viewport={{ once: true, amount: 0.5 }}
@@ -25,7 +25,7 @@ function MaskedParagraph({ children, className = '' }) {
         className={className}
       >
         {children}
-      </motion.p>
+      </m.p>
     </div>
   )
 }
@@ -88,7 +88,7 @@ export default function AboutPage() {
           className="max-w-[20ch] font-heading text-h1 font-semibold text-ink-100"
         />
         {about.subline && (
-          <motion.p
+          <m.p
             initial={{ opacity: 0, y: 18 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={viewportOnce}
@@ -96,7 +96,7 @@ export default function AboutPage() {
             className="mt-8 max-w-[52ch] text-lead text-ink-300"
           >
             {about.subline}
-          </motion.p>
+          </m.p>
         )}
       </section>
 
@@ -125,7 +125,7 @@ export default function AboutPage() {
                 {/* pull-quote after the first paragraph */}
                 {i === 0 && about.pull_quote && (
                   <div className="my-14 overflow-hidden">
-                    <motion.blockquote
+                    <m.blockquote
                       initial={{ y: '105%', opacity: 0 }}
                       whileInView={{ y: '0%', opacity: 1 }}
                       viewport={{ once: true, amount: 0.5 }}
@@ -133,7 +133,7 @@ export default function AboutPage() {
                       className="border-l border-rule pl-6 font-heading text-h2 font-semibold text-ink-100"
                     >
                       “{about.pull_quote}”
-                    </motion.blockquote>
+                    </m.blockquote>
                   </div>
                 )}
               </div>
@@ -152,7 +152,7 @@ export default function AboutPage() {
             amount={0.4}
             className="font-heading text-h2 font-semibold text-ink-100"
           />
-          <motion.div
+          <m.div
             variants={staggerContainer(0.08)}
             initial="hidden"
             whileInView="show"
@@ -160,7 +160,7 @@ export default function AboutPage() {
             className="mt-12 border-t border-rule"
           >
             {philosophy.map((p, i) => (
-              <motion.div
+              <m.div
                 key={i}
                 variants={fadeUp(24)}
                 className="row grid grid-cols-[2.5rem_1fr] items-baseline gap-x-5 gap-y-2 px-2 py-7 md:grid-cols-[4rem_1fr_1fr] md:gap-x-8"
@@ -172,9 +172,9 @@ export default function AboutPage() {
                 <p className="col-span-2 max-w-[52ch] text-small text-ink-300 md:col-span-1">
                   {p.description}
                 </p>
-              </motion.div>
+              </m.div>
             ))}
-          </motion.div>
+          </m.div>
         </section>
       )}
 
@@ -192,7 +192,7 @@ export default function AboutPage() {
           amount={0.4}
           className="max-w-[16ch] font-heading text-h1 font-semibold text-ink-100"
         />
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={viewportOnce}
@@ -216,7 +216,7 @@ export default function AboutPage() {
             {cv.loading ? 'Preparing…' : 'Download CV'}
             <Download size={16} className="transition-transform duration-300 group-hover:translate-y-0.5" />
           </button>
-        </motion.div>
+        </m.div>
 
         {socials.length > 0 && (
           <div className="mt-12 flex flex-wrap gap-x-8 gap-y-3 border-t border-rule pt-8">

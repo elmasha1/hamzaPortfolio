@@ -6,7 +6,7 @@ import { useMotionValue, useSpring, useReducedMotion } from 'framer-motion'
  * then springs back on leave. Returns a ref, x/y motion values to bind to
  * `style`, and the mouse handlers to spread onto the element.
  *
- * Disabled automatically when the user prefers reduced motion.
+ * Disabled automatically when the user prefers reduced m.
  *
  * @param {number} strength  0..1 — how strongly it follows the cursor.
  */

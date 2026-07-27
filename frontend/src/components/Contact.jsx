@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { m, AnimatePresence } from 'framer-motion'
 import { sendContactMessage } from '../lib/api'
 import { staggerContainer, fadeUp, fadeIn, viewportOnce } from '../lib/motion'
 import Reveal from './Reveal'
@@ -36,7 +36,7 @@ function Field({ label, name, value, onChange, type = 'text', textarea, error, a
   const Comp = textarea ? 'textarea' : 'input'
   const errorId = `${name}-error`
   return (
-    <motion.div variants={fadeIn('right')} className="relative">
+    <m.div variants={fadeIn('right')} className="relative">
       <Comp
         id={name}
         name={name}
@@ -64,7 +64,7 @@ function Field({ label, name, value, onChange, type = 'text', textarea, error, a
           {error}
         </p>
       )}
-    </motion.div>
+    </m.div>
   )
 }
 
@@ -72,7 +72,7 @@ function Field({ label, name, value, onChange, type = 'text', textarea, error, a
 function SuccessCheck() {
   return (
     <svg viewBox="0 0 52 52" className="h-7 w-7 shrink-0" aria-hidden="true">
-      <motion.circle
+      <m.circle
         cx="26"
         cy="26"
         r="24"
@@ -83,7 +83,7 @@ function SuccessCheck() {
         animate={{ pathLength: 1 }}
         transition={{ duration: 0.5, ease: 'easeInOut' }}
       />
-      <motion.path
+      <m.path
         d="M16 27l7 7 14-15"
         fill="none"
         stroke="#F5F5F4"
@@ -143,7 +143,7 @@ export default function Contact({ scope = 'Home', index = '06', faq = [], classN
     <section id="contact" className={`section-y relative ${className}`}>
       <div className="container-px grid items-start gap-14 lg:grid-cols-12 lg:gap-20">
         {/* Left — the offer, the process, the channels */}
-        <motion.div
+        <m.div
           variants={staggerContainer(0.1)}
           initial="hidden"
           whileInView="show"
@@ -159,18 +159,18 @@ export default function Contact({ scope = 'Home', index = '06', faq = [], classN
             amount={0.3}
             className="max-w-[16ch] font-heading text-h2 font-semibold text-ink-100"
           />
-          <motion.p variants={fadeUp()} className="mt-6 max-w-[42ch] text-lead text-ink-300">
+          <m.p variants={fadeUp()} className="mt-6 max-w-[42ch] text-lead text-ink-300">
             Product builds, rescue work and full-stack roles — React and Laravel, remote from
             Rabat or on-site. If it ships and someone has to maintain it, it&rsquo;s the right
             message.
-          </motion.p>
+          </m.p>
 
-          <motion.div variants={fadeUp()}>
+          <m.div variants={fadeUp()}>
             <WhatsNext steps={settings.whats_next} />
-          </motion.div>
+          </m.div>
 
           {socials.length > 0 && (
-            <motion.div variants={fadeUp()} className="mt-9 flex flex-wrap gap-2.5">
+            <m.div variants={fadeUp()} className="mt-9 flex flex-wrap gap-2.5">
               {socials.map((s) => (
                 <a
                   key={s.label}
@@ -183,14 +183,14 @@ export default function Contact({ scope = 'Home', index = '06', faq = [], classN
                   <s.Icon size={19} />
                 </a>
               ))}
-            </motion.div>
+            </m.div>
           )}
-        </motion.div>
+        </m.div>
 
         {/* Right — the form, then the objections */}
         <div className="lg:col-span-7">
           <Reveal as="form" onSubmit={handleSubmit} delay={0.1} noValidate>
-            <motion.div
+            <m.div
               variants={staggerContainer(0.1)}
               initial="hidden"
               whileInView="show"
@@ -228,7 +228,7 @@ export default function Contact({ scope = 'Home', index = '06', faq = [], classN
                 />
               </div>
 
-              <motion.div
+              <m.div
                 variants={fadeUp()}
                 className="mt-11 flex flex-col items-start gap-5 sm:flex-row sm:items-center sm:justify-between sm:gap-6"
               >
@@ -259,13 +259,13 @@ export default function Contact({ scope = 'Home', index = '06', faq = [], classN
                   <br />
                   The reply comes from me.
                 </Meta>
-              </motion.div>
+              </m.div>
 
               {/* Status messages — announced to assistive tech */}
               <div aria-live="polite" role="status" className="mt-8">
                 <AnimatePresence>
                   {state === 'success' && (
-                    <motion.div
+                    <m.div
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0 }}
@@ -273,31 +273,31 @@ export default function Contact({ scope = 'Home', index = '06', faq = [], classN
                     >
                       <SuccessCheck />
                       Message sent — I&rsquo;ll get back to you soon.
-                    </motion.div>
+                    </m.div>
                   )}
                   {state === 'error' && Object.keys(errors).length === 0 && (
-                    <motion.div
+                    <m.div
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0 }}
                       className="font-medium text-signal"
                     >
                       Something went wrong. Please try again.
-                    </motion.div>
+                    </m.div>
                   )}
                   {state === 'error' && Object.keys(errors).length > 0 && (
-                    <motion.p
+                    <m.p
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
                       className="font-mono text-meta text-signal"
                     >
                       Please fix the highlighted fields above.
-                    </motion.p>
+                    </m.p>
                   )}
                 </AnimatePresence>
               </div>
-            </motion.div>
+            </m.div>
           </Reveal>
 
           <Faq items={faq} />

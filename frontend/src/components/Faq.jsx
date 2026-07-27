@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, m } from 'framer-motion'
 import { staggerContainer, fadeUp, viewportOnce, DUR, EASE } from '../lib/motion'
 import Meta from './ui/Meta'
 
@@ -10,7 +10,7 @@ function Row({ item, index, open, onToggle }) {
   const buttonId = `faq-button-${index}`
 
   return (
-    <motion.div variants={fadeUp(16)} className="border-b border-rule-soft">
+    <m.div variants={fadeUp(16)} className="border-b border-rule-soft">
       <h3>
         <button
           type="button"
@@ -41,7 +41,7 @@ function Row({ item, index, open, onToggle }) {
 
       <AnimatePresence initial={false}>
         {open && (
-          <motion.div
+          <m.div
             id={panelId}
             role="region"
             aria-labelledby={buttonId}
@@ -52,10 +52,10 @@ function Row({ item, index, open, onToggle }) {
             className="overflow-hidden"
           >
             <p className="max-w-[60ch] pb-5 pl-[2.625rem] text-small text-ink-300">{item.a}</p>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
-    </motion.div>
+    </m.div>
   )
 }
 
@@ -75,7 +75,7 @@ export default function Faq({ items = [], title = 'Before you write' }) {
   if (rows.length === 0) return null
 
   return (
-    <motion.div
+    <m.div
       variants={staggerContainer(0.06)}
       initial="hidden"
       whileInView="show"
@@ -94,6 +94,6 @@ export default function Faq({ items = [], title = 'Before you write' }) {
           onToggle={() => setOpen(open === i ? -1 : i)}
         />
       ))}
-    </motion.div>
+    </m.div>
   )
 }

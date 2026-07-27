@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import GrainOverlay from './components/GrainOverlay'
 import { ArrowLeft } from './components/ui/Icons'
 
@@ -13,7 +13,7 @@ export default function NotFound() {
   return (
     <div className="relative flex min-h-screen items-center justify-center px-6">
       <GrainOverlay />
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 18 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
@@ -32,7 +32,7 @@ export default function NotFound() {
         >
           <ArrowLeft size={18} /> Back to home
         </Link>
-      </motion.div>
+      </m.div>
     </div>
   )
 }

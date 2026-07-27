@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { m, AnimatePresence } from 'framer-motion'
 import { ArrowUp } from './ui/Icons'
 import { scrollToTop } from '../lib/scroll'
 
@@ -20,7 +20,7 @@ export default function ScrollToTop() {
   return (
     <AnimatePresence>
       {show && (
-        <motion.button
+        <m.button
           aria-label="Scroll to top"
           onClick={scrollToTop}
           initial={{ opacity: 0, y: 20, scale: 0.8 }}
@@ -31,7 +31,7 @@ export default function ScrollToTop() {
           className="fixed bottom-[5.25rem] right-6 z-[70] flex h-12 w-12 items-center justify-center rounded-full border border-rule bg-paper text-ink-100 transition-colors hover:bg-ink-100 hover:text-paper"
         >
           <ArrowUp size={20} strokeWidth={2} />
-        </motion.button>
+        </m.button>
       )}
     </AnimatePresence>
   )

@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, m } from 'framer-motion'
 import { Check, X, Info } from '../components/ui/Icons'
 
 /**
@@ -50,7 +50,7 @@ export function ToastProvider({ children }) {
       <div className="pointer-events-none fixed right-4 top-4 z-[120] flex w-[min(92vw,22rem)] flex-col gap-2">
         <AnimatePresence>
           {toasts.map((t) => (
-            <motion.div
+            <m.div
               key={t.id}
               layout
               initial={{ opacity: 0, x: 60, scale: 0.9 }}
@@ -68,7 +68,7 @@ export function ToastProvider({ children }) {
                 })()}
               </span>
               <span className="text-ink-100">{t.message}</span>
-            </motion.div>
+            </m.div>
           ))}
         </AnimatePresence>
       </div>

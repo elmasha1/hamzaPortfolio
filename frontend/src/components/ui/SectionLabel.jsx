@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import { fadeUp } from '../../lib/motion'
 
 /**
@@ -21,7 +21,7 @@ export default function SectionLabel({ scope, index, num, children, className = 
   const number = index ?? num
 
   return (
-    <motion.span
+    <m.span
       variants={fadeUp(16)}
       className={`mb-6 flex items-baseline gap-4 font-mono text-eyebrow font-medium uppercase text-ink-500 ${className}`}
     >
@@ -31,6 +31,6 @@ export default function SectionLabel({ scope, index, num, children, className = 
         {number && <>{number} — </>}
         {children}
       </span>
-    </motion.span>
+    </m.span>
   )
 }

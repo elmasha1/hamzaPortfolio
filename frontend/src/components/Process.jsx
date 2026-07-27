@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import { staggerContainer, fadeUp, viewportOnce } from '../lib/motion'
 import SectionLabel from './ui/SectionLabel'
 import SplitTextReveal from './ui/SplitTextReveal'
@@ -22,7 +22,7 @@ export default function Process({ steps = [], heading, scope = 'Home', index = '
   return (
     <section id="process" className="section-y relative">
       <div className="container-px">
-        <motion.div
+        <m.div
           variants={staggerContainer()}
           initial="hidden"
           whileInView="show"
@@ -37,9 +37,9 @@ export default function Process({ steps = [], heading, scope = 'Home', index = '
             amount={0.4}
             className="max-w-[20ch] font-heading text-h2 font-semibold text-ink-100"
           />
-        </motion.div>
+        </m.div>
 
-        <motion.div
+        <m.div
           variants={staggerContainer(0.08)}
           initial="hidden"
           whileInView="show"
@@ -47,7 +47,7 @@ export default function Process({ steps = [], heading, scope = 'Home', index = '
           className="mt-14 border-t border-rule lg:mt-16"
         >
           {rows.map((step, i) => (
-            <motion.div
+            <m.div
               key={step.title || i}
               variants={fadeUp(24)}
               className="row grid grid-cols-[2rem_1fr] items-baseline gap-x-5 gap-y-2 px-2 py-8 md:grid-cols-[3rem_0.9fr_1.4fr_auto] md:gap-x-8"
@@ -71,9 +71,9 @@ export default function Process({ steps = [], heading, scope = 'Home', index = '
                   {step.artifact}
                 </Meta>
               )}
-            </motion.div>
+            </m.div>
           ))}
-        </motion.div>
+        </m.div>
       </div>
     </section>
   )

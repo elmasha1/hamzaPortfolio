@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, m } from 'framer-motion'
 import { staggerContainer, fadeUp, viewportOnce, DUR, EASE } from '../lib/motion'
 import SectionLabel from './ui/SectionLabel'
 import SplitTextReveal from './ui/SplitTextReveal'
@@ -61,7 +61,7 @@ function Row({ row, index }) {
   const panelId = `engagement-panel-${index}`
 
   return (
-    <motion.div
+    <m.div
       variants={fadeUp(24)}
       className="row grid grid-cols-[1.5rem_1fr] items-start gap-x-5 gap-y-4 px-2 py-8 lg:grid-cols-[1.5rem_1.15fr_1.35fr_9.5rem] lg:gap-x-8 lg:py-9"
     >
@@ -91,7 +91,7 @@ function Row({ row, index }) {
             </button>
             <AnimatePresence initial={false}>
               {open && (
-                <motion.div
+                <m.div
                   id={panelId}
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: 'auto', opacity: 1 }}
@@ -102,7 +102,7 @@ function Row({ row, index }) {
                   <div className="pt-4">
                     <Deliverables items={deliverables} timeline={row.timeline} />
                   </div>
-                </motion.div>
+                </m.div>
               )}
             </AnimatePresence>
           </div>
@@ -138,7 +138,7 @@ function Row({ row, index }) {
           </button>
         )}
       </div>
-    </motion.div>
+    </m.div>
   )
 }
 
@@ -162,7 +162,7 @@ export default function Engagement({ pricing, error, onRetry, scope = 'Home', in
   return (
     <section id="pricing" className="section-y relative">
       <div className="container-px">
-        <motion.div
+        <m.div
           variants={staggerContainer()}
           initial="hidden"
           whileInView="show"
@@ -180,12 +180,12 @@ export default function Engagement({ pricing, error, onRetry, scope = 'Home', in
               className="max-w-[20ch] font-heading text-h2 font-semibold text-ink-100"
             />
             {pricing?.subline && (
-              <motion.p variants={fadeUp(16)} className="max-w-[46ch] text-ink-300">
+              <m.p variants={fadeUp(16)} className="max-w-[46ch] text-ink-300">
                 {pricing.subline}
-              </motion.p>
+              </m.p>
             )}
           </div>
-        </motion.div>
+        </m.div>
 
         {/* Loading — three row-height skeletons: same rhythm, no layout shift */}
         {loading && (
@@ -210,7 +210,7 @@ export default function Engagement({ pricing, error, onRetry, scope = 'Home', in
 
         {rows.length > 0 && (
           <>
-            <motion.div
+            <m.div
               variants={staggerContainer(0.08)}
               initial="hidden"
               whileInView="show"
@@ -220,7 +220,7 @@ export default function Engagement({ pricing, error, onRetry, scope = 'Home', in
               {rows.map((row, i) => (
                 <Row key={row.title || i} row={row} index={i} />
               ))}
-            </motion.div>
+            </m.div>
 
             <div className="mt-10 flex flex-col items-start gap-5 sm:flex-row sm:items-center sm:gap-6">
               <Button as="a" href="#contact" onClick={(e) => goToSection('#contact', e)}>

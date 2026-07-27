@@ -1,6 +1,6 @@
 import { Suspense, useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, m } from 'framer-motion'
 
 import Cursor from '../components/Cursor'
 import GrainOverlay from '../components/GrainOverlay'
@@ -44,7 +44,7 @@ export default function SiteLayout() {
       <div className="relative z-10">
         <Navbar />
         <AnimatePresence mode="wait" initial={false}>
-          <motion.main
+          <m.main
             key={location.pathname}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -56,7 +56,7 @@ export default function SiteLayout() {
             <Suspense fallback={<div className="min-h-screen" />}>
               <Outlet />
             </Suspense>
-          </motion.main>
+          </m.main>
         </AnimatePresence>
         <Footer />
       </div>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import { staggerContainer, fadeUp, viewportOnce } from '../lib/motion'
 import SectionLabel from './ui/SectionLabel'
 import { DynamicIcon } from './ui/Icons'
@@ -64,7 +64,7 @@ export default function Technologies({ scope = 'About', index = '04' }) {
               className="grid gap-5 border-b border-rule py-8 md:grid-cols-[0.24fr_1fr] md:gap-10"
             >
               {/* Category */}
-              <motion.div
+              <m.div
                 initial={{ opacity: 0, y: 12 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={viewportOnce}
@@ -73,10 +73,10 @@ export default function Technologies({ scope = 'About', index = '04' }) {
               >
                 <DynamicIcon name={CAT_ICON[g.label] || 'Code'} size={16} strokeWidth={1.5} className="shrink-0 text-ink-100" />
                 <p className="eyebrow">{g.label}</p>
-              </motion.div>
+              </m.div>
 
               {/* Items grid */}
-              <motion.div
+              <m.div
                 variants={staggerContainer(0.05)}
                 initial="hidden"
                 whileInView="show"
@@ -84,7 +84,7 @@ export default function Technologies({ scope = 'About', index = '04' }) {
                 className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-4"
               >
                 {g.items.map((it) => (
-                  <motion.div
+                  <m.div
                     key={it.name}
                     variants={fadeUp(16)}
                     className="group flex items-center gap-3 rounded-[5px] border border-rule px-3.5 py-3 transition-all duration-300 hover:-translate-y-0.5 hover:border-white/25 hover:bg-white/[0.03]"
@@ -97,9 +97,9 @@ export default function Technologies({ scope = 'About', index = '04' }) {
                     <span className="truncate text-sm text-ink-300 transition-colors duration-300 group-hover:text-ink-100">
                       {it.name}
                     </span>
-                  </motion.div>
+                  </m.div>
                 ))}
-              </motion.div>
+              </m.div>
             </div>
           ))}
         </div>

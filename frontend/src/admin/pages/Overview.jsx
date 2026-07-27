@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import { ArrowRight } from '../../components/ui/Icons'
 import { overviewApi } from '../../lib/adminApi'
 
 function StatCard({ label, value, accent, delay }) {
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.4 }}
@@ -14,7 +14,7 @@ function StatCard({ label, value, accent, delay }) {
     >
       <p className="eyebrow">{label}</p>
       <p className={`mt-2 font-heading text-3xl font-semibold ${accent}`}>{value}</p>
-    </motion.div>
+    </m.div>
   )
 }
 

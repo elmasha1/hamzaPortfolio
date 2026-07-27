@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import { ArrowUp, ArrowUpRight } from './ui/Icons'
 import LocalTime from './LocalTime'
 import Meta from './ui/Meta'
@@ -55,7 +55,7 @@ export default function Footer() {
     <footer className="relative border-t border-rule">
       <GridOverlay visible={grid} />
 
-      <motion.div
+      <m.div
         variants={reveal}
         initial="hidden"
         whileInView="show"
@@ -209,7 +209,7 @@ export default function Footer() {
           </button>
           <span className="sm:order-2">React · Tailwind · Laravel</span>
         </div>
-      </motion.div>
+      </m.div>
     </footer>
   )
 }

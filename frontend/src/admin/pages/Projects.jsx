@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, m } from 'framer-motion'
 import { projectsApi } from '../../lib/adminApi'
 import { useToast } from '../../context/ToastContext'
 import { Plus, Pencil, Trash2, X, ChevronUp, ChevronDown } from '../../components/ui/Icons'
@@ -123,14 +123,14 @@ function ProjectForm({ initial, onClose, onSaved }) {
     'w-full rounded-xl border border-line bg-white/[0.04] px-3 py-2 text-sm text-heading outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20'
 
   return (
-    <motion.div
+    <m.div
       className="fixed inset-0 z-[115] flex justify-end bg-dark/50 backdrop-blur-sm"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       onClick={onClose}
     >
-      <motion.form
+      <m.form
         onSubmit={submit}
         onClick={(e) => e.stopPropagation()}
         initial={{ x: 460 }}
@@ -329,8 +329,8 @@ function ProjectForm({ initial, onClose, onSaved }) {
             </span>
           </button>
         </div>
-      </motion.form>
-    </motion.div>
+      </m.form>
+    </m.div>
   )
 }
 

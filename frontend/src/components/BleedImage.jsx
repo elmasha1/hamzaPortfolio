@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import { fetchProjects } from '../lib/api'
 import Meta from './ui/Meta'
 
@@ -37,7 +37,7 @@ export default function BleedImage() {
   if (!project) return null
 
   return (
-    <motion.section
+    <m.section
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
       viewport={{ once: true, amount: 0.2 }}
@@ -70,6 +70,6 @@ export default function BleedImage() {
           </Meta>
         </div>
       </Link>
-    </motion.section>
+    </m.section>
   )
 }

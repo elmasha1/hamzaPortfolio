@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
+import { m, AnimatePresence } from 'framer-motion'
 import { useSettings } from '../context/SettingsContext'
 import useCvDownload from '../hooks/useCvDownload'
 import useSectionNav from '../hooks/useSectionNav'
@@ -92,7 +92,7 @@ export default function Navbar() {
 
             <AnimatePresence>
               {scrolled && settings.available !== false && (
-                <motion.span
+                <m.span
                   initial={{ opacity: 0, width: 0 }}
                   animate={{ opacity: 1, width: 'auto' }}
                   exit={{ opacity: 0, width: 0 }}
@@ -104,7 +104,7 @@ export default function Navbar() {
                     <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-ink-100" />
                   </span>
                   Available
-                </motion.span>
+                </m.span>
               )}
             </AnimatePresence>
           </div>
@@ -175,7 +175,7 @@ export default function Navbar() {
       {/* Full-screen menu overlay (mobile / tablet) — clip-path wipe + staggered links */}
       <AnimatePresence>
         {open && (
-          <motion.div
+          <m.div
             className="fixed inset-0 z-[60] flex flex-col justify-between bg-paper px-5 pb-8 pt-24 sm:px-8 sm:pb-12 lg:hidden"
             initial={{ clipPath: 'inset(0% 0% 100% 0%)' }}
             animate={{ clipPath: 'inset(0% 0% 0% 0%)' }}
@@ -187,7 +187,7 @@ export default function Navbar() {
                 const active = isActivePath(location.pathname, l)
                 return (
                   <div key={l.label} className="overflow-hidden">
-                    <motion.div
+                    <m.div
                       initial={{ y: '110%' }}
                       animate={{ y: '0%' }}
                       exit={{ y: '110%' }}
@@ -202,13 +202,13 @@ export default function Navbar() {
                         <span className={`font-mono text-meta ${active ? 'text-ink-100' : 'text-ink-700'}`}>0{i + 1}</span>
                         {l.label}
                       </Link>
-                    </motion.div>
+                    </m.div>
                   </div>
                 )
               })}
             </nav>
 
-            <motion.div
+            <m.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -228,8 +228,8 @@ export default function Navbar() {
                 </button>
               </div>
               <LocalTime className="text-xs uppercase tracking-[0.14em] text-ink-500" />
-            </motion.div>
-          </motion.div>
+            </m.div>
+          </m.div>
         )}
       </AnimatePresence>
     </>

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import SplitTextReveal from './components/ui/SplitTextReveal'
 import Meta from './components/ui/Meta'
 import CaseStudyRail from './components/CaseStudyRail'
@@ -204,7 +204,7 @@ export default function ProjectDetail() {
   return (
     <div className="relative min-h-screen">
       {/* Clip-wipe arrival transition */}
-      <motion.div
+      <m.div
         aria-hidden="true"
         className="pointer-events-none fixed inset-0 z-[200] bg-paper"
         initial={{ scaleY: 1 }}
@@ -244,7 +244,7 @@ export default function ProjectDetail() {
           </div>
 
           {/* Full-bleed, full colour — the case study is where colour lives. */}
-          <motion.div
+          <m.div
             initial={{ clipPath: 'inset(100% 0% 0% 0%)' }}
             animate={{ clipPath: 'inset(0% 0% 0% 0%)' }}
             transition={{ duration: 0.9, ease: [0.76, 0, 0.24, 1], delay: 0.6 }}
@@ -263,7 +263,7 @@ export default function ProjectDetail() {
             ) : (
               <NoImage title={p.title} />
             )}
-          </motion.div>
+          </m.div>
 
           <div className="container-px mt-16 grid gap-10 lg:mt-20 lg:grid-cols-12 lg:gap-12">
             <div className="lg:col-span-3">

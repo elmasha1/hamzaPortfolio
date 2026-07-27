@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import { staggerContainer, fadeUp, viewportOnce } from '../lib/motion'
 import SectionLabel from './ui/SectionLabel'
 import SplitTextReveal from './ui/SplitTextReveal'
@@ -25,7 +25,7 @@ export default function Overview({ scope = 'Home', index = '01' }) {
   return (
     <section id="overview" className="section-y relative">
       <div className="container-px">
-        <motion.div
+        <m.div
           variants={staggerContainer()}
           initial="hidden"
           whileInView="show"
@@ -42,15 +42,15 @@ export default function Overview({ scope = 'Home', index = '01' }) {
             className="font-heading text-h2 font-semibold text-ink-100"
           />
           {settings.overview_intro && (
-            <motion.p variants={fadeUp(20)} className="mt-6 max-w-[55ch] text-ink-300">
+            <m.p variants={fadeUp(20)} className="mt-6 max-w-[55ch] text-ink-300">
               {settings.overview_intro}
-            </motion.p>
+            </m.p>
           )}
-        </motion.div>
+        </m.div>
 
         {/* The grid survives any item count: one column below 640, two above,
             three from 1280 when there are enough cells to fill a row. */}
-        <motion.div
+        <m.div
           variants={staggerContainer(0.08)}
           initial="hidden"
           whileInView="show"
@@ -62,7 +62,7 @@ export default function Overview({ scope = 'Home', index = '01' }) {
           {items.map((item, i) => {
             const tech = Array.isArray(item.tech) ? item.tech : []
             return (
-              <motion.article key={item.title || i} variants={fadeUp(20)} className="cell pad group flex flex-col">
+              <m.article key={item.title || i} variants={fadeUp(20)} className="cell pad group flex flex-col">
                 <Meta className="text-ink-300">{String(i + 1).padStart(2, '0')}</Meta>
 
                 <h3 className="mt-10 font-heading text-h3 font-medium text-ink-100">
@@ -88,10 +88,10 @@ export default function Overview({ scope = 'Home', index = '01' }) {
                     )}
                   </div>
                 )}
-              </motion.article>
+              </m.article>
             )
           })}
-        </motion.div>
+        </m.div>
       </div>
     </section>
   )

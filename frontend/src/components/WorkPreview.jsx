@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import { DUR, EASE } from '../lib/motion'
 import Meta from './ui/Meta'
 
@@ -39,7 +39,7 @@ export default function WorkPreview({ projects, active, meta, reduce }) {
         {projects.map((p, i) => {
           const isActive = i === active
           return (
-            <motion.div
+            <m.div
               key={p.id ?? i}
               initial={false}
               animate={{ opacity: isActive ? 1 : 0 }}
@@ -62,7 +62,7 @@ export default function WorkPreview({ projects, active, meta, reduce }) {
               ) : (
                 <NoPreview title={p.title} />
               )}
-            </motion.div>
+            </m.div>
           )
         })}
       </div>

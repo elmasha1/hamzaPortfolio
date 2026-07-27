@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import { fetchProjects } from '../lib/api'
 import { staggerContainer, fadeUp, viewportOnce } from '../lib/motion'
 import { useReducedEffects } from '../hooks/usePerf'
@@ -53,7 +53,7 @@ function Row({ project, index, onActivate }) {
   const problem = project.problem || project.description
 
   return (
-    <motion.div variants={fadeUp(20)}>
+    <m.div variants={fadeUp(20)}>
       <Link
         to={`/work/${project.id}`}
         onMouseEnter={onActivate}
@@ -105,7 +105,7 @@ function Row({ project, index, onActivate }) {
           </div>
         </div>
       </Link>
-    </motion.div>
+    </m.div>
   )
 }
 
@@ -147,7 +147,7 @@ export default function WorkIndex({ scope = 'Home', index = '02' }) {
   return (
     <section id="projects" className="section-y relative">
       <div className="container-px">
-        <motion.div
+        <m.div
           variants={staggerContainer()}
           initial="hidden"
           whileInView="show"
@@ -168,11 +168,11 @@ export default function WorkIndex({ scope = 'Home', index = '02' }) {
               {String(projects.length).padStart(2, '0')} selected
             </Meta>
           </div>
-        </motion.div>
+        </m.div>
 
         <div className="mt-14 grid gap-12 lg:mt-16 lg:grid-cols-12 lg:gap-12">
           {/* The index */}
-          <motion.div
+          <m.div
             variants={staggerContainer(0.06)}
             initial="hidden"
             whileInView="show"
@@ -182,7 +182,7 @@ export default function WorkIndex({ scope = 'Home', index = '02' }) {
             {projects.map((p, i) => (
               <Row key={p.id ?? i} project={p} index={i} onActivate={() => setActive(i)} />
             ))}
-          </motion.div>
+          </m.div>
 
           {/* The sticky colour preview — desktop only */}
           <div className="hidden lg:col-span-5 lg:block">

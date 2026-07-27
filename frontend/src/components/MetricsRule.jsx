@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import { staggerContainer, fadeUp, viewportOnce } from '../lib/motion'
 import CountUp from './ui/CountUp'
 import Meta from './ui/Meta'
@@ -14,27 +14,27 @@ import Meta from './ui/Meta'
  * Dashboard-driven via `settings.metrics` — self-hides when empty.
  */
 export default function MetricsRule({ metrics = [] }) {
-  const items = Array.isArray(metrics) ? metrics.filter((m) => m && (m.value || m.label)) : []
+  const items = Array.isArray(metrics) ? metrics.filter((x) => x && (x.value || x.label)) : []
   if (items.length === 0) return null
 
   return (
-    <motion.div
+    <m.div
       variants={staggerContainer(0.08)}
       initial="hidden"
       whileInView="show"
       viewport={viewportOnce}
       className="mt-14 grid grid-cols-2 gap-px border-t border-rule bg-rule-soft sm:mt-20 lg:grid-cols-4"
     >
-      {items.map((m, i) => (
-        <motion.div key={m.label || i} variants={fadeUp(16)} className="cell px-5 py-7 sm:px-8 lg:px-10">
+      {items.map((metric, i) => (
+        <m.div key={metric.label || i} variants={fadeUp(16)} className="cell px-5 py-7 sm:px-8 lg:px-10">
           <div className="font-heading text-h2 font-semibold text-ink-100">
-            <CountUp value={m.value} suffix={m.suffix || ''} />
+            <CountUp value={metric.value} suffix={metric.suffix || ''} />
           </div>
           <Meta caps className="mt-3 block max-w-[22ch] tracking-[0.05em]">
-            {m.label}
+            {metric.label}
           </Meta>
-        </motion.div>
+        </m.div>
       ))}
-    </motion.div>
+    </m.div>
   )
 }

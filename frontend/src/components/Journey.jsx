@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { motion, useReducedMotion } from 'framer-motion'
+import { m, useReducedMotion } from 'framer-motion'
 import { staggerContainer, fadeUp, viewportOnce } from '../lib/motion'
 import SectionLabel from './ui/SectionLabel'
 import SplitTextReveal from './ui/SplitTextReveal'
@@ -15,11 +15,11 @@ import { useSettings } from '../context/SettingsContext'
  */
 function groupByDate(milestones) {
   const groups = []
-  for (const m of milestones) {
-    const label = (m.date_label || '').trim()
+  for (const milestone of milestones) {
+    const label = (milestone.date_label || '').trim()
     const last = groups[groups.length - 1]
-    if (last && last.label === label) last.items.push(m)
-    else groups.push({ label, items: [m] })
+    if (last && last.label === label) last.items.push(milestone)
+    else groups.push({ label, items: [milestone] })
   }
   return groups
 }
@@ -28,7 +28,7 @@ function groupByDate(milestones) {
 function Entry({ milestone }) {
   const tags = Array.isArray(milestone.tags) ? milestone.tags : []
   return (
-    <motion.div
+    <m.div
       variants={fadeUp(20)}
       className="relative grid gap-x-8 gap-y-3 border-b border-rule-soft py-7 md:grid-cols-[1fr_auto] md:items-baseline"
     >
@@ -58,7 +58,7 @@ function Entry({ milestone }) {
           {tags.join(' · ')}
         </Meta>
       )}
-    </motion.div>
+    </m.div>
   )
 }
 
@@ -105,7 +105,7 @@ export default function Journey({ scope = 'Home', index = '04' }) {
     <section id="journey" className="section-y relative">
       <div className="container-px">
         {/* Header */}
-        <motion.div
+        <m.div
           variants={staggerContainer()}
           initial="hidden"
           whileInView="show"
@@ -122,11 +122,11 @@ export default function Journey({ scope = 'Home', index = '04' }) {
             className="font-heading text-h2 font-semibold text-ink-100"
           />
           {settings.journey_intro && (
-            <motion.p variants={fadeUp(20)} className="mt-6 max-w-[55ch] text-ink-300">
+            <m.p variants={fadeUp(20)} className="mt-6 max-w-[55ch] text-ink-300">
               {settings.journey_intro}
-            </motion.p>
+            </m.p>
           )}
-        </motion.div>
+        </m.div>
 
         {/* Timeline */}
         <div ref={trackRef} className="relative mt-14 lg:mt-16">
@@ -138,13 +138,13 @@ export default function Journey({ scope = 'Home', index = '04' }) {
             aria-hidden="true"
             className="pointer-events-none absolute inset-y-0 left-[7rem] hidden w-px bg-rule md:block"
           />
-          <motion.div
+          <m.div
             aria-hidden="true"
             style={{ scaleY: reduce ? 1 : beam }}
             className="pointer-events-none absolute inset-y-0 left-[7rem] hidden w-px origin-top bg-ink-100 md:block"
           />
 
-          <motion.div
+          <m.div
             variants={staggerContainer(0.06)}
             initial="hidden"
             whileInView="show"
@@ -159,25 +159,25 @@ export default function Journey({ scope = 'Home', index = '04' }) {
                     marker beside its entries from md up. */}
                 <div className="relative">
                   {group.label && (
-                    <motion.div
+                    <m.div
                       variants={fadeUp(16)}
                       className="border-b border-rule pb-2 pt-8 first:pt-0 md:sticky md:top-28 md:border-0 md:pb-0 md:pt-7"
                     >
                       <span className="tabular font-heading text-h3 font-medium text-ink-100">
                         {group.label}
                       </span>
-                    </motion.div>
+                    </m.div>
                   )}
                 </div>
 
                 <div>
-                  {group.items.map((m, i) => (
-                    <Entry key={m.id ?? `${gi}-${i}`} milestone={m} />
+                  {group.items.map((entry, i) => (
+                    <Entry key={entry.id ?? `${gi}-${i}`} milestone={entry} />
                   ))}
                 </div>
               </div>
             ))}
-          </motion.div>
+          </m.div>
         </div>
       </div>
     </section>

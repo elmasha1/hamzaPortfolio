@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { motion, useReducedMotion } from 'framer-motion'
+import { m, useReducedMotion } from 'framer-motion'
 import { Code2 } from 'lucide-react'
 import Button from './ui/Button'
 import Meta from './ui/Meta'
@@ -135,7 +135,7 @@ export default function Hero() {
     >
       <div className="container-px">
         {/* BAND 1 — utility rail */}
-        <motion.div
+        <m.div
           variants={seq(0)}
           initial="hidden"
           animate="show"
@@ -153,7 +153,7 @@ export default function Hero() {
               {item}
             </span>
           ))}
-        </motion.div>
+        </m.div>
 
         {/* BANDS 2–4 — headline + positioning + portrait + proof strip.
             Mobile order: text → proof strip → portrait (full-bleed band).
@@ -161,7 +161,7 @@ export default function Hero() {
         <div className="mt-10 flex flex-col gap-y-14 lg:mt-11 lg:grid lg:grid-cols-12 lg:gap-x-6 lg:gap-y-0">
           {/* BAND 2 + positioning */}
           <div className="order-1 lg:col-span-8 lg:pr-6">
-            <motion.h1
+            <m.h1
               variants={headline}
               initial="hidden"
               animate="show"
@@ -169,25 +169,25 @@ export default function Hero() {
             >
               {words.map((w, i) => (
                 <span key={i} className="mr-[0.22em] inline-block overflow-hidden align-bottom">
-                  <motion.span variants={word} className="inline-block">
+                  <m.span variants={word} className="inline-block">
                     {w}
-                  </motion.span>
+                  </m.span>
                 </span>
               ))}
-            </motion.h1>
+            </m.h1>
 
             {settings.hero_subtitle && (
-              <motion.p
+              <m.p
                 variants={seq(3)}
                 initial="hidden"
                 animate="show"
                 className="mt-8 max-w-[52ch] text-lead text-ink-300"
               >
                 {settings.hero_subtitle}
-              </motion.p>
+              </m.p>
             )}
 
-            <motion.div
+            <m.div
               variants={seq(4)}
               initial="hidden"
               animate="show"
@@ -205,26 +205,26 @@ export default function Hero() {
               >
                 See selected work
               </Button>
-            </motion.div>
+            </m.div>
 
-            <motion.div variants={seq(5)} initial="hidden" animate="show">
+            <m.div variants={seq(5)} initial="hidden" animate="show">
               <StackChain
                 label={chain.label || 'What I own, end to end'}
                 nodes={chainNodes}
               />
-            </motion.div>
+            </m.div>
           </div>
 
           {/* BAND 3 — portrait. Full-bleed 3:2 band on mobile, 4:5 crop on the
               grid from lg up. No diagonal, no parallax. */}
-          <motion.div
+          <m.div
             initial={{ clipPath: reduce ? 'inset(0% 0% 0% 0%)' : 'inset(0% 0% 100% 0%)' }}
             animate={{ clipPath: 'inset(0% 0% 0% 0%)' }}
             transition={{ duration: 0.9, delay: 0.36, ease: [0.76, 0, 0.24, 1] }}
             className="order-3 -mx-5 aspect-[3/2] border-y border-rule-soft sm:-mx-8 lg:order-2 lg:col-span-4 lg:mx-0 lg:aspect-[4/5] lg:border lg:border-rule-soft"
           >
             <Portrait src={photoSrc} error={photoError} onError={() => setPhotoError(true)} />
-          </motion.div>
+          </m.div>
 
           {/* BAND 4 — proof strip, full-bleed on every breakpoint */}
           <div className="order-2 -mx-5 sm:-mx-8 lg:order-3 lg:col-span-12 lg:-mx-14">
