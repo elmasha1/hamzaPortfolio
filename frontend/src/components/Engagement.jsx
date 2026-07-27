@@ -131,7 +131,6 @@ function Row({ row, index }) {
             type="button"
             onClick={cv.download}
             disabled={cv.loading}
-            data-cursor="hover"
             className="inline-flex items-center gap-2 border-b border-rule pb-1 font-mono text-eyebrow font-medium uppercase tracking-[0.06em] text-ink-300 transition-colors hover:border-ink-100 hover:text-ink-100 disabled:opacity-60"
           >
             {cv.loading ? 'Preparing…' : row.cta_label || 'Download CV'}

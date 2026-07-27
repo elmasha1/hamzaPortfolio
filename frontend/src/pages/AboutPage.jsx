@@ -211,7 +211,6 @@ export default function AboutPage() {
             type="button"
             onClick={cv.download}
             disabled={cv.loading}
-            data-cursor="hover"
             className="group inline-flex min-h-[48px] items-center gap-2 rounded-full border border-rule px-8 text-[0.9375rem] font-medium text-ink-100 transition-colors duration-300 hover:bg-ink-100 hover:text-paper disabled:opacity-60"
           >
             {cv.loading ? 'Preparing…' : 'Download CV'}
@@ -227,7 +226,6 @@ export default function AboutPage() {
                 href={soc.href}
                 target="_blank"
                 rel="noreferrer"
-                data-cursor="hover"
                 className="group inline-flex items-center gap-2 text-sm text-ink-300 transition-colors hover:text-ink-100"
               >
                 <soc.Icon size={16} />

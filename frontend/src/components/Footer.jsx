@@ -70,7 +70,6 @@ export default function Footer() {
             </Meta>
             <a
               href={`mailto:${s.email}`}
-              data-cursor="hover"
               className="group mt-4 block border-b border-rule pb-6 font-heading text-[clamp(2rem,7vw,5.5rem)] font-semibold leading-[1] tracking-[-0.04em] text-ink-100 transition-colors"
             >
               <span className="bg-gradient-to-r from-ink-100 to-ink-100 bg-[length:0%_1px] bg-left-bottom bg-no-repeat pb-1 transition-[background-size] duration-500 ease-out group-hover:bg-[length:100%_1px]">
@@ -92,7 +91,6 @@ export default function Footer() {
                   <Link
                     to={n.hash ? n.to + n.hash : n.to}
                     onClick={n.hash ? (e) => goToSection(n.hash, e) : undefined}
-                    data-cursor="hover"
                     className="group inline-flex items-center gap-1.5 text-ink-300 transition-colors hover:text-ink-100"
                   >
                     {n.label}
@@ -117,7 +115,6 @@ export default function Footer() {
                     href={soc.href}
                     target="_blank"
                     rel="noreferrer"
-                    data-cursor="hover"
                     className="group inline-flex items-center gap-1.5 text-ink-300 transition-colors hover:text-ink-100"
                   >
                     {soc.label}
@@ -133,7 +130,6 @@ export default function Footer() {
                   type="button"
                   onClick={downloadCv}
                   disabled={cvLoading}
-                  data-cursor="hover"
                   className="text-ink-300 transition-colors hover:text-ink-100 disabled:opacity-60"
                 >
                   {cvLoading ? 'Preparing…' : 'Download CV'}
@@ -178,7 +174,6 @@ export default function Footer() {
               type="button"
               onClick={() => setGrid((g) => !g)}
               aria-pressed={grid}
-              data-cursor="hover"
               className={`inline-flex min-h-[36px] items-center gap-2 border px-3.5 font-mono text-meta uppercase tracking-[0.06em] transition-colors duration-300 ${
                 grid
                   ? 'border-ink-100 bg-ink-100 text-paper'
@@ -193,7 +188,6 @@ export default function Footer() {
         {/* Oversized wordmark → back to top */}
         <button
           onClick={scrollToTop}
-          data-cursor="hover"
           aria-label="Back to top"
           className="group block w-full text-left"
         >
@@ -208,7 +202,6 @@ export default function Footer() {
           <button
             type="button"
             onClick={scrollToTop}
-            data-cursor="hover"
             className="inline-flex items-center gap-1.5 transition-colors hover:text-ink-100 sm:order-3"
           >
             Back to top

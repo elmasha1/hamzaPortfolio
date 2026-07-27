@@ -87,7 +87,6 @@ export default function Technologies({ scope = 'About', index = '04' }) {
                   <motion.div
                     key={it.name}
                     variants={fadeUp(16)}
-                    data-cursor="hover"
                     className="group flex items-center gap-3 rounded-[5px] border border-rule px-3.5 py-3 transition-all duration-300 hover:-translate-y-0.5 hover:border-white/25 hover:bg-white/[0.03]"
                   >
                     <TechIcon

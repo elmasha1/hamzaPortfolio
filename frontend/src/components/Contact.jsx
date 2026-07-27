@@ -178,7 +178,6 @@ export default function Contact({ scope = 'Home', index = '06', faq = [], classN
                   target="_blank"
                   rel="noreferrer"
                   aria-label={s.label}
-                  data-cursor="hover"
                   className="flex h-12 w-12 items-center justify-center border border-rule bg-white/[0.04] text-ink-300 transition-colors duration-300 hover:bg-ink-100 hover:text-paper"
                 >
                   <s.Icon size={19} />

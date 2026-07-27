@@ -182,11 +182,18 @@
   }
 }
 
-/* Hide the native cursor only where the custom cursor takes over (desktop,
-   media only — text and form fields keep the native caret/pointer). */
-.custom-cursor-active [data-cursor='view'],
-.custom-cursor-active [data-cursor='open'] {
+/* The custom dot replaces the native arrow on the page… */
+.custom-cursor-active,
+.custom-cursor-active * {
   cursor: none;
+}
+/* …but text and form fields keep the native caret, where precision and the
+   affordance actually matter. */
+.custom-cursor-active input,
+.custom-cursor-active textarea,
+.custom-cursor-active select,
+.custom-cursor-active [contenteditable='true'] {
+  cursor: auto;
 }
 
 /* ============================================================

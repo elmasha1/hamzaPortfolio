@@ -18,7 +18,6 @@ function Row({ item, index, open, onToggle }) {
           onClick={onToggle}
           aria-expanded={open}
           aria-controls={panelId}
-          data-cursor="hover"
           className="group flex w-full items-center justify-between gap-5 py-5 text-left"
         >
           <span className="flex items-baseline gap-4">

@@ -75,7 +75,6 @@ function SpecTable({ project }) {
                 href={l.href}
                 target="_blank"
                 rel="noreferrer"
-                data-cursor="hover"
                 className="inline-flex items-center gap-2 border-b border-rule pb-0.5 font-mono text-meta uppercase tracking-[0.05em] text-ink-300 transition-colors hover:border-ink-100 hover:text-ink-100"
               >
                 <l.Icon size={14} />
@@ -217,7 +216,6 @@ export default function ProjectDetail() {
       <div className="container-px relative z-10 pt-28 lg:pt-32">
         <Link
           to="/#projects"
-          data-cursor="hover"
           className="inline-flex items-center gap-2 font-mono text-meta uppercase tracking-[0.06em] text-ink-500 transition-colors hover:text-ink-100"
         >
           <ArrowLeft size={14} /> Back to work

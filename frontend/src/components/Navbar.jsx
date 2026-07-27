@@ -119,7 +119,6 @@ export default function Navbar() {
                   <Link
                     to={linkTo(l)}
                     onClick={(e) => go(e, l)}
-                    data-cursor="hover"
                     aria-current={active ? 'page' : undefined}
                     className={`group relative block py-3 font-mono text-meta font-medium uppercase tracking-[0.07em] transition-colors hover:text-ink-100 ${
                       active ? 'text-ink-100' : 'text-ink-500'
@@ -142,7 +141,6 @@ export default function Navbar() {
               type="button"
               onClick={downloadCv}
               disabled={cvLoading}
-              data-cursor="hover"
               className="group inline-flex items-center gap-1.5 border-b border-rule py-1 font-mono text-meta font-medium uppercase tracking-[0.07em] text-ink-300 transition-colors hover:border-ink-100 hover:text-ink-100 disabled:opacity-60"
             >
               {cvLoading ? 'Preparing…' : 'CV'}
@@ -151,7 +149,6 @@ export default function Navbar() {
             <Link
               to="/#contact"
               onClick={(e) => goToSection('#contact', e)}
-              data-cursor="hover"
               className="group inline-flex min-h-[44px] items-center gap-2 rounded-full border border-rule px-5 text-[0.8125rem] font-medium text-ink-100 transition-colors duration-300 hover:bg-ink-100 hover:text-paper"
             >
               Start a project
@@ -164,7 +161,6 @@ export default function Navbar() {
             aria-label={open ? 'Close menu' : 'Open menu'}
             aria-expanded={open}
             onClick={() => setOpen((o) => !o)}
-            data-cursor="hover"
             className="group flex min-h-[44px] items-center gap-2.5 font-mono text-meta font-medium uppercase tracking-[0.07em] text-ink-100 lg:hidden"
           >
             {open ? 'Close' : 'Menu'}
@@ -200,7 +196,6 @@ export default function Navbar() {
                       <Link
                         to={linkTo(l)}
                         onClick={(e) => go(e, l)}
-                        data-cursor="hover"
                         aria-current={active ? 'page' : undefined}
                         className={`group inline-flex items-baseline gap-4 font-heading text-[clamp(2.5rem,9vw,5.5rem)] font-medium leading-[1.05] tracking-[-0.03em] transition-colors hover:text-ink-100 ${active ? 'text-ink-100' : 'text-ink-500'}`}
                       >
@@ -222,12 +217,12 @@ export default function Navbar() {
             >
               <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
                 {socials.map((soc) => (
-                  <a key={soc.label} href={soc.href} target="_blank" rel="noreferrer" data-cursor="hover" className="group inline-flex items-center gap-1 text-sm text-ink-500 transition-colors hover:text-ink-100">
+                  <a key={soc.label} href={soc.href} target="_blank" rel="noreferrer" className="group inline-flex items-center gap-1 text-sm text-ink-500 transition-colors hover:text-ink-100">
                     {soc.label}
                     <ArrowUpRight size={14} className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                   </a>
                 ))}
-                <button type="button" onClick={downloadCv} disabled={cvLoading} data-cursor="hover" className="group inline-flex items-center gap-1 text-sm text-ink-500 transition-colors hover:text-ink-100 disabled:opacity-60">
+                <button type="button" onClick={downloadCv} disabled={cvLoading} className="group inline-flex items-center gap-1 text-sm text-ink-500 transition-colors hover:text-ink-100 disabled:opacity-60">
                   {cvLoading ? 'Preparing…' : 'Download CV'}
                   <Download size={14} className="transition-transform duration-300 group-hover:translate-y-0.5" />
                 </button>
