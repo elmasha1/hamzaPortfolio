@@ -4,7 +4,17 @@ import { Code2 } from 'lucide-react'
 import Button from './ui/Button'
 import Meta from './ui/Meta'
 import MetricsRule from './MetricsRule'
-import { ArrowRight } from './ui/Icons'
+import {
+  ArrowRight,
+  Cpu,
+  Database,
+  GitBranch,
+  Layers,
+  MonitorSmartphone,
+  Rocket,
+  Server,
+  Terminal,
+} from './ui/Icons'
 import useSectionNav from '../hooks/useSectionNav'
 import { useSettings } from '../context/SettingsContext'
 
@@ -31,39 +41,71 @@ const HATCH = {
 }
 
 /**
+ * Each node gets the icon its layer earns. The dashboard field stays a plain
+ * comma-separated list, so the icon is matched from the label's own keywords —
+ * rename a node and it keeps working; invent one and it falls back to the
+ * generic layer mark rather than to nothing.
+ */
+const NODE_ICONS = [
+  [/client|browser|front|ui|web|app/i, MonitorSmartphone],
+  [/api|server|backend|service/i, Server],
+  [/queue|job|worker|event|bus/i, Layers],
+  [/db|database|data|sql|store/i, Database],
+  [/ci|cd|deploy|pipeline|build|release/i, GitBranch],
+  [/monitor|observ|alert|log|metric|uptime/i, Cpu],
+  [/cache|redis|cdn|edge/i, Rocket],
+  [/infra|cloud|docker|server|linux|ops/i, Terminal],
+]
+
+function nodeIcon(label) {
+  const match = NODE_ICONS.find(([pattern]) => pattern.test(label))
+  return match ? match[1] : Layers
+}
+
+/**
  * StackChain — "what I own, end to end" as a request path: CLIENT → API →
  * QUEUE → DB → CI/CD → MONITORING. Nodes light up in sequence (CSS only).
  * This is the old decorative constellation given a job.
+ *
+ * The path reads left-to-right where there is room and top-to-bottom where
+ * there isn't — six labelled nodes never fit a 320px column, and turning the
+ * chain rather than scrolling it keeps the whole diagram visible at once,
+ * which is the only reason it exists.
  */
 function StackChain({ label, nodes }) {
   if (!nodes.length) return null
+
   return (
     <div className="mt-14 border-t border-rule-soft pt-6">
       <Meta caps>{label}</Meta>
-      {/* Six labelled nodes don't fit a 320px column — the chain scrolls
-          horizontally on small screens rather than wrapping, which would
-          break the left-to-right reading the diagram exists to show. */}
-      <div className="mt-6 -mx-5 overflow-x-auto px-5 sm:mx-0 sm:overflow-visible sm:px-0">
-        <div className="flex min-w-max items-start sm:min-w-0">
-          {nodes.map((n, i) => (
-            <div key={n} className="contents">
+
+      <ol className="mt-6 flex flex-col sm:flex-row sm:items-start">
+        {nodes.map((node, i) => {
+          const Icon = nodeIcon(node)
+          return (
+            <li key={node} className="contents">
               {i > 0 && (
-                <span aria-hidden="true" className="mx-2.5 mt-[5px] h-px min-w-[24px] flex-1 bg-rule" />
-              )}
-              <div className="flex shrink-0 flex-col items-center gap-2.5">
                 <span
                   aria-hidden="true"
-                  className="hero-node block h-3 w-3 border border-white/35"
-                  style={{ animationDelay: `${i * 0.6}s` }}
+                  className="ml-[15px] h-4 w-px bg-rule sm:ml-0 sm:mt-[15px] sm:h-px sm:min-w-[20px] sm:flex-1"
                 />
-                <Meta caps className="whitespace-nowrap tracking-[0.06em]">
-                  {n}
+              )}
+              <div className="flex shrink-0 items-center gap-3 sm:flex-col sm:items-center sm:gap-2.5">
+                <span
+                  aria-hidden="true"
+                  className="hero-node flex h-[31px] w-[31px] shrink-0 items-center justify-center border border-white/35 text-ink-100"
+                  style={{ animationDelay: `${i * 0.6}s` }}
+                >
+                  <Icon size={15} strokeWidth={1.5} />
+                </span>
+                <Meta caps className="tracking-[0.06em] sm:whitespace-nowrap">
+                  {node}
                 </Meta>
               </div>
-            </div>
-          ))}
-        </div>
-      </div>
+            </li>
+          )
+        })}
+      </ol>
     </div>
   )
 }
