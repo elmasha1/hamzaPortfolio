@@ -5,6 +5,7 @@ import WorkIndex from '../components/WorkIndex'
 import Statement from '../components/Statement'
 import Process from '../components/Process'
 import Journey from '../components/Journey'
+import BleedImage from '../components/BleedImage'
 import Engagement from '../components/Engagement'
 import Contact from '../components/Contact'
 import { fetchPricing } from '../lib/api'
@@ -19,6 +20,7 @@ import { useSettings } from '../context/SettingsContext'
  *      Statement        — full-bleed anchor
  *   03 How I work       — scope → build → ship → maintain
  *   04 Journey
+ *      BleedImage       — full-bleed anchor, the one colour moment
  *   05 Ways to work together
  *   06 Contact          — form, what happens next, and the FAQ
  *
@@ -79,6 +81,7 @@ export default function HomePage() {
         index={nProcess}
       />
       <Journey scope="Home" index={nJourney} />
+      <BleedImage />
       <Engagement
         pricing={pricing}
         error={pricingError}
