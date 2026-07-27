@@ -16,10 +16,12 @@ echo "==> migrating"
 php artisan migrate --force
 
 # Cache after migrating, so a config change and a schema change land together.
+# No view:cache — this API renders no Blade templates, so it has nothing to
+# compile, and with `set -e` a missing resources/views killed the container
+# before Apache ever started.
 echo "==> warming caches"
 php artisan config:cache
 php artisan route:cache
-php artisan view:cache
 
 echo "==> apache on :${PORT}"
 exec apache2-foreground

@@ -1,0 +1,9 @@
+This API renders no Blade templates — every response is JSON.
+
+The directory still has to exist: config('view.paths') points at it, and
+Laravel's built-in /up health endpoint resolves a view through the compiler.
+Without it the framework throws
+
+    The "/var/www/html/resources/views" directory does not exist.
+
+git does not track empty directories, so this file is what keeps it alive.
