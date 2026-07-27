@@ -83,10 +83,31 @@ export default function Navbar() {
         }`}
       >
         <nav className={`container-px flex items-center justify-between gap-6 transition-all duration-300 ${scrolled ? 'py-3.5' : 'py-5'}`}>
-          {/* Wordmark */}
-          <Link to="/" className="shrink-0 font-heading text-lg font-semibold tracking-[-0.02em] text-ink-100">
-            Hamza<span className="text-ink-500">®</span>
-          </Link>
+          {/* Wordmark + status. Once the hero's utility rail has scrolled
+              away, the availability follows the visitor down the page. */}
+          <div className="flex shrink-0 items-center gap-4">
+            <Link to="/" className="font-heading text-lg font-semibold tracking-[-0.02em] text-ink-100">
+              Hamza<span className="text-ink-500">®</span>
+            </Link>
+
+            <AnimatePresence>
+              {scrolled && settings.available !== false && (
+                <motion.span
+                  initial={{ opacity: 0, width: 0 }}
+                  animate={{ opacity: 1, width: 'auto' }}
+                  exit={{ opacity: 0, width: 0 }}
+                  transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                  className="hidden items-center gap-2 overflow-hidden whitespace-nowrap border-l border-rule-soft pl-4 font-mono text-eyebrow font-medium uppercase tracking-[0.07em] text-ink-500 sm:flex"
+                >
+                  <span aria-hidden="true" className="relative flex h-1.5 w-1.5 shrink-0">
+                    <span className="absolute inline-flex h-full w-full rounded-full bg-white/50 motion-safe:animate-pulse-ring" />
+                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-ink-100" />
+                  </span>
+                  Available
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </div>
 
           {/* Desktop links — the metadata voice, so the growing underline sits
               under mono rather than under letter-spaced Inter caps. */}
