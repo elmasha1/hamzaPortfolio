@@ -15,15 +15,18 @@ sed -ri "s/:80>/:${PORT}>/" /etc/apache2/sites-available/000-default.conf
 echo "==> migrating"
 php artisan migrate --force
 
-# Optional one-shot seeding. Render's free tier has no shell, so this is the
-# only way to get starting content into a fresh database.
-#
-# Set SEED_DATABASE=true in the dashboard, deploy once, then REMOVE it again.
-# Leaving it on is not destructive — every seeder is idempotent — but it would
-# reset the demo rows to their defaults on each deploy, quietly undoing edits
-# you made in the admin dashboard.
+# A brand-new database gets its starting content and admin account
+# automatically — otherwise the first deploy leaves a site with nothing in it
+# and no way to log in and fix that. The command no-ops the moment any content
+# exists, so it cannot overwrite dashboard edits.
+echo "==> seed check"
+php artisan app:seed-if-empty
+
+# Escape hatch: force a reseed of the demo rows. Set SEED_DATABASE=true for one
+# deploy, then remove it — every seeder is idempotent, but leaving it on would
+# reset those rows to their defaults on each deploy.
 if [ "${SEED_DATABASE:-false}" = "true" ]; then
-    echo "==> seeding (SEED_DATABASE=true)"
+    echo "==> forced reseed (SEED_DATABASE=true)"
     php artisan db:seed --force
 fi
 
