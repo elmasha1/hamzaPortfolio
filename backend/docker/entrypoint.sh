@@ -38,5 +38,13 @@ echo "==> warming caches"
 php artisan config:cache
 php artisan route:cache
 
+# Everything above ran as root, so anything it wrote — the config/route cache,
+# and every file the seeder's cache busting touched — is now owned by root.
+# Apache serves as www-data, which can read those but not overwrite them, so
+# the first cache write from a request fails and every cached endpoint returns
+# 500. Hand ownership back before serving.
+echo "==> fixing ownership"
+chown -R www-data:www-data storage bootstrap/cache
+
 echo "==> apache on :${PORT}"
 exec apache2-foreground

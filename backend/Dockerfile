@@ -56,7 +56,14 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction --no-script
 
 COPY . .
 
+# The cache directories must exist before anything writes to them — the
+# .dockerignore keeps their contents out of the image, and an excluded
+# directory that is empty simply never gets created.
 RUN composer dump-autoload --optimize --no-interaction \
+    && mkdir -p storage/framework/cache/data \
+                storage/framework/sessions \
+                storage/framework/views \
+                storage/logs \
     && chown -R www-data:www-data storage bootstrap/cache
 
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint
