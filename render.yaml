@@ -42,8 +42,11 @@ services:
       # your own: php artisan key:generate --show
       - key: APP_KEY
         generateValue: true
+      # stderr, not stack: the default writes to storage/logs inside a
+      # container that is thrown away, so exceptions were invisible. stderr
+      # puts them straight into Render's log stream.
       - key: LOG_CHANNEL
-        value: stack
+        value: stderr
       - key: LOG_LEVEL
         value: error
 
@@ -73,8 +76,10 @@ services:
 
       - key: CACHE_STORE
         value: database
+      # This API authenticates with Sanctum tokens and has no session state.
+      # Pointing the driver at the database only bought a table dependency.
       - key: SESSION_DRIVER
-        value: database
+        value: file
       - key: QUEUE_CONNECTION
         value: sync
 
