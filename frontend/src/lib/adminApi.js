@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { clearPublicCache } from './api'
+import { COLD_START_TIMEOUT, installReadRetry } from './httpRetry'
 
 /**
  * Axios instance for the admin dashboard. Automatically attaches the stored
@@ -14,10 +15,17 @@ export const tokenStore = {
   clear: () => localStorage.removeItem(TOKEN_KEY),
 }
 
-const adminApi = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api',
-  headers: { Accept: 'application/json' },
-})
+// Same cold-start handling as the public client. Without a timeout the
+// dashboard hung on a sleeping API, and without the retry a refused
+// connection surfaced as "cannot reach the server" for a server that was
+// simply waking up.
+const adminApi = installReadRetry(
+  axios.create({
+    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api',
+    timeout: COLD_START_TIMEOUT,
+    headers: { Accept: 'application/json' },
+  })
+)
 
 // Attach the bearer token on every request.
 adminApi.interceptors.request.use((config) => {

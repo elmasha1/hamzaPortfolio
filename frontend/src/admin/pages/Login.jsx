@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, useLocation, Navigate } from 'react-router-dom'
 import { m } from 'framer-motion'
 import { useAuth } from '../../context/AuthContext'
 import { useToast } from '../../context/ToastContext'
+import { fetchSettings } from '../../lib/api'
 
 export default function Login() {
   const { login, isAuthed } = useAuth()
@@ -14,6 +15,14 @@ export default function Login() {
   const [form, setForm] = useState({ email: 'admin@portfolio.test', password: '' })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+
+  // Wake the API while the password is still being typed. This page is the one
+  // place in the app that asks for nothing on mount, so a sleeping container
+  // used to start booting only at submit — turning the login itself into the
+  // request that waits, or fails outright because a POST is never retried.
+  useEffect(() => {
+    fetchSettings().catch(() => {})
+  }, [])
 
   // Already logged in? Bounce to the dashboard.
   if (isAuthed) return <Navigate to="/admin/dashboard" replace />

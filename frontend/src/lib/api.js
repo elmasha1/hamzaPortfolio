@@ -1,46 +1,18 @@
 import axios from 'axios'
+import { COLD_START_TIMEOUT, installReadRetry } from './httpRetry'
 
-// Centralised axios instance pointing at the Laravel API.
-//
-// The timeout has to clear a cold start. The API sleeps after 15 minutes of
-// inactivity and the first request then waits for a container to boot, run its
-// migrations and warm its caches — tens of seconds, not milliseconds. At the
-// old 12s the request was aborted while the server was still starting, and the
-// page reported "the API didn't respond" for a server that was merely waking.
-const COLD_START_TIMEOUT = 75000
-
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api',
-  timeout: COLD_START_TIMEOUT,
-  headers: {
-    Accept: 'application/json',
-    'Content-Type': 'application/json',
-  },
-})
-
-/**
- * Retry reads once on a connection-level failure.
- *
- * A container that is still binding its port refuses the connection outright
- * rather than answering slowly, so waiting longer doesn't help — asking again
- * does. Only GETs are retried: they're idempotent, and re-sending a contact
- * message or a login would not be.
- */
-api.interceptors.response.use(undefined, async (error) => {
-  const config = error.config
-  const method = (config?.method || 'get').toLowerCase()
-  const isRead = method === 'get'
-  const isConnectionFailure = !error.response // no HTTP status came back at all
-
-  if (!config || !isRead || !isConnectionFailure || config.__retried) {
-    return Promise.reject(error)
-  }
-
-  config.__retried = true
-  await new Promise((resolve) => setTimeout(resolve, 2000))
-
-  return api.request(config)
-})
+// Centralised axios instance pointing at the Laravel API. The timeout and the
+// read retry both exist to survive a cold start — see lib/httpRetry.js.
+const api = installReadRetry(
+  axios.create({
+    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api',
+    timeout: COLD_START_TIMEOUT,
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  })
+)
 
 /* ------------------------------------------------------------------ */
 /* Client-side cache: in-memory TTL + in-flight request de-duplication.
