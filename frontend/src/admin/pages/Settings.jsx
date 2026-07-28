@@ -3,6 +3,7 @@ import { settingsApi, photoApi } from '../../lib/adminApi'
 import { useToast } from '../../context/ToastContext'
 import { Plus, X, ICON_NAMES, DynamicIcon } from '../../components/ui/Icons'
 import ImageUploader from '../components/ImageUploader'
+import AccountSection from '../components/AccountSection'
 
 const field =
   'w-full rounded-xl border border-line bg-white/[0.04] px-3 py-2 text-sm text-heading outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20'
@@ -120,7 +121,13 @@ export default function Settings() {
   }
 
   return (
-    <form onSubmit={save} className="space-y-6">
+    // The account form is a sibling of this one, never a child: nesting one
+    // <form> inside another is invalid HTML, and the inner submit would end up
+    // saving site settings instead of changing a password.
+    <div className="space-y-6">
+      <AccountSection />
+
+      <form onSubmit={save} className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="font-heading text-2xl font-semibold text-heading">
           Site settings
@@ -371,6 +378,7 @@ export default function Settings() {
           <input value={s.socials.email} onChange={(e) => setSocial('email', e.target.value)} className={field} />
         </Labeled>
       </Section>
-    </form>
+      </form>
+    </div>
   )
 }

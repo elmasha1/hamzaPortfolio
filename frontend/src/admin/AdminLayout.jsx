@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { AnimatePresence, m } from 'framer-motion'
+import AdminErrorBoundary from './components/AdminErrorBoundary'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import {
@@ -143,19 +144,22 @@ export default function AdminLayout() {
           </div>
         </header>
 
-        {/* Page content with smooth transitions */}
+        {/* Page content.
+            No exit animation and no AnimatePresence "wait": those made the
+            outgoing page fade out completely before the incoming one mounted,
+            so every link click showed an empty content area for about half a
+            second. The new section now renders immediately and just fades in. */}
         <main className="p-5 sm:p-8">
-          <AnimatePresence mode="wait">
+          <AdminErrorBoundary resetKey={location.pathname}>
             <m.div
               key={location.pathname}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.15, ease: [0.22, 1, 0.36, 1] }}
             >
               <Outlet />
             </m.div>
-          </AnimatePresence>
+          </AdminErrorBoundary>
         </main>
       </div>
     </div>

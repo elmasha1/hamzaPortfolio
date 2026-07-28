@@ -197,6 +197,11 @@ export const aboutVideoApi = {
   remove: () => adminApi.delete('/admin/about-video').then((r) => r.data.data),
 }
 
+/* -------------------------- Own account -------------------------- */
+export const accountApi = {
+  update: (payload) => adminApi.put('/admin/account', payload).then((r) => r.data),
+}
+
 /* ---------------------------- About ----------------------------- */
 export const aboutApi = {
   get: () => cachedAdminGet('/admin/about').then((d) => d.data),

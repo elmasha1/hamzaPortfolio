@@ -13,6 +13,7 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\TechnologyController;
 use App\Http\Controllers\Admin\AboutController as AdminAboutController;
+use App\Http\Controllers\Admin\AccountController as AdminAccountController;
 use App\Http\Controllers\Admin\AboutVideoController as AdminAboutVideoController;
 use App\Http\Controllers\Admin\CvController as AdminCvController;
 use App\Http\Controllers\Admin\CvPhotoController as AdminCvPhotoController;
@@ -63,6 +64,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 
     Route::prefix('admin')->group(function () {
+        // The signed-in admin's own name, email and password
+        Route::put('/account', [AdminAccountController::class, 'update']);
+
         // Dashboard overview (counts + recents, one request)
         Route::get('/overview', [AdminOverviewController::class, 'index']);
 
